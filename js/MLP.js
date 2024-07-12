@@ -1,5 +1,6 @@
+var layers = [];
 class Neuron {
-  constructor(nin) {
+  constructor(nin, x, y) {
     this.w = [];
     for (let i = 0; i < nin; i++) {
       let randomValue = Math.random() * 2 - 1;
@@ -8,6 +9,9 @@ class Neuron {
     this.b = new Value(Math.random() * 2 - 1);
     this.act_func = ActivationFunction.TANH;
     this.output = null;
+    this.lines = [];
+    this.x = x;
+    this.y = y;
   }
 
   call(x) {
@@ -28,23 +32,48 @@ class Neuron {
     this.act_func = act_func;
   }
 
-  draw(layerX, layerY, layerW, layerH, numOfNeuron, i) {
-    let x = layerX + layerW / 2;
-    let y = layerY + 25 + (layerH / numOfNeuron) * i;
-    circle(x, y, 25, 25);
-    text(this.output?.data.toFixed(2), x + 30, y);
-    text(this.output?.grad.toFixed(2), x + 30, y + 25);
+  setLines(lines) {
+    this.lines = lines;
+  }
+  draw() {
+    this.lines.forEach((line) => line.draw());
+    circle(this.x, this.y, 25, 25);
+    text(this.output?.data.toFixed(2), this.x + 30, this.y);
+    text(this.output?.grad.toFixed(2), this.x + 30, this.y + 25);
   }
 }
 
-class Layer {
-  constructor(nin, nout, act_func = ActivationFunction.TANH) {
-    this.neurons = Array.from({ length: nout }, () => new Neuron(nin));
+class Line {
+  constructor(from, to) {
+    this.from = from;
+    this.to = to;
+  }
+
+  draw() {
+    line(this.from.x, this.from.y, this.to.x, this.to.y);
+  }
+}
+
+class Layer extends Draggable {
+  constructor(nin, nout, x, act_func = ActivationFunction.TANH) {
+    super();
     this.act_func = act_func;
-    this.x = 100;
-    this.y = 100;
+    this.prevLayer = null;
+    this.x = x;
     this.w = 50;
-    this.h = 200;
+    this.neurons = [];
+    this.middleYpoint = 350;
+
+    let yGap = 40;
+    this.h = yGap * (nout - 1) + 50;
+    this.y = this.middleYpoint - this.h / 2;
+
+    for (let i = 0; i < nout; i++) {
+      let x = this.x + this.w / 2;
+      let y = this.y + this.h / 2 + yGap * (i - (nout - 1) / 2);
+
+      this.neurons.push(new Neuron(nin, x, y));
+    }
   }
 
   call(x) {
@@ -61,16 +90,23 @@ class Layer {
     this.neurons.forEach((neuron) => neuron.change_act_func(this.act_func));
   }
 
-  change_x(x) {
-    this.x = x;
+  setPrevLayer(layer) {
+    this.prevLayer = layer;
+
+    this.neurons.forEach((neuron) => {
+      let lines = [];
+      this.prevLayer.neurons.forEach((fromNeuron) => {
+        lines.push(new Line(fromNeuron, neuron));
+      });
+      neuron.setLines(lines);
+    });
   }
 
   draw() {
+    fill(255, 255, 255, 0);
     rect(this.x, this.y, 50, this.h);
-
-    this.neurons.forEach((neuron, i) =>
-      neuron.draw(this.x, this.y, this.w, this.h, this.neurons.length, i),
-    );
+    fill(255);
+    this.neurons.forEach((neuron) => neuron.draw());
   }
 }
 
@@ -78,10 +114,16 @@ class MLP {
   constructor(nin, nouts) {
     let sz = [nin, ...nouts];
     this.layers = [];
+
     for (let i = 0; i < nouts.length; i++) {
-      const layer = new Layer(sz[i], sz[i + 1]);
-      layer.change_x(i * 100 + 50);
+      const layer = new Layer(sz[i], sz[i + 1], i * 100 + 50);
+
+      if (this.layers.length > 0) {
+        layer.setPrevLayer(this.layers[this.layers.length - 1]);
+      }
+
       this.layers.push(layer);
+      layers.push(layer);
     }
   }
 
@@ -93,6 +135,8 @@ class MLP {
     return this.layers.flatMap((layer) => layer.parameters());
   }
   draw() {
-    this.layers.forEach((layer) => layer.draw());
+    for (let i = this.layers.length - 1; i >= 0; i--) {
+      this.layers[i].draw();
+    }
   }
 }
