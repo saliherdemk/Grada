@@ -21,15 +21,11 @@ class Draggable {
     }
   }
   pressed() {
-    console.log("asd");
     if (this.rollover) {
       this.dragging = true;
       this.offsetX = this.x - mouseX;
       this.offsetY = this.y - mouseY;
     }
-
-    this.globOffsetX = this.x - mouseX;
-    this.globOffsetY = this.y - mouseY;
   }
 
   released() {
@@ -40,6 +36,13 @@ class Draggable {
     if (this.dragging) {
       this.x = mouseX + this.offsetX;
       this.y = mouseY + this.offsetY;
+
+      for (let i = 0; i < this.neurons.length; i++) {
+        let x = this.x + this.w / 2;
+        let y = this.y + this.h / 2 + this.yGap * (i - (this.nout - 1) / 2);
+
+        this.neurons[i].updateCoordinates(x, y);
+      }
     }
   }
 }

@@ -1,10 +1,10 @@
 var layers = [];
+
 class Neuron {
   constructor(nin, x, y) {
     this.w = [];
     for (let i = 0; i < nin; i++) {
-      let randomValue = Math.random() * 2 - 1;
-      this.w.push(new Value(randomValue));
+      this.w.push(new Value(Math.random() * 2 - 1));
     }
     this.b = new Value(Math.random() * 2 - 1);
     this.act_func = ActivationFunction.TANH;
@@ -35,11 +35,18 @@ class Neuron {
   setLines(lines) {
     this.lines = lines;
   }
+
+  updateCoordinates(x, y) {
+    this.x = x;
+    this.y = y;
+  }
   draw() {
     this.lines.forEach((line) => line.draw());
     circle(this.x, this.y, 25, 25);
+    fill(0);
     text(this.output?.data.toFixed(2), this.x + 30, this.y);
     text(this.output?.grad.toFixed(2), this.x + 30, this.y + 25);
+    fill(255);
   }
 }
 
@@ -47,6 +54,7 @@ class Line {
   constructor(from, to) {
     this.from = from;
     this.to = to;
+    this.w = new Value(Math.random() * 2 - 1);
   }
 
   draw() {
@@ -61,16 +69,18 @@ class Layer extends Draggable {
     this.prevLayer = null;
     this.x = x;
     this.w = 50;
+    this.nout = nout;
+    this.yGap = 40;
     this.neurons = [];
-    this.middleYpoint = 350;
 
-    let yGap = 40;
-    this.h = yGap * (nout - 1) + 50;
-    this.y = this.middleYpoint - this.h / 2;
+    let middleYPoint = 350;
+
+    this.h = this.yGap * (nout - 1) + 50;
+    this.y = middleYPoint - this.h / 2;
 
     for (let i = 0; i < nout; i++) {
       let x = this.x + this.w / 2;
-      let y = this.y + this.h / 2 + yGap * (i - (nout - 1) / 2);
+      let y = this.y + this.h / 2 + this.yGap * (i - (nout - 1) / 2);
 
       this.neurons.push(new Neuron(nin, x, y));
     }
@@ -107,6 +117,8 @@ class Layer extends Draggable {
     rect(this.x, this.y, 50, this.h);
     fill(255);
     this.neurons.forEach((neuron) => neuron.draw());
+    this.over();
+    this.updateCoordinates();
   }
 }
 
