@@ -1,9 +1,6 @@
 class Draggable {
-  constructor(x, y, w, h) {
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
+  constructor(type) {
+    this.type = type;
     this.dragging = false;
     this.rollover = false;
   }
@@ -20,29 +17,34 @@ class Draggable {
       this.rollover = false;
     }
   }
-  pressed() {
-    if (this.rollover) {
+
+  pressed(force = false) {
+    if (this.rollover || force) {
       this.dragging = true;
       this.offsetX = this.x - mouseX;
       this.offsetY = this.y - mouseY;
+      isBusy = this.type == "layer" && !force;
+
+      if (this.type == "mlp") {
+        for (let i = 0; i < this.layers.length; i++) {
+          this.layers[i].pressed(true);
+        }
+      }
     }
   }
 
   released() {
     this.dragging = false;
+    isBusy = false;
   }
 
   updateCoordinates() {
     if (this.dragging) {
       this.x = mouseX + this.offsetX;
       this.y = mouseY + this.offsetY;
-
-      for (let i = 0; i < this.neurons.length; i++) {
-        let x = this.x + this.w / 2;
-        let y = this.y + this.h / 2 + this.yGap * (i - (this.nout - 1) / 2);
-
-        this.neurons[i].updateCoordinates(x, y);
-      }
+      this.type == "layer" && this.updateNeuronsCoordinates();
     }
+
+    this.type == "mlp" && this.updateLayersCoordinates();
   }
 }
