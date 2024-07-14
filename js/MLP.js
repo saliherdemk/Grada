@@ -1,5 +1,3 @@
-var isBusy = false;
-
 class Neuron {
   constructor(nin, x, y) {
     this.w = [];
@@ -71,6 +69,7 @@ class Layer extends Draggable {
     super("layer");
     this.act_func = act_func;
     this.nextLayer = null;
+    this.prevLayer = null;
     this.label = label;
     this.x = x;
     this.w = 50;
@@ -118,15 +117,13 @@ class Layer extends Draggable {
     });
   }
 
-  upCoordinates(x, y) {
-    this.x = x;
-    this.y = y;
+  setPrevLayer(layer) {
+    this.prevLayer = layer;
   }
 
   show() {
     fill(255, 255, 255, 0);
     rect(this.x, this.y, 50, this.h);
-    fill(255);
     fill(0);
     text(this.label, this.x, this.y - 10);
     fill(255);
@@ -135,8 +132,9 @@ class Layer extends Draggable {
   draw() {
     this.show();
     this.neurons.forEach((neuron) => neuron.draw());
-    this.over();
-    this.updateCoordinates();
+
+    !organizer.getDragActive() && this.over();
+    (organizer.getDragActive() || this.dragging) && this.updateCoordinates();
   }
 }
 
@@ -161,16 +159,18 @@ class MLP extends Draggable {
       );
 
       if (this.layers.length > 0) {
-        this.layers[this.layers.length - 1].setNextLayer(layer);
+        let prevLayer = this.layers[this.layers.length - 1];
+        prevLayer.setNextLayer(layer);
+        layer.setPrevLayer(prevLayer);
       }
 
       this.layers.push(layer);
     }
 
-    this.updateLayersCoordinates();
+    this.updateBorders();
   }
 
-  updateLayersCoordinates() {
+  updateBorders() {
     let lastX = 0;
     let firstX = width;
     let firstY = height;
@@ -207,7 +207,7 @@ class MLP extends Draggable {
     this.layers.forEach((layer) => {
       layer.pressed();
     });
-    if (isBusy) return;
+    if (organizer.getDragActive()) return;
     this.pressed();
   }
 
@@ -218,10 +218,15 @@ class MLP extends Draggable {
     this.released();
   }
 
+  handleDoubleClicked() {
+    this.layers.forEach((layer) => layer.doubleClicked());
+  }
+
   draw() {
     this.layers.forEach((layer) => layer.draw());
     this.show();
-    !isBusy && this.over();
-    (isBusy || this.dragging) && this.updateCoordinates();
+
+    !organizer.getDragActive() && this.over();
+    (organizer.getDragActive() || this.dragging) && this.updateCoordinates();
   }
 }

@@ -6,36 +6,39 @@ class Draggable {
   }
 
   over() {
-    if (
+    this.rollover =
       mouseX > this.x &&
       mouseX < this.x + this.w &&
       mouseY > this.y &&
-      mouseY < this.y + this.h
-    ) {
-      this.rollover = true;
-    } else {
-      this.rollover = false;
-    }
+      mouseY < this.y + this.h;
   }
 
   pressed(force = false) {
-    if (this.rollover || force) {
+    if (!(this.rollover || force)) return;
+
+    if (!organizer.getDragActive() || force) {
       this.dragging = true;
       this.offsetX = this.x - mouseX;
       this.offsetY = this.y - mouseY;
-      isBusy = this.type == "layer" && !force;
 
-      if (this.type == "mlp") {
-        for (let i = 0; i < this.layers.length; i++) {
-          this.layers[i].pressed(true);
-        }
+      if (this.type === "mlp") {
+        this.layers.forEach((layer) => layer.pressed(true));
       }
+
+      organizer.setDragActive(true);
+    }
+  }
+
+  doubleClicked() {
+    if (this.rollover && !editOrganizer.getSelected()) {
+      editOrganizer.enable();
+      editOrganizer.setSelected(this);
     }
   }
 
   released() {
     this.dragging = false;
-    isBusy = false;
+    organizer.setDragActive(false);
   }
 
   updateCoordinates() {
@@ -45,6 +48,6 @@ class Draggable {
       this.type == "layer" && this.updateNeuronsCoordinates();
     }
 
-    this.type == "mlp" && this.updateLayersCoordinates();
+    this.type == "mlp" && this.updateBorders(); // This is works because when you drag layer you also drag mlp
   }
 }
