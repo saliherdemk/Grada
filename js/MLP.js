@@ -1,15 +1,24 @@
 class Neuron {
-  constructor(nin, x, y) {
+  constructor(x, y, hidden) {
     this.w = [];
-    for (let i = 0; i < nin; i++) {
-      this.w.push(new Value(Math.random() * 2 - 1));
-    }
+    // for (let i = 0; i < nin; i++) {
+    //   this.w.push(new Value(Math.random() * 2 - 1));
+    // }
     this.b = new Value(Math.random() * 2 - 1);
     this.act_func = ActivationFunction.TANH;
     this.output = null;
     this.lines = [];
     this.x = x;
     this.y = y;
+    this.hidden = hidden;
+  }
+
+  hide() {
+    this.hidden = true;
+  }
+
+  visible() {
+    this.hidden = false;
   }
 
   call(x) {
@@ -47,6 +56,7 @@ class Neuron {
     fill(255);
   }
   draw() {
+    if (this.hidden) return;
     this.lines.forEach((line) => line.draw());
     this.show();
   }
@@ -60,12 +70,13 @@ class Line {
   }
 
   draw() {
-    line(this.from.x, this.from.y, this.to.x, this.to.y);
+    !(this.from.hidden || this.to.hidden) &&
+      line(this.from.x, this.from.y, this.to.x, this.to.y);
   }
 }
 
 class Layer extends Draggable {
-  constructor(nin, nout, x, y, label, act_func = ActivationFunction.TANH) {
+  constructor(neuronNum, x, y, label, act_func = ActivationFunction.TANH) {
     super("layer");
     this.act_func = act_func;
     this.nextLayer = null;
@@ -73,24 +84,95 @@ class Layer extends Draggable {
     this.label = label;
     this.x = x;
     this.w = 50;
-    this.nout = nout;
     this.yGap = 40;
-    this.h = this.yGap * (nout - 1) + 50;
-    this.neurons = Array.from({ length: nout }, () => new Neuron(nin, x, y));
+    this.h = this.yGap * (neuronNum - 1) + 50;
+    this.neurons = Array.from({ length: neuronNum }, () => new Neuron(x, y));
+    this.shrinked = false;
+    this.shownNeuronsNum = 3;
 
     let middleYPoint = 350;
     this.y = y + middleYPoint - this.h / 2;
 
     this.updateNeuronsCoordinates();
+    this.neurons.length > 4 && this.shrink();
+  }
+
+  shrink() {
+    let mid = this.shownNeuronsNum / 2;
+    for (let i = 0; i < this.neurons.length; i++) {
+      if (!(i < mid || i >= this.neurons.length - mid)) {
+        this.neurons[i].hide();
+      }
+    }
+
+    this.h = this.yGap * (this.shownNeuronsNum - 1) + 50;
+
+    this.shrinked = true;
+    this.updateNeuronsCoordinates();
+  }
+
+  expand() {
+    this.neurons.forEach((neuron) => neuron.visible());
+    this.shrinked = false;
+
+    this.updateNeuronsCoordinates();
+  }
+
+  showInfoBox() {
+    push();
+    fill(0);
+    textSize(18);
+    textAlign(CENTER, TOP);
+
+    textLeading(7);
+    text(`.\n.\n.`, this.x, this.infoBoxY + 10, 50, 100);
+
+    textAlign(CENTER, CENTER);
+    text(
+      this.neurons.length - this.shownNeuronsNum,
+      this.x,
+      this.infoBoxY + 15,
+      50,
+      100,
+    );
+    textAlign(CENTER, BOTTOM);
+
+    textLeading(7);
+    text(`.\n.\n.`, this.x, this.infoBoxY, 50, 120);
+    pop();
   }
 
   updateNeuronsCoordinates() {
-    for (let i = 0; i < this.neurons.length; i++) {
-      let x = this.x + this.w / 2;
-      let y = this.y + this.h / 2 + this.yGap * (i - (this.nout - 1) / 2);
-      this.neurons[i].updateCoordinates(x, y);
-    }
+    const neuronNum = this.shrinked
+      ? this.shownNeuronsNum
+      : this.neurons.length;
+    const infoBoxH = 100;
+
+    this.h = this.yGap * (neuronNum - 1) + 50;
+
+    let index = 0;
+    this.neurons.forEach((neuron) => {
+      if (!neuron.hidden) {
+        const externalHeight =
+          index >= neuronNum / 2 && this.shrinked ? infoBoxH : 0;
+        const x = this.x + this.w / 2;
+        const y =
+          this.y +
+          this.h / 2 +
+          externalHeight +
+          this.yGap * (index - (neuronNum - 1) / 2);
+
+        if (index == Math.floor(neuronNum / 2)) {
+          this.infoBoxY = y;
+        }
+        neuron.updateCoordinates(x, y);
+        index++;
+      }
+    });
+
+    this.h += this.shrinked ? infoBoxH : 0;
   }
+
   call(x) {
     let outs = this.neurons.map((neuron) => neuron.call(x));
     return outs.length === 1 ? outs[0] : outs;
@@ -127,6 +209,8 @@ class Layer extends Draggable {
     fill(0);
     text(this.label, this.x, this.y - 10);
     fill(255);
+
+    this.shrinked && this.showInfoBox();
   }
 
   draw() {
@@ -146,12 +230,11 @@ class MLP extends Draggable {
     this.y = y;
     this.h;
     this.w;
-    this.inputLayer = new Layer(nin, sz[0], this.x - 50, this.y, "Input Layer");
+    this.inputLayer = new Layer(sz[0], this.x - 50, this.y, "Input Layer");
     this.layers = [this.inputLayer];
 
     for (let i = 0; i < nouts.length; i++) {
       const layer = new Layer(
-        sz[i],
         sz[i + 1],
         this.x + i * 100 + 50,
         this.y,
