@@ -1,14 +1,16 @@
 var mlps = [];
-var ogarganizer;
+var organizer;
 var editOrganizer;
 
 function setup() {
-  createCanvas(1920, 1080);
-  organizer = new Organizer();
-  editOrganizer = new EditOrganizer(createGraphics(1920, 1080));
+  const mainCanvas = createCanvas(1920, 1080);
+  const editCanvas = createGraphics(1920, 1080);
 
-  mlps.push(new MLP(4, [3, 5, 1], 600, 100));
-  mlps.push(new MLP(4, [3, 5, 1], 600, 100));
+  organizer = new Organizer();
+  editOrganizer = new EditOrganizer(editCanvas);
+
+  mlps.push(new MLP(4, [3, 5, 1], 600, 100, mainCanvas));
+  mlps.push(new MLP(4, [3, 5, 1], 600, 100, mainCanvas));
 }
 
 function setupPopup() {
@@ -17,12 +19,14 @@ function setupPopup() {
 
 function draw() {
   background(255);
+
   mlps.forEach((m) => m.draw());
 
   editOrganizer.draw();
 }
 
 function mousePressed() {
+  if (editOrganizer.isEnabled()) return;
   mlps.forEach((mlp) => mlp.handlePressed());
 }
 
@@ -61,3 +65,15 @@ function doubleClicked() {
 //     clearInterval(intervalId);
 //   }
 // }, 500);
+function executeDrawingCommands(cnv, arr) {
+  const parent = cnv instanceof p5.Graphics ? cnv : window;
+
+  for (let i = 0; i < arr.length; i++) {
+    let { func, args } = arr[i];
+    if (typeof parent[func] === "function") {
+      parent[func](...args);
+    } else {
+      console.error(`Function '${func}' does not exist on canvas`);
+    }
+  }
+}
