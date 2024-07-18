@@ -4,11 +4,30 @@ class EditOrganizer {
     this.enabled = false;
     this.selected = null;
     this.selectedCopy = null;
-    this.originX = (width - 500) / 2;
-    this.originY = 150;
+    this.originX;
+    this.originY;
     this.w = 500;
     this.h = 500;
-    this.setup();
+    this.editPanel = getElementById("edit-panel");
+    this.resize();
+    this.setShownNeuronContainer = getElementById("shown-neuron-container");
+    this.buttonsContainer = getElementById("buttons-container");
+    this.neuronNumContainer = getElementById("neuron-container");
+  }
+
+  getCanvas() {
+    return this.canvas;
+  }
+
+  setLayout() {
+    this.setShownNeuronContainer.style.left = this.originX + "px";
+    this.setShownNeuronContainer.style.top = this.originY + "px";
+
+    this.buttonsContainer.style.left = this.originX + "px";
+    this.buttonsContainer.style.top = this.originY + 100 + "px";
+
+    this.neuronNumContainer.style.left = this.originX + "px";
+    this.neuronNumContainer.style.top = this.originY + this.h - 50 + "px";
   }
 
   setup() {
@@ -17,25 +36,66 @@ class EditOrganizer {
     button.mousePressed(() => {
       this.disable();
     });
-    let button1 = createButton("Add neuron");
-    button1.position(100, 100);
-    button1.mousePressed(() => {
-      this.selectedCopy.neurons.push(
-        new Neuron(5, 0, this.selectedCopy.shrinked, this.canvas),
+
+    const layer = this.selectedCopy;
+    this.setLayout();
+
+    const properties = {
+      value: layer.getShownNeuronNum(),
+      max: layer.getNeuronNum().toString(),
+      min: "3",
+    };
+
+    setElementProperties("set-shown-neuron", properties);
+
+    addEventToElement("set-shown-neuron", "input", (e) => {
+      const val = e.target.value;
+
+      layer.setShownNeuronNum(val);
+      setElementProperties("shown-neuron-label", { innerText: val });
+
+      layer.expand();
+      layer.shrink();
+    });
+
+    addEventToElement("shrink-btn", "click", () => layer.shrink());
+    addEventToElement("expand-btn", "click", () => layer.expand());
+
+    setElementProperties("set-neuron-num", { value: layer.getNeuronNum() });
+
+    addEventToElement("set-neuron-num", "change", (e) => {
+      const diff = e.target.value - layer.getNeuronNum();
+
+      if (diff > 0) {
+        for (let i = 0; i < diff; i++) {
+          layer.addNeuron(
+            new Neuron(5, 0, this.selectedCopy.isShrinked(), this.canvas),
+          );
+        }
+      } else {
+        for (let i = 0; i < -diff; i++) {
+          layer.removeNeuron();
+        }
+      }
+
+      layer.setShownNeuronNum(
+        Math.min(layer.getNeuronNum(), layer.getShownNeuronNum()),
       );
 
-      this.selectedCopy.updateNeuronsCoordinates();
-    });
+      layer.updateNeuronsCoordinates();
+      const newProperties = {
+        max: layer.getNeuronNum().toString(),
+        min: "3",
+        value: layer.getShownNeuronNum(),
+      };
 
-    let button2 = createButton("shrink");
-    button2.position(200, 200);
-    button2.mousePressed(() => {
-      this.selectedCopy.shrink();
-    });
-    let button3 = createButton("expand");
-    button3.position(200, 300);
-    button3.mousePressed(() => {
-      this.selectedCopy.expand();
+      setElementProperties("set-shown-neuron", newProperties);
+      setElementProperties("shown-neuron-label", {
+        innerText: newProperties.value,
+      });
+
+      layer.expand();
+      layer.shrink();
     });
   }
 
@@ -63,7 +123,7 @@ class EditOrganizer {
 
     this.selected = layer;
     this.selectedCopy = new Layer(
-      layer.neurons.length,
+      layer.getNeuronNum(),
       x,
       y - 100,
       layer.label,
@@ -76,13 +136,24 @@ class EditOrganizer {
     this.enabled = false;
     this.selected = null;
     this.selectedCopy = null;
+    this.editPanel.style.display = "none";
   }
 
   enable() {
     this.enabled = true;
+    this.editPanel.style.display = "block";
+    this.setup();
   }
 
   isEnabled() {
     return this.enabled;
+  }
+
+  resize() {
+    this.getCanvas().resizeCanvas(windowWidth, windowHeight);
+
+    this.originX = (width - 500) / 2;
+
+    this.originY = 150;
   }
 }

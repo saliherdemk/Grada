@@ -3,18 +3,14 @@ var organizer;
 var editOrganizer;
 
 function setup() {
-  const mainCanvas = createCanvas(1920, 1080);
-  const editCanvas = createGraphics(1920, 1080);
+  const mainCanvas = createCanvas(windowWidth, windowHeight);
+  const editCanvas = createGraphics(windowWidth, windowHeight);
 
   organizer = new Organizer();
   editOrganizer = new EditOrganizer(editCanvas);
 
+  mlps.push(new MLP(4, [3, 15, 1], 600, 100, mainCanvas));
   mlps.push(new MLP(4, [3, 5, 1], 600, 100, mainCanvas));
-  mlps.push(new MLP(4, [3, 5, 1], 600, 100, mainCanvas));
-}
-
-function setupPopup() {
-  organizer.disable();
 }
 
 function draw() {
@@ -36,6 +32,11 @@ function mouseReleased() {
 
 function doubleClicked() {
   mlps.forEach((mlp) => mlp.handleDoubleClicked());
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  editOrganizer.resize();
 }
 
 // mlps.push(new MLP(3, [3, 2, 1], 500, 300));
@@ -65,15 +66,3 @@ function doubleClicked() {
 //     clearInterval(intervalId);
 //   }
 // }, 500);
-function executeDrawingCommands(cnv, arr) {
-  const parent = cnv instanceof p5.Graphics ? cnv : window;
-
-  for (let i = 0; i < arr.length; i++) {
-    let { func, args } = arr[i];
-    if (typeof parent[func] === "function") {
-      parent[func](...args);
-    } else {
-      console.error(`Function '${func}' does not exist on canvas`);
-    }
-  }
-}

@@ -31,8 +31,9 @@ class Draggable {
 
   doubleClicked() {
     if (this.rollover && !editOrganizer.getSelected()) {
-      editOrganizer.enable();
       editOrganizer.setSelected(this);
+
+      editOrganizer.enable();
     }
   }
 
