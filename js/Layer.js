@@ -48,7 +48,7 @@ class Layer extends Draggable {
     const { neurons, yGap } = this;
 
     if (
-      this.getShownNeuronNum() === this.getNeuronNum() ||
+      this.getShownNeuronNum() == this.getNeuronNum() ||
       this.getNeuronNum() < 4
     ) {
       this.expand();

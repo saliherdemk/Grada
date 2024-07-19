@@ -130,6 +130,9 @@ class EditOrganizer {
       this.canvas,
       layer.act_func,
     );
+
+    this.selectedCopy.y = y + 100;
+    this.selectedCopy.shrink();
   }
 
   disable() {
