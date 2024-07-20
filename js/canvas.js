@@ -42,8 +42,16 @@ function mousePressed() {
   schemas.forEach((schema) => schema.handlePressed());
 }
 
+function touchStarted() {
+  mousePressed();
+}
+
 function mouseReleased() {
   schemas.forEach((schema) => schema.handleReleased());
+}
+
+function touchEnded() {
+  mouseReleased();
 }
 
 function doubleClicked() {

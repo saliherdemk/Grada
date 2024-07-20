@@ -6,8 +6,19 @@ class Schema extends Draggable {
 
     this.layers = [];
 
-    mlp.layers.forEach((layer, i) => {
-      const newLayer = new DrawLayer(layer, canvas, x + i * 100, y);
+    this.initialize();
+  }
+
+  initialize() {
+    this.layers = [];
+    this.origin.layers.forEach((layer, i) => {
+      const newLayer = new DrawLayer(
+        layer,
+        this.canvas,
+        this.x + i * 100,
+        this.y,
+        this.id,
+      );
       if (i > 0) {
         const prevLayer = this.layers[i - 1];
         prevLayer.neurons.forEach((prevNeuron) => {
@@ -41,6 +52,15 @@ class Schema extends Draggable {
     this.x = firstX - 25;
     this.y = firstY - 25;
     this.h = lastY - firstY + 50;
+  }
+
+  removeLayer(layer) {
+    let index = 0;
+    for (let i = 0; i < this.layers.length; i++) {
+      if (i > 0 && this.layers[i] == layer) {
+        this.layers[i - 1].removeLines();
+      }
+    }
   }
 
   handlePressed() {
@@ -84,8 +104,7 @@ class DrawLayer extends Draggable {
   constructor(layer, cnv, x, y) {
     super(x, y);
     this.origin = layer;
-    this.cnv = cnv;
-    this.y = y;
+    this.canvas = cnv;
     this.w = 50;
     this.yGap = 40;
     this.h = this.yGap * (layer.neurons.length - 1) + 50;
@@ -99,9 +118,36 @@ class DrawLayer extends Draggable {
     this.updateNeuronsCoordinates();
   }
 
+  pushNeuron(nin = -1) {
+    const hasNeighbor = nin === -1;
+    const neuronInputSize = hasNeighbor
+      ? this.neurons[0].origin.origin.w.length // This is just gets neighbors neuron inputSize
+      : nin;
+    const newNeuron = new Neuron(neuronInputSize);
+    this.neurons.push(new DrawNeuron(newNeuron, this.canvas));
+    this.updateNeuronsCoordinates();
+  }
+
+  popNeuron() {
+    this.neurons.pop();
+    this.updateNeuronsCoordinates();
+  }
+
+  setNeurons(neurons) {
+    this.neurons = neurons;
+    this.updateNeuronsCoordinates();
+  }
+
+  getNeuronNum() {
+    return this.neurons.length;
+  }
+
+  removeLines() {
+    this.neurons.forEach((neuron) => (neuron.lines = []));
+  }
+
   updateNeuronsCoordinates() {
     const neuronNum = this.neurons.length;
-
     this.h = this.yGap * (neuronNum - 1) + 50;
 
     let index = 0;
@@ -121,10 +167,9 @@ class DrawLayer extends Draggable {
     let commands = [
       { func: "noFill", args: [] },
       { func: "rect", args: [this.x, this.y, this.w, this.h] },
-      { func: "fill", args: [0] },
-      { func: "text", args: [this.label, this.x, this.y - 10] },
       { func: "fill", args: [255] },
     ];
+
     executeDrawingCommands(this.canvas, commands);
   }
 

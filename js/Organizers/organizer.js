@@ -1,6 +1,11 @@
 class Organizer {
   constructor() {
     this.dragActive = false;
+    this.lastUsedId = 0;
+  }
+
+  getNextId() {
+    return ++this.lastUsedId;
   }
 
   setDragActive(dragActive) {

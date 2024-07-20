@@ -5,21 +5,24 @@
   </head>
   <body>
     <div id="edit-panel">
-      <div class="edit-container" id="neuron-container">
-        <span>Total number of neurons: </span>
-        <input class="inp" id="set-neuron-num" type="text" maxlength="4" />
-
-        <span id="neuron-num-label"></span>
+      <div class="grid-container">
+        <div id="info-message">Some Info</div>
+        <div class="grid-item">
+          <span>Number of shown neurons: </span>
+        </div>
+        <div class="grid-item">
+          <input id="set-shown-neuron" type="range" min="0" max="100" />
+        </div>
+        <div class="grid-item">
+          <span>Number of neurons: </span>
+          <input class="inp" id="set-neuron-num" type="text" maxlength="4" />
+        </div>
+        <button class="btn grid-item" id="toggle-shrink-btn">Shrink</button>
       </div>
-      <div class="edit-container" id="buttons-container">
-        <button class="btn" id="shrink-btn">Shrink</button>
-        <button class="btn" id="expand-btn">Expand</button>
-      </div>
 
-      <div class="edit-container" id="shown-neuron-container">
-        <input id="set-shown-neuron" type="range" min="0" max="100" />
-
-        <span id="shown-neuron-label"></span>
+      <div id="save-cancel-container">
+        <img id="cancel-icon" src="close.png" alt="" width="25" height="25" />
+        <button class="btn" id="save-btn" type="button">Save</button>
       </div>
     </div>
 
@@ -32,17 +35,17 @@
 
     <script src="js/script.js"></script>
 
-    <script src="js/organizer.js"></script>
-    <script src="js/editOrganizer.js"></script>
+    <script src="js/Organizers/organizer.js"></script>
+    <script src="js/Organizers/editOrganizer.js"></script>
 
-    <script src="js/draggable.js"></script>
+    <script src="js/MLP/Value.js"></script>
+    <script src="js/MLP/ActFunctions.js"></script>
+    <script src="js/MLP/Neuron.js"></script>
+    <script src="js/MLP/Layer.js"></script>
+    <script src="js/MLP/MLP.js"></script>
 
-    <script src="js/Value.js"></script>
-    <script src="js/ActFunctions.js"></script>
-    <script src="js/Neuron.js"></script>
-    <script src="js/Layer.js"></script>
-    <script src="js/MLP.js"></script>
-    <script src="js/Schema.js"></script>
+    <script src="js/Draw/draggable.js"></script>
+    <script src="js/Draw/Schema.js"></script>
 
     <script src="js/canvas.js"></script>
   </body>

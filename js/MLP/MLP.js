@@ -1,6 +1,16 @@
 class MLP {
   constructor(layers) {
-    this.layers = layers;
+    this.id = organizer.getNextId();
+
+    this.layers = layers.map((layer) => {
+      layer.setParentId(this.id);
+      return layer;
+    });
+  }
+
+  removeLayer(layer) {
+    let indexToRemove = this.layers.findIndex((l) => l === layer);
+    this.layers.splice(indexToRemove, 1);
   }
 
   predict(x) {

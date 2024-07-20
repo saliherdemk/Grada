@@ -41,3 +41,7 @@ function setElementProperties(elId, properties) {
 function addEventToElement(elId, eventName, func) {
   getElementById(elId).addEventListener(eventName, func);
 }
+
+function findMLPbyId(id) {
+  return schemas.find((mlp) => mlp.origin.id == id).origin;
+}
