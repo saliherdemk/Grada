@@ -2,20 +2,22 @@ class Layer {
   constructor(nin, nout) {
     this.nin = nin;
     this.neurons = Array.from({ length: nout }, () => new Neuron(nin));
-    this.parentId;
   }
 
-  setParentId(parentId) {
-    this.parentId = parentId;
+  changeNin(nin) {
+    this.nin = nin;
+    this.neurons = Array.from(
+      { length: this.neurons.length },
+      () => new Neuron(nin),
+    );
   }
 
-  replace(nout) {
-    this.neurons = Array.from({ length: nout }, () => new Neuron(this.nin));
+  addNeuron() {
+    this.neurons.push(new Neuron(this.nin));
   }
 
-  destroy() {
-    let mlp = findMLPbyId(this.parentId);
-    mlp.removeLayer(this);
+  popNeuron() {
+    this.neurons.pop();
   }
 
   call(x) {

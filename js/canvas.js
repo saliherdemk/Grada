@@ -1,4 +1,3 @@
-var schemas = [];
 var organizer;
 var editOrganizer;
 
@@ -6,17 +5,17 @@ function setup() {
   const mainCanvas = createCanvas(windowWidth, windowHeight);
   const editCanvas = createGraphics(windowWidth, windowHeight);
 
-  organizer = new Organizer();
+  organizer = new Organizer(mainCanvas);
   editOrganizer = new EditOrganizer(editCanvas);
 
   let mlp = new MLP([
-    new Layer(2, 3),
+    new Layer(0, 3),
     new Layer(3, 2),
     new Layer(2, 1),
     new Layer(1, 5),
   ]);
 
-  schemas.push(new Schema(mlp, mainCanvas, 300, 300));
+  organizer.addSchema(new Schema(mlp, mainCanvas, 300, 300));
 
   // let xs = [
   //   [2.0, 3.0, -1.0],
@@ -32,14 +31,14 @@ function setup() {
 
 function draw() {
   background(255);
-  schemas.forEach((schema) => schema.draw());
 
+  organizer.draw();
   editOrganizer.draw();
 }
 
 function mousePressed() {
   if (editOrganizer.isEnabled()) return;
-  schemas.forEach((schema) => schema.handlePressed());
+  organizer.handlePressed();
 }
 
 function touchStarted() {
@@ -47,7 +46,7 @@ function touchStarted() {
 }
 
 function mouseReleased() {
-  schemas.forEach((schema) => schema.handleReleased());
+  organizer.handleReleased();
 }
 
 function touchEnded() {
@@ -55,7 +54,15 @@ function touchEnded() {
 }
 
 function doubleClicked() {
-  schemas.forEach((schema) => schema.handleDoubleClicked());
+  organizer.handleDoubleClicked();
+}
+
+function keyPressed() {
+  if (key === "Escape") {
+    editOrganizer.disable();
+    organizer.setActiveLine(null);
+  }
+  organizer.handleKeyPressed(key);
 }
 
 function windowResized() {

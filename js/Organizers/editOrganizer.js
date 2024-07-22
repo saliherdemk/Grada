@@ -34,6 +34,7 @@ class EditOrganizer {
       for (let i = 0; i < Math.abs(diff); i++) {
         diff > 0 ? layer.pushNeuron() : layer.popNeuron();
       }
+      layer.updateNeuronsCoordinates();
     });
 
     addEventToElement("save-btn", "click", () => this.update());
@@ -42,9 +43,8 @@ class EditOrganizer {
   update() {
     var original = this.getSelected();
     var copy = this.selectedCopy;
-    original.origin.replace(copy.neurons.length);
-    const currentSchema = schemas[0];
-    currentSchema.initialize();
+
+    original.replace(copy);
   }
 
   getSelected() {

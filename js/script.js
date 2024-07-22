@@ -45,3 +45,8 @@ function addEventToElement(elId, eventName, func) {
 function findMLPbyId(id) {
   return schemas.find((mlp) => mlp.origin.id == id).origin;
 }
+
+function addLayer() {
+  const newMlp = new MLP([new Layer(0, parseInt(Math.random() * 7) + 1)]);
+  organizer.addSchema(new Schema(newMlp, organizer.canvas, 300, 500));
+}

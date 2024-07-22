@@ -3,34 +3,37 @@ class Schema extends Draggable {
     super(x, y);
     this.origin = mlp;
     this.canvas = cnv;
-
     this.layers = [];
 
     this.initialize();
   }
 
+  destroy() {
+    this.origin = null;
+    organizer.removeSchema(this);
+  }
+
   initialize() {
-    this.layers = [];
     this.origin.layers.forEach((layer, i) => {
-      const newLayer = new DrawLayer(
-        layer,
-        this.canvas,
-        this.x + i * 100,
-        this.y,
-        this.id,
-      );
-      if (i > 0) {
-        const prevLayer = this.layers[i - 1];
-        prevLayer.neurons.forEach((prevNeuron) => {
-          newLayer.neurons.forEach((newNeuron) => {
-            prevNeuron.addLine(new Line(prevNeuron, newNeuron));
-          });
-        });
-      }
-      this.layers.push(newLayer);
+      const newLayer = new DrawLayer(layer, this.canvas, this.x, this.y, this);
+      i > 0 && this.layers[i - 1].connectLayer(newLayer);
+
+      this.pushLayer(newLayer, i);
     });
 
+    this.resetCoordinates();
     this.updateBorders();
+  }
+
+  pushLayer(layer) {
+    this.layers.push(layer);
+    this.updateOrigin();
+  }
+
+  updateOrigin() {
+    const origin = this.origin;
+    origin.layers = [];
+    this.layers.forEach((l) => origin.layers.push(l.origin));
   }
 
   updateBorders() {
@@ -54,21 +57,28 @@ class Schema extends Draggable {
     this.h = lastY - firstY + 50;
   }
 
-  removeLayer(layer) {
-    let index = 0;
-    for (let i = 0; i < this.layers.length; i++) {
-      if (i > 0 && this.layers[i] == layer) {
-        this.layers[i - 1].removeLines();
-      }
-    }
-  }
-
   handlePressed() {
     this.layers.forEach((layer) => {
-      layer.pressed();
+      layer.handlePressed();
     });
     if (organizer.getDragActive()) return;
     this.pressed();
+  }
+
+  resetCoordinates() {
+    const layers = this.layers;
+    const originLayer = layers[0];
+
+    layers.forEach((layer, index) => {
+      layer.y = originLayer.y - (layer.h - originLayer.h) / 2;
+      layer.x = originLayer.x + index * layer.w * 2;
+      layer.updateNeuronsCoordinates();
+      layer.parent.updateBorders();
+    });
+  }
+
+  handleKeyPressed() {
+    this.rollover && this.resetCoordinates();
   }
 
   handleReleased() {
@@ -90,150 +100,13 @@ class Schema extends Draggable {
 
     executeDrawingCommands(this.canvas, commands);
   }
+
   draw() {
     this.layers.forEach((layer) => layer.draw());
-    this.show();
+    this.layers.length > 1 && this.show();
 
     !organizer.getDragActive() && this.over();
 
     (organizer.getDragActive() || this.dragging) && this.updateCoordinates();
-  }
-}
-
-class DrawLayer extends Draggable {
-  constructor(layer, cnv, x, y) {
-    super(x, y);
-    this.origin = layer;
-    this.canvas = cnv;
-    this.w = 50;
-    this.yGap = 40;
-    this.h = this.yGap * (layer.neurons.length - 1) + 50;
-    this.neurons = [];
-    layer.neurons.forEach((neuron) => {
-      this.neurons.push(new DrawNeuron(neuron, cnv));
-    });
-
-    this.y = y - this.h / 2;
-
-    this.updateNeuronsCoordinates();
-  }
-
-  pushNeuron(nin = -1) {
-    const hasNeighbor = nin === -1;
-    const neuronInputSize = hasNeighbor
-      ? this.neurons[0].origin.origin.w.length // This is just gets neighbors neuron inputSize
-      : nin;
-    const newNeuron = new Neuron(neuronInputSize);
-    this.neurons.push(new DrawNeuron(newNeuron, this.canvas));
-    this.updateNeuronsCoordinates();
-  }
-
-  popNeuron() {
-    this.neurons.pop();
-    this.updateNeuronsCoordinates();
-  }
-
-  setNeurons(neurons) {
-    this.neurons = neurons;
-    this.updateNeuronsCoordinates();
-  }
-
-  getNeuronNum() {
-    return this.neurons.length;
-  }
-
-  removeLines() {
-    this.neurons.forEach((neuron) => (neuron.lines = []));
-  }
-
-  updateNeuronsCoordinates() {
-    const neuronNum = this.neurons.length;
-    this.h = this.yGap * (neuronNum - 1) + 50;
-
-    let index = 0;
-    this.neurons.forEach((neuron) => {
-      const x = this.x + this.w / 2;
-      const y = this.y + this.h / 2 + this.yGap * (index - (neuronNum - 1) / 2);
-
-      if (index == Math.floor(neuronNum / 2)) {
-        this.infoBoxY = y;
-      }
-      neuron.updateCoordinates(x, y);
-      index++;
-    });
-  }
-
-  show() {
-    let commands = [
-      { func: "noFill", args: [] },
-      { func: "rect", args: [this.x, this.y, this.w, this.h] },
-      { func: "fill", args: [255] },
-    ];
-
-    executeDrawingCommands(this.canvas, commands);
-  }
-
-  draw() {
-    this.show();
-    this.neurons.forEach((neuron) => neuron.draw());
-
-    !organizer.getDragActive() && this.over();
-    (organizer.getDragActive() || this.dragging) && this.updateCoordinates();
-  }
-}
-
-class DrawNeuron {
-  constructor(neuron, cnv, x, y) {
-    this.origin = neuron;
-    this.canvas = cnv;
-    this.x = x;
-    this.y = y;
-    this.lines = [];
-  }
-
-  addLine(line) {
-    this.lines.push(line);
-  }
-
-  updateCoordinates(x, y) {
-    this.x = x;
-    this.y = y;
-  }
-
-  show() {
-    const commands = [
-      { func: "circle", args: [this.x, this.y, 25, 25] },
-      { func: "fill", args: [0] },
-      {
-        func: "text",
-        args: [this.output?.data.toFixed(2), this.x + 30, this.y],
-      },
-      {
-        func: "text",
-        args: [this.output?.grad.toFixed(2), this.x + 30, this.y + 25],
-      },
-      { func: "fill", args: [255] },
-    ];
-    executeDrawingCommands(this.canvas, commands);
-  }
-
-  draw() {
-    this.lines.forEach((line) => line.draw());
-    this.show();
-  }
-}
-
-class Line {
-  constructor(fromNeuron, toNeuron) {
-    this.from = fromNeuron;
-    this.to = toNeuron;
-  }
-
-  show() {
-    line(this.from.x, this.from.y, this.to.x, this.to.y);
-  }
-
-  draw() {
-    this.show();
   }
 }

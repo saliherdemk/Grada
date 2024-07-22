@@ -1,11 +1,11 @@
 class MLP {
   constructor(layers) {
     this.id = organizer.getNextId();
+    this.layers = layers;
+  }
 
-    this.layers = layers.map((layer) => {
-      layer.setParentId(this.id);
-      return layer;
-    });
+  addLayer(layer) {
+    this.layers.push(layer);
   }
 
   removeLayer(layer) {
