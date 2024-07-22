@@ -48,19 +48,41 @@ class DrawLayer extends Draggable {
     });
   }
 
+  splitMLp(targetLayer) {
+    const parentLayers = targetLayer.parent.layers;
+    const splitIndex = parentLayers.indexOf(targetLayer);
+    const newLayers = parentLayers.splice(0, splitIndex);
+    const [x, y] = [newLayers[0].x, newLayers[0].y];
+
+    const newMlp = new MLP();
+    newLayers.forEach((layer) => {
+      newMlp.addLayer(layer.origin);
+      layer.destroy();
+    });
+
+    const newSchema = new Schema(newMlp, organizer.getCanvas(), x, y);
+    organizer.addSchema(newSchema);
+  }
+
   connectLayer(targetLayer) {
+    if (targetLayer.dots[0].isOccupied()) {
+      this.splitMLp(targetLayer);
+    }
+
     this.connectNeurons(targetLayer.neurons);
     this.dots[1].occupy();
     targetLayer.dots[0].occupy();
-    if (this.parent == targetLayer.parent) return;
-    const parent = this.parent;
 
-    targetLayer.parent.layers.forEach((l) => {
+    const targetParent = targetLayer.parent;
+    const parent = this.parent;
+    if (parent == targetParent) return;
+
+    targetParent.layers.forEach((l) => {
       parent.pushLayer(l);
     });
 
-    targetLayer.parent.destroy();
-    targetLayer.parent.layers.forEach((l) => {
+    targetParent.destroy();
+    targetParent.layers.forEach((l) => {
       l.parent = parent;
     });
     targetLayer.origin.changeNin(this.getNeuronNum());
@@ -92,6 +114,7 @@ class DrawLayer extends Draggable {
 
     this.initializeNeurons();
     this.reConnectNeurons();
+    this.parent.resetCoordinates();
   }
 
   destroy() {
@@ -154,14 +177,18 @@ class Dot {
     this.origin = parent;
     this.isInput = isInput;
     this.rollover = false;
-    this.isOccupied = false;
+    this.occupied = false;
     this.r = 12;
     this.x = this.isInput ? parent.x : parent.x + parent.w;
     this.y = parent.y + parent.h / 2;
   }
 
+  isOccupied() {
+    return this.occupied;
+  }
+
   occupy() {
-    this.isOccupied = true;
+    this.occupied = true;
   }
   destroy() {
     this.origin = null;
@@ -176,7 +203,7 @@ class Dot {
   show() {
     let r = this.r + (this.rollover ? 5 : 0);
     let commands = [
-      { func: "fill", args: this.isOccupied ? [0, 255, 0] : [255, 0, 0] },
+      { func: "fill", args: this.isOccupied() ? [0, 255, 0] : [255, 0, 0] },
       { func: "circle", args: [this.x, this.y, r, r] },
     ];
 

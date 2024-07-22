@@ -7,6 +7,10 @@ class Organizer {
     this.schemas = [];
   }
 
+  getCanvas() {
+    return this.canvas;
+  }
+
   addSchema(schema) {
     this.schemas.push(schema);
   }

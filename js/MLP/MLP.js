@@ -1,5 +1,5 @@
 class MLP {
-  constructor(layers) {
+  constructor(layers = []) {
     this.id = organizer.getNextId();
     this.layers = layers;
   }

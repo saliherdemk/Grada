@@ -8,11 +8,6 @@ class Schema extends Draggable {
     this.initialize();
   }
 
-  destroy() {
-    this.origin = null;
-    organizer.removeSchema(this);
-  }
-
   initialize() {
     this.origin.layers.forEach((layer, i) => {
       const newLayer = new DrawLayer(layer, this.canvas, this.x, this.y, this);
@@ -23,6 +18,11 @@ class Schema extends Draggable {
 
     this.resetCoordinates();
     this.updateBorders();
+  }
+
+  destroy() {
+    this.origin = null;
+    organizer.removeSchema(this);
   }
 
   pushLayer(layer) {
