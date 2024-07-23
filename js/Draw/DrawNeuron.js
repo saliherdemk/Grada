@@ -4,7 +4,20 @@ class DrawNeuron {
     this.canvas = cnv;
     this.x = x;
     this.y = y;
+    this.hidden = false;
     this.lines = [];
+  }
+
+  isHidden() {
+    return this.hidden;
+  }
+
+  hide() {
+    this.hidden = true;
+  }
+
+  visible() {
+    this.hidden = false;
   }
 
   addLine(line) {
@@ -45,8 +58,10 @@ class DrawNeuron {
   }
 
   draw() {
-    this.lines.forEach((line) => line.draw());
-    this.show();
+    if (!this.hidden) {
+      this.lines.forEach((line) => line.draw());
+      this.show();
+    }
   }
 }
 
