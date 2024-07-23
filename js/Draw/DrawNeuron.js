@@ -86,6 +86,6 @@ class Line {
   }
 
   draw() {
-    this.show();
+    !(this.from.isHidden() || this.to.isHidden()) && this.show();
   }
 }

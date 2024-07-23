@@ -9,40 +9,39 @@ class DrawLayer extends Draggable {
     this.h = 0;
     this.y = y - this.h / 2;
     this.neurons = [];
-    this.shownNeuronsIndexes = [];
-    this.shownNeuronsNum = 0;
-    this.shrinked = false;
     this.infoBoxH = 70;
     this.infoBoxY = 0;
-    this.infoBoxLabel = this.getNeuronNum() - this.getShownNeuronNum();
+    this.infoBoxLabel = this.getNeuronNum() - this.getShownNeuronsNum();
     this.initializeNeurons();
+    this.shownNeuronsNum = this.getNeuronNum();
+    this.shownNeuronsIndexes = [];
 
     this.dots = [new Dot(this, true), new Dot(this, false)];
   }
 
-  getShownNeuronNum() {
+  getShownNeuronsNum() {
     return this.shownNeuronsNum;
   }
 
-  // GIANT MESS
-  shrink() {
-    const shownNeuronsNum = getElementById("set-shown-neuron").value;
+  setShownNeuronsNum(shownNeuronsNum) {
     this.shownNeuronsNum = shownNeuronsNum;
-    const neuronNum = this.getNeuronNum();
-    if (neuronNum < 3 || shownNeuronsNum == neuronNum) {
-      this.expand();
-      return;
-    }
-    this.infoBoxLabel = this.getNeuronNum() - this.getShownNeuronNum();
+  }
 
-    if (shownNeuronsNum > 5) {
-      return;
-    }
-
+  // GIANT MESS -> LESS GIANT MESS
+  shrink() {
     this.expand();
-    const neurons = this.neurons;
+    const shownNeuronsNum = this.getShownNeuronsNum();
+    const neuronNum = this.getNeuronNum();
 
-    const mid = shownNeuronsNum / 2;
+    this.infoBoxLabel = neuronNum - shownNeuronsNum;
+    if (shownNeuronsNum == neuronNum && neuronNum < 8) return;
+
+    const neurons = this.neurons;
+    const displayedNeuronsNum = this.parent
+      ? shownNeuronsNum
+      : Math.min(shownNeuronsNum, 5);
+    const mid = displayedNeuronsNum / 2;
+
     for (let i = 0; i < neuronNum; i++) {
       if (!(i < mid || i >= neuronNum - mid)) {
         neurons[i].hide();
@@ -52,7 +51,7 @@ class DrawLayer extends Draggable {
       this.shownNeuronsIndexes.push(i);
     }
 
-    this.infoBoxLabel = this.getNeuronNum() - this.getShownNeuronNum();
+    this.infoBoxLabel = neuronNum - this.getShownNeuronsNum();
     this.shrinked = true;
     this.updateNeuronsCoordinates();
   }
@@ -169,7 +168,7 @@ class DrawLayer extends Draggable {
     this.parent.updateBorders();
   }
 
-  replace(layer) {
+  replace(layer, shrank) {
     let diff = layer.getNeuronNum() - this.getNeuronNum();
     for (let i = 0; i < Math.abs(diff); i++) {
       diff > 0 ? this.origin.addNeuron() : this.origin.popNeuron();
@@ -177,6 +176,8 @@ class DrawLayer extends Draggable {
 
     this.initializeNeurons();
     this.reConnectNeurons();
+    this.setShownNeuronsNum(layer.getShownNeuronsNum());
+    shrank ? this.shrink() : this.expand();
     this.parent.resetCoordinates();
   }
 
