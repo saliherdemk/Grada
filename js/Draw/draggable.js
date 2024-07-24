@@ -1,9 +1,9 @@
 class Draggable {
-  constructor(x, y) {
+  constructor(x, y, w, h) {
     this.x = x;
     this.y = y;
-    this.w;
-    this.h;
+    this.w = w;
+    this.h = h;
     this.dragging = false;
     this.rollover = false;
   }

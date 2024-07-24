@@ -86,6 +86,9 @@ class Line {
   }
 
   draw() {
-    !(this.from.isHidden() || this.to.isHidden()) && this.show();
+    const willDrew =
+      organizer.getActiveLine() ||
+      !(this.from.isHidden() || this.to.isHidden());
+    willDrew && this.show();
   }
 }
