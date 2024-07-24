@@ -31,7 +31,7 @@ class EditOrganizer {
     addEventToElement(
       "set-neuron-num",
       "focusout",
-      this.handleNeuronChangeFocusOut.bind(this),
+      this.handleNeuronFocusOut.bind(this),
     );
     addEventToElement(
       "set-neuron-num",
@@ -41,17 +41,18 @@ class EditOrganizer {
     addEventToElement(
       "set-shown-neuron",
       "input",
-      this.handleSetShownNeuron.bind(this),
+      this.handleSetShownNeuron.bind(this, "shown-neuron-inp"),
     );
-  }
-
-  getCanvas() {
-    return this.canvas;
-  }
-
-  setLayout() {
-    this.editPanel.style.left = this.originX + "px";
-    this.editPanel.style.top = this.originY + "px";
+    addEventToElement(
+      "shown-neuron-inp",
+      "focusout",
+      this.handleShownNeuronFocusOut.bind(this),
+    );
+    addEventToElement(
+      "shown-neuron-inp",
+      "input",
+      this.handleSetShownNeuron.bind(this, "set-shown-neuron"),
+    );
   }
 
   setMaxShownNeuronInput() {
@@ -62,13 +63,14 @@ class EditOrganizer {
       value: newShownNeuronNum,
       max: neuronNum,
     });
+
+    setElementProperties("shown-neuron-inp", { value: newShownNeuronNum });
     layer.setShownNeuronsNum(newShownNeuronNum);
   }
 
   handleNeuronNumChange(e) {
     const layer = this.selectedCopy;
-    const inputVal = e.target.value;
-    const val = inputVal == "" || inputVal < 1 ? 1 : inputVal;
+    const val = this.makeInputValid(e.target.value);
     const diff = val - layer.getNeuronNum();
 
     for (let i = 0; i < Math.abs(diff); i++) {
@@ -77,11 +79,26 @@ class EditOrganizer {
     this.setMaxShownNeuronInput();
   }
 
-  handleNeuronChangeFocusOut(e) {
-    const val = e.target.value;
-    if (val == "" || val < 1) {
-      setElementProperties("set-neuron-num", { value: 1 });
-    }
+  handleSetShownNeuron(otherElId, e) {
+    const layer = this.selectedCopy;
+    const val = Math.min(
+      this.makeInputValid(e.target.value),
+      layer.getNeuronNum(),
+    );
+
+    setElementProperties(otherElId, { value: val });
+    layer.setShownNeuronsNum(val);
+  }
+
+  handleNeuronFocusOut(e) {
+    const val = parseInt(e.target.value) || 1;
+    setElementProperties("set-neuron-num", { value: val });
+  }
+
+  handleShownNeuronFocusOut(e) {
+    let val = parseInt(e.target.value) || 1;
+    val = Math.max(1, Math.min(val, this.selectedCopy.getNeuronNum()));
+    setElementProperties("shown-neuron-inp", { value: val });
   }
 
   toggleShrink() {
@@ -90,9 +107,17 @@ class EditOrganizer {
     btn.innerText = this.shrank ? "Shrank" : "Expanded";
   }
 
-  handleSetShownNeuron(e) {
-    const layer = this.selectedCopy;
-    layer.setShownNeuronsNum(e.target.value);
+  makeInputValid(val) {
+    return isNaN(val) || val == "" || val < 1 ? 1 : val;
+  }
+
+  getCanvas() {
+    return this.canvas;
+  }
+
+  setLayout() {
+    this.editPanel.style.left = this.originX + "px";
+    this.editPanel.style.top = this.originY + "px";
   }
 
   setup() {
@@ -105,8 +130,8 @@ class EditOrganizer {
   }
 
   update() {
-    var original = this.selectedCopy.origin;
-    var copy = this.selectedCopy;
+    const original = this.selectedCopy.origin;
+    const copy = this.selectedCopy;
     original.replace(copy, this.shrank);
   }
 
@@ -128,9 +153,9 @@ class EditOrganizer {
 
   disable() {
     this.enabled = false;
-    this.shrank = false;
     this.selectedCopy.destroy();
     this.selectedCopy = null;
+    this.shrank = false;
     this.editPanel.style.display = "none";
   }
 
@@ -146,8 +171,6 @@ class EditOrganizer {
 
   resize() {
     this.getCanvas().resizeCanvas(windowWidth, windowHeight);
-    this.originX = (width - 500) / 2;
-    this.originY = 150;
   }
 
   draw() {

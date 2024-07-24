@@ -14,21 +14,24 @@
         <div id="info-message">Some Info</div>
         <div class="grid-item">
           <span>Number of shown neurons: </span>
-        </div>
-        <div class="grid-item">
+
           <input id="set-shown-neuron" type="range" min="1" max="100" />
+
+          <input class="inp" id="shown-neuron-inp" type="text" maxlength="4" />
         </div>
+
         <div class="grid-item">
           <span>Number of neurons: </span>
           <input class="inp" id="set-neuron-num" type="text" maxlength="4" />
+          <button class="btn grid-item" id="toggle-shrink-btn">Expanded</button>
+
+          <button class="btn grid-item" id="save-btn" type="button">
+            Save
+          </button>
         </div>
-        <button class="btn grid-item" id="toggle-shrink-btn">Expanded</button>
       </div>
 
-      <div id="save-cancel-container">
-        <img id="cancel-icon" src="close.png" alt="" width="25" height="25" />
-        <button class="btn" id="save-btn" type="button">Save</button>
-      </div>
+      <img id="cancel-icon" src="close.png" alt="" width="25" height="25" />
     </div>
 
     <script
