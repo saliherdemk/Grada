@@ -10,14 +10,33 @@ class EditOrganizer {
     this.h = 500;
     this.editPanel = getElementById("edit-panel");
 
-    this.resize();
-    this.initialize();
     this.setupEventListeners();
   }
 
-  initialize() {
+  isEnabled() {
+    return this.enabled;
+  }
+  getSelected() {
+    return this.selectedCopy;
+  }
+
+  adjustOrigins() {
     this.originX = (width - 500) / 2;
     this.originY = 150;
+  }
+
+  placeSelected() {
+    const layer = this.selectedCopy;
+    const x = this.originX + (this.w - layer.w) / 2;
+    const y = this.originY + 100;
+    layer.setCoordinates(x, y);
+    layer.updateNeuronsCoordinates();
+  }
+
+  setInfoText() {
+    const layer = this.selectedCopy;
+    const text = this.shrank ? layer.getShownNeuronsNum() : "all";
+    getElementById("info-message").innerText = text;
   }
 
   setupEventListeners() {
@@ -55,6 +74,11 @@ class EditOrganizer {
     );
   }
 
+  setShownNeuronsNum(shownNeuronNum) {
+    this.selectedCopy.setShownNeuronsNum(shownNeuronNum);
+    this.setInfoText();
+  }
+
   setMaxShownNeuronInput() {
     const layer = this.selectedCopy;
     const neuronNum = layer.getNeuronNum();
@@ -65,7 +89,7 @@ class EditOrganizer {
     });
 
     setElementProperties("shown-neuron-inp", { value: newShownNeuronNum });
-    layer.setShownNeuronsNum(newShownNeuronNum);
+    this.setShownNeuronsNum(newShownNeuronNum);
   }
 
   handleNeuronNumChange(e) {
@@ -87,7 +111,7 @@ class EditOrganizer {
     );
 
     setElementProperties(otherElId, { value: val });
-    layer.setShownNeuronsNum(val);
+    this.setShownNeuronsNum(val);
   }
 
   handleNeuronFocusOut(e) {
@@ -105,6 +129,7 @@ class EditOrganizer {
     const btn = getElementById("toggle-shrink-btn");
     this.shrank = !this.shrank;
     btn.innerText = this.shrank ? "Shrank" : "Expanded";
+    this.setInfoText();
   }
 
   makeInputValid(val) {
@@ -116,12 +141,16 @@ class EditOrganizer {
   }
 
   setLayout() {
+    this.adjustOrigins();
     this.editPanel.style.left = this.originX + "px";
     this.editPanel.style.top = this.originY + "px";
+    this.editPanel.style.display = "flex";
+    this.placeSelected();
   }
 
   setup() {
     this.setLayout();
+    // Adjusts inputs properties based on selectedLayer
     this.toggleShrink();
     setElementProperties("set-neuron-num", {
       value: this.selectedCopy.getNeuronNum(),
@@ -135,22 +164,6 @@ class EditOrganizer {
     original.replace(copy, this.shrank);
   }
 
-  getSelected() {
-    return this.selectedCopy;
-  }
-
-  setSelected(layer) {
-    let x = this.originX + (this.w - layer.w) / 2;
-    let y = this.originY + 100;
-    const copy = new DrawLayer(layer, this.canvas, x, 0);
-    copy.y = y;
-    this.shrank = !layer.shrank;
-    copy.setShownNeuronsNum(layer.getShownNeuronsNum());
-    copy.updateNeuronsCoordinates();
-    this.selectedCopy = copy;
-    this.enable();
-  }
-
   disable() {
     this.enabled = false;
     this.selectedCopy.destroy();
@@ -159,18 +172,18 @@ class EditOrganizer {
     this.editPanel.style.display = "none";
   }
 
-  enable() {
+  enable(layer) {
+    const copy = new DrawLayer(layer, this.canvas, 0, 0);
+    this.shrank = !layer.shrank; // will call toggleShrink. I wanted to use same function
+    this.selectedCopy = copy;
+    this.setShownNeuronsNum(layer.getShownNeuronsNum());
     this.enabled = true;
-    this.editPanel.style.display = "flex";
     this.setup();
-  }
-
-  isEnabled() {
-    return this.enabled;
   }
 
   resize() {
     this.getCanvas().resizeCanvas(windowWidth, windowHeight);
+    this.setLayout();
   }
 
   draw() {

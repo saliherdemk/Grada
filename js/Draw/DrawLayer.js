@@ -28,6 +28,11 @@ class DrawLayer extends Draggable {
     return this.shownNeurons.num;
   }
 
+  setCoordinates(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
   setShownNeuronsNum(shownNeuronsNum) {
     this.shownNeurons.num = shownNeuronsNum;
     this.setShownNeurons();

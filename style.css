@@ -31,7 +31,7 @@ body {
     background-color: #06b6d4
 }
 
-#info-message {
+#info-message-container {
     position: absolute;
     top: 50px;
     left: 0;
@@ -40,6 +40,10 @@ body {
     padding-left: 50px;
     padding-right: 50px;
     box-sizing: border-box;
+}
+
+#info-message {
+    color: blue;
 }
 
 .grid-container {
