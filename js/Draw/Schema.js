@@ -20,6 +20,17 @@ class Schema extends Draggable {
     this.updateBorders();
   }
 
+  getLayers() {
+    return this.layers;
+  }
+
+  setLayers(layers) {
+    this.layers = layers;
+    layers.forEach((l) => {
+      l.parent = this;
+    });
+  }
+
   destroy() {
     this.origin = null;
     organizer.removeSchema(this);
@@ -28,6 +39,15 @@ class Schema extends Draggable {
   pushLayer(layer) {
     this.layers.push(layer);
     this.updateOrigin();
+  }
+
+  removeLayer(layer) {
+    const layers = this.layers;
+    const index = layers.indexOf(layer);
+    const prevLayer = layers[index - 1];
+    prevLayer.splitMLp(layer);
+    layers.splice(index, 1);
+    console.log(layers);
   }
 
   updateOrigin() {
@@ -52,8 +72,7 @@ class Schema extends Draggable {
       lastY = Math.max(lastY, layer.y + layer.h);
     }
     this.w = lastX - firstX + 100;
-    this.x = firstX - 25;
-    this.y = firstY - 25;
+    this.setCoordinates(firstX - 25, firstY - 25);
     this.h = lastY - firstY + 50;
   }
 
@@ -70,8 +89,9 @@ class Schema extends Draggable {
     const originLayer = layers[0];
 
     layers.forEach((layer, index) => {
-      layer.y = originLayer.y - (layer.h - originLayer.h) / 2;
-      layer.x = originLayer.x + index * layer.w * 2;
+      const y = originLayer.y - (layer.h - originLayer.h) / 2;
+      const x = originLayer.x + index * layer.w * 2;
+      layer.setCoordinates(x, y);
       layer.updateNeuronsCoordinates();
       layer.parent.updateBorders();
     });

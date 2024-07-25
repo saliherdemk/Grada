@@ -4,7 +4,6 @@ var editOrganizer;
 function setup() {
   const mainCanvas = createCanvas(windowWidth, windowHeight);
   const editCanvas = createGraphics(windowWidth, windowHeight);
-
   organizer = new Organizer(mainCanvas);
   editOrganizer = new EditOrganizer(editCanvas);
 
@@ -67,5 +66,5 @@ function keyPressed() {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  editOrganizer.resize();
+  editOrganizer.isEnabled() && editOrganizer.resize();
 }

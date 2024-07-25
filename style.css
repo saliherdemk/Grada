@@ -5,8 +5,8 @@ body {
 }
 
 #edit-panel {
-    display: none;
     position: absolute;
+    display: none;
     flex-direction: row;
     height: 500px;
     width: 500px;
@@ -98,4 +98,13 @@ body {
     font-weight: 700;
     color: #ffffff;
     cursor: pointer;
+}
+
+.clear-line-btn {
+    width: 50px;
+    height: 20px;
+    background-image: url("broken-link.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }

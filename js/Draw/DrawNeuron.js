@@ -33,9 +33,13 @@ class DrawNeuron {
     this.y = y;
   }
 
-  destroy() {
+  removeLines() {
     this.lines.forEach((line) => line.destroy());
     this.lines = [];
+  }
+
+  destroy() {
+    this.removeLines();
     this.origin = null;
     this.canvas = null;
   }
@@ -66,29 +70,32 @@ class DrawNeuron {
 }
 
 class Line {
-  constructor(from, to, isTemp = false) {
+  constructor(from, to, temp = false) {
     this.from = from;
     this.to = to;
-    this.isTemp = isTemp;
+    this.temp = temp;
   }
   destroy() {
     this.from = null;
     this.to = null;
   }
 
+  isTemp() {
+    return this.temp;
+  }
+
   show() {
     line(
       this.from.x,
       this.from.y,
-      this.isTemp ? mouseX : this.to.x,
-      this.isTemp ? mouseY : this.to.y,
+      this.isTemp() ? mouseX : this.to.x,
+      this.isTemp() ? mouseY : this.to.y,
     );
   }
 
   draw() {
     const willDrew =
-      organizer.getActiveLine() ||
-      !(this.from.isHidden() || this.to.isHidden());
+      this.isTemp() || !(this.from.isHidden() || this.to.isHidden());
     willDrew && this.show();
   }
 }

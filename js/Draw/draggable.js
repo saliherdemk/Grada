@@ -43,10 +43,14 @@ class Draggable {
     organizer.setDragActive(false);
   }
 
+  setCoordinates(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
   updateCoordinates() {
     if (this.dragging) {
-      this.x = mouseX + this.offsetX;
-      this.y = mouseY + this.offsetY;
+      this.setCoordinates(mouseX + this.offsetX, mouseY + this.offsetY);
       this.neurons && this.updateNeuronsCoordinates();
     }
 
