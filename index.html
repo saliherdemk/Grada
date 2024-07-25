@@ -4,23 +4,36 @@
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
+    <div style="position: absolute">
+      <button id="add-layer" type="button" onclick="addLayer()">
+        Add Layer
+      </button>
+    </div>
     <div id="edit-panel">
-      <div class="edit-container" id="neuron-container">
-        <span>Total number of neurons: </span>
-        <input class="inp" id="set-neuron-num" type="text" maxlength="4" />
+      <div class="grid-container">
+        <div id="info-message-container">
+          Layer will be display with <span id="info-message">hey</span> neurons
+        </div>
+        <div class="grid-item">
+          <span>Number of shown neurons: </span>
 
-        <span id="neuron-num-label"></span>
-      </div>
-      <div class="edit-container" id="buttons-container">
-        <button class="btn" id="shrink-btn">Shrink</button>
-        <button class="btn" id="expand-btn">Expand</button>
+          <input id="set-shown-neuron" type="range" min="1" max="100" />
+
+          <input class="inp" id="shown-neuron-inp" type="text" maxlength="4" />
+        </div>
+
+        <div class="grid-item">
+          <span>Number of neurons: </span>
+          <input class="inp" id="set-neuron-num" type="text" maxlength="4" />
+          <button class="btn grid-item" id="toggle-shrink-btn">Expanded</button>
+
+          <button class="btn grid-item" id="save-btn" type="button">
+            Save
+          </button>
+        </div>
       </div>
 
-      <div class="edit-container" id="shown-neuron-container">
-        <input id="set-shown-neuron" type="range" min="0" max="100" />
-
-        <span id="shown-neuron-label"></span>
-      </div>
+      <img id="cancel-icon" src="close.png" alt="" width="25" height="25" />
     </div>
 
     <script
@@ -31,15 +44,20 @@
     ></script>
 
     <script src="js/script.js"></script>
-    <script src="js/organizer.js"></script>
-    <script src="js/editOrganizer.js"></script>
-    <script src="js/draggable.js"></script>
-    <script src="js/Value.js"></script>
-    <script src="js/ActFunctions.js"></script>
-    <script src="js/Line.js"></script>
-    <script src="js/Neuron.js"></script>
-    <script src="js/Layer.js"></script>
-    <script src="js/MLP.js"></script>
+
+    <script src="js/Organizers/organizer.js"></script>
+    <script src="js/Organizers/editOrganizer.js"></script>
+
+    <script src="js/MLP/Value.js"></script>
+    <script src="js/MLP/ActFunctions.js"></script>
+    <script src="js/MLP/Neuron.js"></script>
+    <script src="js/MLP/Layer.js"></script>
+    <script src="js/MLP/MLP.js"></script>
+
+    <script src="js/Draw/draggable.js"></script>
+    <script src="js/Draw/Schema.js"></script>
+    <script src="js/Draw/DrawLayer.js"></script>
+    <script src="js/Draw/DrawNeuron.js"></script>
 
     <script src="js/canvas.js"></script>
   </body>

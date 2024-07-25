@@ -1,4 +1,3 @@
-var mlps = [];
 var organizer;
 var editOrganizer;
 
@@ -6,63 +5,67 @@ function setup() {
   const mainCanvas = createCanvas(windowWidth, windowHeight);
   const editCanvas = createGraphics(windowWidth, windowHeight);
 
-  organizer = new Organizer();
+  organizer = new Organizer(mainCanvas);
   editOrganizer = new EditOrganizer(editCanvas);
 
-  mlps.push(new MLP(4, [3, 15, 1], 600, 100, mainCanvas));
-  mlps.push(new MLP(4, [3, 5, 1], 600, 100, mainCanvas));
+  let mlp = new MLP([
+    new Layer(0, 3),
+    new Layer(3, 2),
+    new Layer(2, 1),
+    new Layer(1, 5),
+  ]);
+
+  organizer.addSchema(new Schema(mlp, mainCanvas, 300, 300));
+
+  // let xs = [
+  //   [2.0, 3.0, -1.0],
+  //   [3.0, -1.0, 0.5],
+  //   [0.5, 1.0, 1.0],
+  //   [1.0, 1.0, -1.0],
+  // ];
+  //
+  // let ys = [1.0, -1.0, -1.0, 1.0];
+  //
+  // console.log(mlp.train(xs, ys, 20));
 }
 
 function draw() {
   background(255);
 
-  mlps.forEach((m) => m.draw());
-
+  organizer.draw();
   editOrganizer.draw();
 }
 
 function mousePressed() {
   if (editOrganizer.isEnabled()) return;
-  mlps.forEach((mlp) => mlp.handlePressed());
+  organizer.handlePressed();
+}
+
+function touchStarted() {
+  mousePressed();
 }
 
 function mouseReleased() {
-  mlps.forEach((mlp) => mlp.handleReleased());
+  organizer.handleReleased();
+}
+
+function touchEnded() {
+  mouseReleased();
 }
 
 function doubleClicked() {
-  mlps.forEach((mlp) => mlp.handleDoubleClicked());
+  organizer.handleDoubleClicked();
+}
+
+function keyPressed() {
+  if (key === "Escape") {
+    editOrganizer.disable();
+    organizer.setActiveLine(null);
+  }
+  organizer.handleKeyPressed(key);
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   editOrganizer.resize();
 }
-
-// mlps.push(new MLP(3, [3, 2, 1], 500, 300));
-//
-// xs = [
-//   [2.0, 3.0, -1.0],
-//   [3.0, -1.0, 0.5],
-//   [0.5, 1.0, 1.0],
-//   [1.0, 1.0, -1.0],
-// ];
-// ys = [1.0, -1.0, -1.0, 1.0];
-//
-// let k = 0;
-// let intervalId = setInterval(() => {
-//   ypred = xs.map((x) => mlp.call(x));
-//   let loss = new Value(0);
-//   for (let i = 0; i < ys.length; i++) {
-//     loss = loss.add(ypred[i].sub(new Value(ys[i])).pow(new Value(2)));
-//   }
-//
-//   m.parameters().forEach((p) => (p.grad = 0.0));
-//   loss.backprop();
-//   m.parameters().forEach((p) => (p.data += -0.1 * p.grad));
-//
-//   k++;
-//   if (k >= 20) {
-//     clearInterval(intervalId);
-//   }
-// }, 500);

@@ -7,8 +7,13 @@ class Value {
     this.grad = 0.0;
     this.backward = () => {};
   }
+
+  convert(val) {
+    return val instanceof Value ? val : new Value(val);
+  }
+
   add(other) {
-    other = other instanceof Value ? other : new Value(other);
+    other = this.convert(other);
     let output = new Value(this.data + other.data, [this, other], "+");
 
     output.backward = () => {
@@ -20,7 +25,7 @@ class Value {
   }
 
   mul(other) {
-    other = other instanceof Value ? other : new Value(other);
+    other = this.convert(other);
     let output = new Value(this.data * other.data, [this, other], "*");
 
     output.backward = () => {
@@ -43,7 +48,7 @@ class Value {
   }
 
   div(other) {
-    other = other instanceof Value ? other : new Value(other);
+    other = this.convert(other);
     return this.mul(other.pow(-1));
   }
 
@@ -52,6 +57,7 @@ class Value {
   }
 
   sub(other) {
+    this.convert(other);
     return this.add(other.neg());
   }
 

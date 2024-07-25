@@ -1,18 +1,67 @@
 body {
     margin: 0;
     padding: 0;
+    overflow: hidden;
 }
 
 #edit-panel {
     display: none;
+    position: absolute;
+    flex-direction: row;
+    height: 500px;
+    width: 500px;
+    align-items: end;
 }
 
-.edit-container {
+#cancel-icon {
     position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    top: 0;
+    right: 0;
+    margin: 5px;
+    cursor: pointer;
+    background: black;
+    border-radius: 100%;
+}
 
+#save-btn {
+    background-color: #1C64F2;
+}
+
+#toggle-shrink-btn {
+    background-color: #06b6d4
+}
+
+#info-message-container {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding-left: 50px;
+    padding-right: 50px;
+    box-sizing: border-box;
+}
+
+#info-message {
+    color: blue;
+}
+
+.grid-container {
+    display: grid;
+    flex: 1;
+    grid-template-columns: auto;
+    grid-template-rows: auto;
+    gap: 2px;
+    justify-items: center;
+    align-items: center;
+    padding: 5px;
+}
+
+.grid-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
 }
 
 .inp {
@@ -28,4 +77,25 @@ body {
     cursor: pointer;
     padding: 0;
     margin: 5px
+}
+
+.edit-container {
+    position: absolute;
+}
+
+.btn {
+    flex: 1;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 0.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
 }

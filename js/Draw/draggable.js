@@ -1,6 +1,9 @@
 class Draggable {
-  constructor(type) {
-    this.type = type;
+  constructor(x, y, w, h) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
     this.dragging = false;
     this.rollover = false;
   }
@@ -21,7 +24,7 @@ class Draggable {
       this.offsetX = this.x - mouseX;
       this.offsetY = this.y - mouseY;
 
-      if (this.type === "mlp") {
+      if (this.layers !== undefined) {
         this.layers.forEach((layer) => layer.pressed(true));
       }
 
@@ -31,9 +34,7 @@ class Draggable {
 
   doubleClicked() {
     if (this.rollover && !editOrganizer.getSelected()) {
-      editOrganizer.setSelected(this);
-
-      editOrganizer.enable();
+      editOrganizer.enable(this);
     }
   }
 
@@ -46,9 +47,9 @@ class Draggable {
     if (this.dragging) {
       this.x = mouseX + this.offsetX;
       this.y = mouseY + this.offsetY;
-      this.type == "layer" && this.updateNeuronsCoordinates();
+      this.neurons && this.updateNeuronsCoordinates();
     }
 
-    this.type == "mlp" && this.updateBorders(); // This is works because when you drag layer you also drag mlp
+    this.layers && this.updateBorders(); // This is works because when you drag layer you also drag mlp
   }
 }
