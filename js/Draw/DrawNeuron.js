@@ -1,9 +1,8 @@
 class DrawNeuron {
-  constructor(neuron, cnv, x, y) {
-    this.origin = neuron;
+  constructor(cnv) {
     this.canvas = cnv;
-    this.x = x;
-    this.y = y;
+    this.x;
+    this.y;
     this.hidden = false;
     this.lines = [];
   }
@@ -40,7 +39,6 @@ class DrawNeuron {
 
   destroy() {
     this.removeLines();
-    this.origin = null;
     this.canvas = null;
   }
 

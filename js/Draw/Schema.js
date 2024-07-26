@@ -1,22 +1,9 @@
 class Schema extends Draggable {
-  constructor(mlp, cnv, x, y) {
+  constructor(x, y, cnv = organizer.getCanvas()) {
     super(x, y);
-    this.origin = mlp;
     this.canvas = cnv;
-    this.layers = [];
+    this.layers = [new DrawLayer(this.x, this.y, this, this.canvas)];
 
-    this.initialize();
-  }
-
-  initialize() {
-    this.origin.layers.forEach((layer, i) => {
-      const newLayer = new DrawLayer(layer, this.canvas, this.x, this.y, this);
-      i > 0 && this.layers[i - 1].connectLayer(newLayer);
-
-      this.pushLayer(newLayer, i);
-    });
-
-    this.resetCoordinates();
     this.updateBorders();
   }
 
@@ -32,13 +19,12 @@ class Schema extends Draggable {
   }
 
   destroy() {
-    this.origin = null;
+    // this.canvas = null;
     organizer.removeSchema(this);
   }
 
   pushLayer(layer) {
     this.layers.push(layer);
-    this.updateOrigin();
   }
 
   removeLayer(layer) {
@@ -47,13 +33,6 @@ class Schema extends Draggable {
     const prevLayer = layers[index - 1];
     prevLayer.splitMLp(layer);
     layers.splice(index, 1);
-    console.log(layers);
-  }
-
-  updateOrigin() {
-    const origin = this.origin;
-    origin.layers = [];
-    this.layers.forEach((l) => origin.layers.push(l.origin));
   }
 
   updateBorders() {

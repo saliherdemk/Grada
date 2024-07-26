@@ -1,12 +1,16 @@
 class CanvasButton {
-  constructor(imagePath, onClick) {
+  constructor(image, onClick) {
     this.x = 0;
     this.y = 0;
     this.w = 50;
     this.h = 25;
     this.onClick = onClick;
     this.rollover = false;
-    this.img = imagePath;
+    this.img = image;
+  }
+
+  changeImg(img) {
+    this.img = img;
   }
 
   setCoordinates(x, y) {
