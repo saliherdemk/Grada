@@ -5,6 +5,14 @@ class Organizer {
     this.lastUsedId = 0;
     this.activeLine = null;
     this.schemas = [];
+    this.images = {
+      brokenLink: loadImage("broken-link.png"),
+      delete: loadImage("delete-icon.png"),
+    };
+  }
+
+  getImageByKey(key) {
+    return this.images[key];
   }
 
   getCanvas() {

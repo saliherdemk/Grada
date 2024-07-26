@@ -1,39 +1,38 @@
 class Schema extends Draggable {
-  constructor(mlp, cnv, x, y) {
+  constructor(x, y, cnv = organizer.getCanvas()) {
     super(x, y);
-    this.origin = mlp;
     this.canvas = cnv;
-    this.layers = [];
+    this.layers = [new DrawLayer(this.x, this.y, this, this.canvas)];
 
-    this.initialize();
-  }
-
-  initialize() {
-    this.origin.layers.forEach((layer, i) => {
-      const newLayer = new DrawLayer(layer, this.canvas, this.x, this.y, this);
-      i > 0 && this.layers[i - 1].connectLayer(newLayer);
-
-      this.pushLayer(newLayer, i);
-    });
-
-    this.resetCoordinates();
     this.updateBorders();
   }
 
+  getLayers() {
+    return this.layers;
+  }
+
+  setLayers(layers) {
+    this.layers = layers;
+    layers.forEach((l) => {
+      l.parent = this;
+    });
+  }
+
   destroy() {
-    this.origin = null;
+    // this.canvas = null;
     organizer.removeSchema(this);
   }
 
   pushLayer(layer) {
     this.layers.push(layer);
-    this.updateOrigin();
   }
 
-  updateOrigin() {
-    const origin = this.origin;
-    origin.layers = [];
-    this.layers.forEach((l) => origin.layers.push(l.origin));
+  removeLayer(layer) {
+    const layers = this.layers;
+    const index = layers.indexOf(layer);
+    const prevLayer = layers[index - 1];
+    prevLayer.splitMLp(layer);
+    layers.splice(index, 1);
   }
 
   updateBorders() {
@@ -52,8 +51,7 @@ class Schema extends Draggable {
       lastY = Math.max(lastY, layer.y + layer.h);
     }
     this.w = lastX - firstX + 100;
-    this.x = firstX - 25;
-    this.y = firstY - 25;
+    this.setCoordinates(firstX - 25, firstY - 25);
     this.h = lastY - firstY + 50;
   }
 
@@ -70,8 +68,9 @@ class Schema extends Draggable {
     const originLayer = layers[0];
 
     layers.forEach((layer, index) => {
-      layer.y = originLayer.y - (layer.h - originLayer.h) / 2;
-      layer.x = originLayer.x + index * layer.w * 2;
+      const y = originLayer.y - (layer.h - originLayer.h) / 2;
+      const x = originLayer.x + index * layer.w * 2;
+      layer.setCoordinates(x, y);
       layer.updateNeuronsCoordinates();
       layer.parent.updateBorders();
     });

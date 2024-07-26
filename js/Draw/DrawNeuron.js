@@ -1,9 +1,8 @@
 class DrawNeuron {
-  constructor(neuron, cnv, x, y) {
-    this.origin = neuron;
+  constructor(cnv) {
     this.canvas = cnv;
-    this.x = x;
-    this.y = y;
+    this.x;
+    this.y;
     this.hidden = false;
     this.lines = [];
   }
@@ -33,10 +32,13 @@ class DrawNeuron {
     this.y = y;
   }
 
-  destroy() {
+  removeLines() {
     this.lines.forEach((line) => line.destroy());
     this.lines = [];
-    this.origin = null;
+  }
+
+  destroy() {
+    this.removeLines();
     this.canvas = null;
   }
 
@@ -66,29 +68,32 @@ class DrawNeuron {
 }
 
 class Line {
-  constructor(from, to, isTemp = false) {
+  constructor(from, to, temp = false) {
     this.from = from;
     this.to = to;
-    this.isTemp = isTemp;
+    this.temp = temp;
   }
   destroy() {
     this.from = null;
     this.to = null;
   }
 
+  isTemp() {
+    return this.temp;
+  }
+
   show() {
     line(
       this.from.x,
       this.from.y,
-      this.isTemp ? mouseX : this.to.x,
-      this.isTemp ? mouseY : this.to.y,
+      this.isTemp() ? mouseX : this.to.x,
+      this.isTemp() ? mouseY : this.to.y,
     );
   }
 
   draw() {
     const willDrew =
-      organizer.getActiveLine() ||
-      !(this.from.isHidden() || this.to.isHidden());
+      this.isTemp() || !(this.from.isHidden() || this.to.isHidden());
     willDrew && this.show();
   }
 }

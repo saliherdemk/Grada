@@ -4,7 +4,6 @@ var editOrganizer;
 function setup() {
   const mainCanvas = createCanvas(windowWidth, windowHeight);
   const editCanvas = createGraphics(windowWidth, windowHeight);
-
   organizer = new Organizer(mainCanvas);
   editOrganizer = new EditOrganizer(editCanvas);
 
@@ -15,7 +14,7 @@ function setup() {
     new Layer(1, 5),
   ]);
 
-  organizer.addSchema(new Schema(mlp, mainCanvas, 300, 300));
+  organizer.addSchema(new Schema(300, 300));
 
   // let xs = [
   //   [2.0, 3.0, -1.0],
@@ -67,5 +66,5 @@ function keyPressed() {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  editOrganizer.resize();
+  editOrganizer.isEnabled() && editOrganizer.resize();
 }

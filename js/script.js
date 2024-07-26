@@ -51,6 +51,9 @@ function findMLPbyId(id) {
 }
 
 function addLayer() {
-  const newMlp = new MLP([new Layer(0, parseInt(Math.random() * 7) + 1)]);
-  organizer.addSchema(new Schema(newMlp, organizer.canvas, 300, 500));
+  organizer.addSchema(new Schema(300, 500));
+}
+
+function logMLPs() {
+  console.log(organizer.schemas);
 }

@@ -1,23 +1,53 @@
 class DrawLayer extends Draggable {
-  constructor(layer, cnv, x, y, parent) {
+  constructor(x, y, parent, cnv) {
     super(x, y, 50, 0);
     this.parent = parent;
-    this.origin = layer;
     this.canvas = cnv;
-    this.yGap = 40;
     this.neurons = [];
+    this.yGap = 40;
     this.infoBox = { h: 70, y: 0, val: 0 };
     this.shrank = false;
     this.shownNeurons = { num: 0, indexes: [] };
     this.dots = parent ? [new Dot(this, true), new Dot(this, false)] : [];
+    this.button;
     this.initializeNeurons();
+    !this.isCopy() && this.initializeButton();
   }
 
   initializeNeurons() {
-    this.neurons = this.origin.neurons.map(
-      (neuron) => new DrawNeuron(neuron, this.canvas),
-    );
+    const numOfNeurons = parseInt(Math.random() * 7) + 1;
+    for (let i = 0; i < numOfNeurons; i++) {
+      this.neurons.push(new DrawNeuron(this.canvas));
+    }
+
     this.setShownNeuronsNum(this.getNeuronNum());
+  }
+
+  initializeButton() {
+    this.button = new CanvasButton(loadImage("delete-icon.png"), () =>
+      this.handleRemove(),
+    );
+    this.updateButtonCoordinates();
+  }
+
+  updateButtonCoordinates() {
+    this.button.setCoordinates(this.x + this.button.w / 4, this.y + this.h);
+  }
+
+  isShrank() {
+    return this.shrank || this.isCopy();
+  }
+
+  isCopy() {
+    return !this.parent;
+  }
+
+  pushNeuron() {
+    this.neurons.push(new DrawNeuron(this.canvas));
+  }
+
+  popNeuron() {
+    this.neurons.pop();
   }
 
   getNeuronNum() {
@@ -29,13 +59,45 @@ class DrawLayer extends Draggable {
   }
 
   setCoordinates(x, y) {
+    this.button?.setCoordinates(x + this.button.w / 4, y + this.h);
     this.x = x;
     this.y = y;
   }
 
+  handleRemove() {
+    if (this.isIsolated()) {
+      this.destroy();
+      return;
+    }
+    this.isolate();
+  }
+
+  isIsolated() {
+    return this.parent.layers.length == 1;
+  }
+
+  isolate() {
+    let parentLayers = this.parent.getLayers();
+    if (this.dots[1].isOccupied()) {
+      const targetLayer = parentLayers[parentLayers.indexOf(this) + 1];
+      targetLayer.dots[0].free();
+      this.splitMLp(targetLayer);
+    }
+
+    parentLayers = this.parent.getLayers();
+    if (this.dots[0].isOccupied()) {
+      const prevLayer = parentLayers[parentLayers.indexOf(this)];
+      this.dots[0].free();
+      prevLayer.splitMLp(this);
+    }
+  }
+
   setShownNeuronsNum(shownNeuronsNum) {
-    this.shownNeurons.num = shownNeuronsNum;
+    this.shownNeurons.num = this.isShrank()
+      ? shownNeuronsNum
+      : this.getNeuronNum();
     this.setShownNeurons();
+    editOrganizer.isEnabled && editOrganizer.setInfoText();
   }
 
   // GIANT MESS -> LESS GIANT MESS -> Acceptable mess
@@ -50,23 +112,21 @@ class DrawLayer extends Draggable {
       : Math.min(shownNeuronsNum, 5);
     const mid = displayedNeuronsNum / 2;
 
-    this.neurons.forEach((neuron, i) => {
+    for (let i = 0; i < this.neurons.length; i++) {
+      const neuron = this.neurons[i];
       if (i < mid || i >= neuronNum - mid) {
         neuron.visible();
         this.shownNeurons.indexes.push(i);
-      } else {
-        neuron.hide();
+        continue;
       }
-    });
-
+      neuron.hide();
+    }
     this.updateNeuronsCoordinates();
   }
 
   updateNeuronsCoordinates() {
     const isShrank = this.isShrank();
-    const neurons = isShrank
-      ? this.shownNeurons.indexes.map((index) => this.neurons[index])
-      : this.neurons;
+    const neurons = this.shownNeurons.indexes.map((i) => this.neurons[i]);
 
     const neuronNum = neurons.length;
     this.h = this.yGap * (neuronNum - 1) + this.w;
@@ -88,25 +148,57 @@ class DrawLayer extends Draggable {
     this.dots.forEach((dot) => dot.updateCoordinates());
   }
 
-  connectNeurons(targetNeurons) {
+  splitMLp(targetLayer) {
+    const parentLayers = targetLayer.parent.layers;
+    const splitIndex = parentLayers.indexOf(targetLayer);
+    parentLayers[splitIndex - 1].clearLines();
+
+    const newLayers = parentLayers.splice(0, splitIndex);
+
+    const [x, y] = [newLayers[0].x, newLayers[0].y];
+
+    // FIXME: Don't destroy and recreate, just move -> Done but not satisfying
+    const newSchema = new Schema(new MLP(), organizer.getCanvas(), x, y);
+
+    newSchema.setLayers(newLayers);
+    organizer.addSchema(newSchema);
+  }
+
+  reconnectNeurons() {
+    const layers = this.parent.layers;
+    const index = layers.indexOf(this);
+    const prev = layers[index - 1];
+    const next = layers[index + 1];
+
+    if (prev) {
+      prev.connectNeurons(this);
+    }
+    if (next) {
+      this.connectNeurons(next);
+    }
+    this.updateButtonCoordinates();
+    this.parent.updateBorders();
+  }
+
+  connectNeurons(targetLayer) {
     this.neurons.forEach((n1) => {
       n1.setLines([]);
-      targetNeurons.forEach((n2) => {
+      targetLayer.neurons.forEach((n2) => {
         n1.addLine(new Line(n1, n2));
       });
     });
+    this.dots[1].occupy();
+    targetLayer.dots[0].occupy();
   }
 
   connectLayer(targetLayer) {
+    if (this.parent === targetLayer.parent) return;
+
     if (targetLayer.dots[0].isOccupied()) {
       this.splitMLp(targetLayer);
     }
 
-    this.connectNeurons(targetLayer.neurons);
-    this.dots[1].occupy();
-    targetLayer.dots[0].occupy();
-
-    if (this.parent === targetLayer.parent) return;
+    this.connectNeurons(targetLayer);
 
     targetLayer.parent.layers.forEach((layer) => {
       this.parent.pushLayer(layer);
@@ -116,88 +208,26 @@ class DrawLayer extends Draggable {
     targetLayer.parent.layers.forEach((layer) => {
       layer.parent = this.parent;
     });
-
-    targetLayer.origin.changeNin(this.getNeuronNum());
   }
 
-  reConnectNeurons() {
-    const layers = this.parent.layers;
-    const index = layers.indexOf(this);
-    const prev = layers[index - 1];
-    const next = layers[index + 1];
-
-    if (prev) {
-      prev.connectNeurons(this.neurons);
-      this.origin.changeNin(prev.getNeuronNum());
-    }
-    if (next) {
-      this.connectNeurons(next.neurons);
-      next.origin.changeNin(this.getNeuronNum());
-    }
-
-    this.parent.updateBorders();
-  }
-
-  replace(layer, shrank) {
-    const diff = layer.getNeuronNum() - this.getNeuronNum();
-    for (let i = 0; i < Math.abs(diff); i++) {
-      diff > 0 ? this.origin.addNeuron() : this.origin.popNeuron();
-    }
-
-    this.initializeNeurons();
-    this.reConnectNeurons();
-    this.shrank = shrank;
-    this.setShownNeuronsNum(
-      shrank ? layer.getShownNeuronsNum() : layer.getNeuronNum(),
-    );
-    this.parent.resetCoordinates();
+  clearLines() {
+    this.neurons.forEach((neuron) => neuron.removeLines());
+    this.dots[1].free();
   }
 
   destroy() {
     this.neurons.forEach((neuron) => neuron.destroy());
-    this.dots.forEach((dot) => dot.destroy());
     this.neurons = [];
+    this.dots.forEach((dot) => dot.destroy());
     this.dots = [];
-    this.origin = null;
     this.canvas = null;
-  }
-
-  isShrank() {
-    return this.shrank || this.isCopy();
-  }
-
-  isCopy() {
-    return !this.parent;
-  }
-
-  pushNeuron() {
-    const neuronInputSize = this.neurons[0].origin.lines.length; // This is just gets neighbors neuron inputSize
-    const newNeuron = new Neuron(neuronInputSize);
-    this.neurons.push(new DrawNeuron(newNeuron, this.canvas));
-  }
-
-  popNeuron() {
-    this.neurons.pop();
-  }
-
-  setNeurons(neurons) {
-    this.neurons = neurons;
-    this.updateNeuronsCoordinates();
+    this.parent = null;
   }
 
   handlePressed() {
     this.pressed();
     this.dots.forEach((dot) => dot.handlePressed());
-  }
-
-  resetP5Settings() {
-    const commands = [
-      { func: "textSize", args: [12] },
-      { func: "textAlign", args: [LEFT, BASELINE] },
-      { func: "textLeading", args: [15] },
-      { func: "fill", args: [255] },
-    ];
-    executeDrawingCommands(this.canvas, commands);
+    this.button.handlePressed();
   }
 
   showInfoBox() {
@@ -213,10 +243,10 @@ class DrawLayer extends Draggable {
         args: [this.infoBox.val.toString(), this.x, infoBoxY + 25, 50, 35],
       },
       { func: "text", args: [`.\n.\n.\n`, this.x, infoBoxY + 45, 50, 35] },
+      { func: "fill", args: [255] },
     ];
 
     executeDrawingCommands(this.canvas, commands);
-    this.resetP5Settings();
   }
 
   show() {
@@ -231,23 +261,20 @@ class DrawLayer extends Draggable {
 
   draw() {
     this.show();
-    if (this.isShrank()) {
-      this.showInfoBox();
-    }
+    this.isShrank() && this.showInfoBox();
+
     this.neurons.forEach((neuron) => neuron.draw());
     this.dots.forEach((dot) => dot.draw());
-    if (!organizer.getDragActive()) {
-      this.over();
-    }
-    if (organizer.getDragActive() || this.dragging) {
-      this.updateCoordinates();
-    }
+    this.button?.draw();
+    !organizer.getDragActive() && this.over();
+
+    (organizer.getDragActive() || this.dragging) && this.updateCoordinates();
   }
 }
 
 class Dot {
   constructor(parent, isInput) {
-    this.origin = parent;
+    this.parent = parent;
     this.isInput = isInput;
     this.rollover = false;
     this.occupied = false;
@@ -261,14 +288,22 @@ class Dot {
 
   occupy() {
     this.occupied = true;
+    this.parent.button.changeImg(organizer.getImageByKey("brokenLink"));
+  }
+
+  free() {
+    this.occupied = false;
+    const allFree = this.parent.dots.every((d) => !d.isOccupied());
+
+    allFree && this.parent.button.changeImg(organizer.getImageByKey("delete"));
   }
 
   destroy() {
-    this.origin = null;
+    this.parent = null;
   }
 
   updateCoordinates() {
-    const parent = this.origin;
+    const parent = this.parent;
     this.x = this.isInput ? parent.x : parent.x + parent.w;
     this.y = parent.y + parent.h / 2;
   }
@@ -280,7 +315,7 @@ class Dot {
       { func: "circle", args: [this.x, this.y, r, r] },
     ];
 
-    executeDrawingCommands(this.origin.canvas, commands);
+    executeDrawingCommands(this.parent.canvas, commands);
   }
 
   over() {
@@ -294,8 +329,8 @@ class Dot {
       return;
     }
 
-    const layer1 = activeLine.from.origin;
-    const layer2 = this.origin;
+    const layer1 = activeLine.from.parent;
+    const layer2 = this.parent;
     const [majorLayer, minorLayer] = this.isInput
       ? [layer1, layer2]
       : [layer2, layer1];
