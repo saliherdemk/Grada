@@ -7,6 +7,12 @@ class Schema extends Draggable {
     this.updateBorders();
   }
 
+  getPrevAndNext(layer) {
+    const layers = this.getLayers();
+    const index = layers.indexOf(layer);
+    return { prev: layers[index - 1], next: layers[index + 1], index: index };
+  }
+
   getLayers() {
     return this.layers;
   }
@@ -18,21 +24,24 @@ class Schema extends Draggable {
     });
   }
 
+  moveLayers(targetSchema) {
+    this.getLayers().forEach((layer) => {
+      targetSchema.pushLayer(layer);
+    });
+    this.setLayers([]);
+    this.destroy();
+  }
+
   destroy() {
-    // this.canvas = null;
+    this.canvas = null;
+    this.getLayers().forEach((l) => l.destroy());
+    this.setLayers([]);
     organizer.removeSchema(this);
   }
 
   pushLayer(layer) {
-    this.layers.push(layer);
-  }
-
-  removeLayer(layer) {
-    const layers = this.layers;
-    const index = layers.indexOf(layer);
-    const prevLayer = layers[index - 1];
-    prevLayer.splitMLp(layer);
-    layers.splice(index, 1);
+    layer.parent = this;
+    this.getLayers().push(layer);
   }
 
   updateBorders() {
@@ -41,8 +50,8 @@ class Schema extends Draggable {
       firstY = height,
       lastY = 0;
 
-    for (let i = 0; i < this.layers.length; i++) {
-      const layer = this.layers[i];
+    for (let i = 0; i < this.getLayers().length; i++) {
+      const layer = this.getLayers()[i];
 
       lastX = Math.max(layer.x, lastX);
       firstX = Math.min(layer.x, firstX);
@@ -56,7 +65,7 @@ class Schema extends Draggable {
   }
 
   handlePressed() {
-    this.layers.forEach((layer) => {
+    this.getLayers().forEach((layer) => {
       layer.handlePressed();
     });
     if (organizer.getDragActive()) return;
@@ -64,7 +73,7 @@ class Schema extends Draggable {
   }
 
   resetCoordinates() {
-    const layers = this.layers;
+    const layers = this.getLayers();
     const originLayer = layers[0];
 
     layers.forEach((layer, index) => {
@@ -81,14 +90,14 @@ class Schema extends Draggable {
   }
 
   handleReleased() {
-    this.layers.forEach((layer) => {
+    this.getLayers().forEach((layer) => {
       layer.released();
     });
     this.released();
   }
 
   handleDoubleClicked() {
-    this.layers.forEach((layer) => layer.doubleClicked());
+    this.getLayers().forEach((layer) => layer.doubleClicked());
   }
 
   show() {
@@ -101,8 +110,8 @@ class Schema extends Draggable {
   }
 
   draw() {
-    this.layers.forEach((layer) => layer.draw());
-    this.layers.length > 1 && this.show();
+    this.getLayers().forEach((layer) => layer.draw());
+    this.getLayers().length > 1 && this.show();
 
     !organizer.getDragActive() && this.over();
 

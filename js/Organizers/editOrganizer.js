@@ -11,7 +11,7 @@ class EditOrganizer {
     this.h = 500;
     this.editPanel = getElementById("edit-panel");
 
-    new EventManager(this);
+    this.eventManager = new EventManager(this);
   }
 
   isEnabled() {
@@ -20,11 +20,6 @@ class EditOrganizer {
 
   getSelected() {
     return this.selectedCopy;
-  }
-
-  adjustOrigins() {
-    this.originX = (width - 500) / 2;
-    this.originY = 150;
   }
 
   toggleShrink() {
@@ -40,72 +35,21 @@ class EditOrganizer {
     getElementById("info-message").innerText = text;
   }
 
+  getCanvas() {
+    return this.canvas;
+  }
+
+  adjustOrigins() {
+    this.originX = (width - 500) / 2;
+    this.originY = 150;
+  }
+
   placeSelected() {
     const layer = this.selectedCopy;
     const x = this.originX + (this.w - layer.w) / 2;
     const y = this.originY + 100;
     layer.setCoordinates(x, y);
     layer.updateNeuronsCoordinates();
-  }
-
-  onNeuronFocusOut(e) {
-    const val = parseInt(e.target.value) || 1;
-    setElementProperties("set-neuron-num", { value: val });
-  }
-
-  onNeuronNumChange(e) {
-    const layer = this.selectedCopy;
-    const val = this.makeInputValid(e.target.value);
-    const diff = val - layer.getNeuronNum();
-
-    for (let i = 0; i < Math.abs(diff); i++) {
-      diff > 0 ? layer.pushNeuron() : layer.popNeuron();
-    }
-
-    this.setMaxShownNeuronInput();
-  }
-
-  onSetShownNeuron(otherElId, e) {
-    const layer = this.selectedCopy;
-    const val = Math.min(
-      this.makeInputValid(e.target.value),
-      layer.getNeuronNum(),
-    );
-
-    setElementProperties(otherElId, { value: val });
-    this.setShownNeuronsNum(val);
-  }
-
-  setShownNeuronsNum(shownNeuronNum) {
-    this.selectedCopy.setShownNeuronsNum(shownNeuronNum);
-    this.setInfoText();
-  }
-
-  setMaxShownNeuronInput() {
-    const layer = this.selectedCopy;
-    const neuronNum = layer.getNeuronNum();
-    const newShownNeuronNum = Math.min(layer.getShownNeuronsNum(), neuronNum);
-
-    setElementProperties("set-shown-neuron", {
-      value: newShownNeuronNum,
-      max: neuronNum,
-    });
-
-    setElementProperties("shown-neuron-inp", { value: newShownNeuronNum });
-    this.setShownNeuronsNum(newShownNeuronNum);
-  }
-
-  onShownNeuronFocusOut(e) {
-    let val = parseInt(e.target.value) || 1;
-    val = Math.max(1, Math.min(val, this.selectedCopy.getNeuronNum()));
-    setElementProperties("shown-neuron-inp", { value: val });
-  }
-
-  makeInputValid(val) {
-    return isNaN(val) || val === "" || val < 1 ? 1 : val;
-  }
-  getCanvas() {
-    return this.canvas;
   }
 
   setLayout() {
@@ -123,7 +67,7 @@ class EditOrganizer {
     setElementProperties("set-neuron-num", {
       value: this.selectedCopy.getNeuronNum(),
     });
-    this.setMaxShownNeuronInput();
+    this.eventManager.setMaxShownNeuronInput();
   }
 
   update() {
@@ -157,7 +101,7 @@ class EditOrganizer {
     this.copyNeurons(layer, copy);
     this.shrank = !layer.shrank; // will call toggleShrink. I wanted to use same function
     this.selectedCopy = copy;
-    this.setShownNeuronsNum(layer.getShownNeuronsNum());
+    this.eventManager.setShownNeuronsNum(layer.getShownNeuronsNum());
     this.enabled = true;
     this.setup();
   }

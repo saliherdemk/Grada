@@ -4,22 +4,6 @@ class Layer {
     this.neurons = Array.from({ length: nout }, () => new Neuron(nin));
   }
 
-  changeNin(nin) {
-    this.nin = nin;
-    this.neurons = Array.from(
-      { length: this.neurons.length },
-      () => new Neuron(nin),
-    );
-  }
-
-  addNeuron() {
-    this.neurons.push(new Neuron(this.nin));
-  }
-
-  popNeuron() {
-    this.neurons.pop();
-  }
-
   call(x) {
     let outs = this.neurons.map((neuron) => neuron.call(x));
     return outs.length === 1 ? outs[0] : outs;

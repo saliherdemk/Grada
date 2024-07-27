@@ -9,8 +9,13 @@ class CanvasButton {
     this.img = image;
   }
 
-  changeImg(img) {
-    this.img = img;
+  destroy() {
+    this.onClick = null;
+    this.img = null;
+  }
+
+  changeImg(imgKey) {
+    this.img = organizer.getImageByKey(imgKey);
   }
 
   setCoordinates(x, y) {

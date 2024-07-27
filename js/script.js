@@ -1,19 +1,3 @@
-function mixin(targetClass, ...mixins) {
-  mixins.forEach((mixin) => {
-    Object.getOwnPropertyNames(mixin.prototype).forEach((name) => {
-      if (name !== "constructor") {
-        const original = targetClass.prototype[name];
-        targetClass.prototype[name] = function (...args) {
-          if (original) {
-            original.apply(this, args);
-          }
-          mixin.prototype[name].apply(this, args);
-        };
-      }
-    });
-  });
-}
-
 function executeDrawingCommands(cnv, arr) {
   const parent = cnv instanceof p5.Graphics ? cnv : window;
 
@@ -44,10 +28,6 @@ function addEventToElement(elId, eventName, func) {
 
 function removeEvents(elId) {
   getElementById(elId).removeEventListeners();
-}
-
-function findMLPbyId(id) {
-  return schemas.find((mlp) => mlp.origin.id == id).origin;
 }
 
 function addLayer() {

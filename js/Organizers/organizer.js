@@ -36,10 +36,6 @@ class Organizer {
     this.activeLine = line;
   }
 
-  getNextId() {
-    return ++this.lastUsedId;
-  }
-
   setDragActive(dragActive) {
     this.dragActive = dragActive;
   }

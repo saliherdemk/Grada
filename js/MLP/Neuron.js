@@ -8,14 +8,6 @@ class Neuron {
     this.act_func = ActivationFunction.TANH;
   }
 
-  addWeight() {
-    this.w.push(new Value(Math.random() * 2 - 1));
-  }
-
-  popWeight() {
-    this.w.pop();
-  }
-
   call(x) {
     let act = this.b;
     for (let i = 0; i < this.w.length; i++) {
