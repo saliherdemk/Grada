@@ -66,7 +66,7 @@ class DrawLayer extends Draggable {
 
   handleRemove() {
     if (this.isIsolated()) {
-      this.destroy();
+      this.parent.destroy();
       return;
     }
     this.isolate();
@@ -77,19 +77,11 @@ class DrawLayer extends Draggable {
   }
 
   isolate() {
-    let parentLayers = this.parent.getLayers();
-    if (this.dots[1].isOccupied()) {
-      const targetLayer = parentLayers[parentLayers.indexOf(this) + 1];
-      targetLayer.dots[0].free();
-      this.splitMLp(targetLayer);
-    }
+    const { prev: prevLayer, next: targetLayer } =
+      this.parent.getPrevAndNext(this);
 
-    parentLayers = this.parent.getLayers();
-    if (this.dots[0].isOccupied()) {
-      const prevLayer = parentLayers[parentLayers.indexOf(this)];
-      this.dots[0].free();
-      prevLayer.splitMLp(this);
-    }
+    targetLayer && this.splitMlp(targetLayer);
+    prevLayer && prevLayer.splitMlp(this);
   }
 
   setShownNeuronsNum(shownNeuronsNum) {
@@ -104,23 +96,20 @@ class DrawLayer extends Draggable {
   setShownNeurons() {
     this.shownNeurons.indexes = [];
     const shownNeuronsNum = this.getShownNeuronsNum();
-    const neuronNum = this.getNeuronNum();
-    this.infoBox.val = neuronNum - shownNeuronsNum;
+    const neuronsNum = this.getNeuronNum();
+    this.infoBox.val = neuronsNum - shownNeuronsNum;
+    const mid =
+      (this.parent ? shownNeuronsNum : Math.min(shownNeuronsNum, 5)) / 2;
 
-    const displayedNeuronsNum = this.parent
-      ? shownNeuronsNum
-      : Math.min(shownNeuronsNum, 5);
-    const mid = displayedNeuronsNum / 2;
-
-    for (let i = 0; i < this.neurons.length; i++) {
-      const neuron = this.neurons[i];
-      if (i < mid || i >= neuronNum - mid) {
+    this.neurons.forEach((neuron, i) => {
+      if (i < mid || i >= neuronsNum - mid) {
         neuron.visible();
         this.shownNeurons.indexes.push(i);
-        continue;
+      } else {
+        neuron.hide();
       }
-      neuron.hide();
-    }
+    });
+
     this.updateNeuronsCoordinates();
   }
 
@@ -148,12 +137,12 @@ class DrawLayer extends Draggable {
     this.dots.forEach((dot) => dot.updateCoordinates());
   }
 
-  splitMLp(targetLayer) {
-    const parentLayers = targetLayer.parent.layers;
-    const splitIndex = parentLayers.indexOf(targetLayer);
-    parentLayers[splitIndex - 1].clearLines();
+  splitMlp(targetLayer) {
+    const parent = targetLayer.parent;
+    const { prev, index: splitIndex } = parent.getPrevAndNext(targetLayer);
+    prev.clearLines(targetLayer);
 
-    const newLayers = parentLayers.splice(0, splitIndex);
+    const newLayers = parent.getLayers().splice(0, splitIndex);
 
     const [x, y] = [newLayers[0].x, newLayers[0].y];
 
@@ -165,19 +154,14 @@ class DrawLayer extends Draggable {
   }
 
   reconnectNeurons() {
-    const layers = this.parent.layers;
-    const index = layers.indexOf(this);
-    const prev = layers[index - 1];
-    const next = layers[index + 1];
+    const parent = this.parent;
+    const { prev, next } = parent.getPrevAndNext(this);
 
-    if (prev) {
-      prev.connectNeurons(this);
-    }
-    if (next) {
-      this.connectNeurons(next);
-    }
+    prev && prev.connectNeurons(this);
+    next && this.connectNeurons(next);
+
     this.updateButtonCoordinates();
-    this.parent.updateBorders();
+    parent.updateBorders();
   }
 
   connectNeurons(targetLayer) {
@@ -192,27 +176,21 @@ class DrawLayer extends Draggable {
   }
 
   connectLayer(targetLayer) {
+    console.log(this, targetLayer);
     if (this.parent === targetLayer.parent) return;
 
     if (targetLayer.dots[0].isOccupied()) {
-      this.splitMLp(targetLayer);
+      this.splitMlp(targetLayer);
     }
 
     this.connectNeurons(targetLayer);
-
-    targetLayer.parent.layers.forEach((layer) => {
-      this.parent.pushLayer(layer);
-    });
-
-    targetLayer.parent.destroy();
-    targetLayer.parent.layers.forEach((layer) => {
-      layer.parent = this.parent;
-    });
+    targetLayer.parent.moveLayers(this.parent);
   }
 
-  clearLines() {
+  clearLines(targetLayer) {
     this.neurons.forEach((neuron) => neuron.removeLines());
     this.dots[1].free();
+    targetLayer.dots[0].free();
   }
 
   destroy() {
@@ -221,7 +199,8 @@ class DrawLayer extends Draggable {
     this.dots.forEach((dot) => dot.destroy());
     this.dots = [];
     this.canvas = null;
-    this.parent = null;
+    this.button?.destroy();
+    this.button = null;
   }
 
   handlePressed() {
@@ -288,14 +267,14 @@ class Dot {
 
   occupy() {
     this.occupied = true;
-    this.parent.button.changeImg(organizer.getImageByKey("brokenLink"));
+    this.parent.button.changeImg("brokenLink");
   }
 
   free() {
     this.occupied = false;
     const allFree = this.parent.dots.every((d) => !d.isOccupied());
 
-    allFree && this.parent.button.changeImg(organizer.getImageByKey("delete"));
+    allFree && this.parent.button.changeImg("delete");
   }
 
   destroy() {
@@ -343,16 +322,18 @@ class Dot {
     if (!this.rollover) return;
 
     const activeLine = organizer.getActiveLine();
+
     if (!activeLine) {
-      organizer.setActiveLine(new Line(this, null, true));
+      !this.isInput && organizer.setActiveLine(new Line(this, null, true));
       return;
     }
 
-    if (activeLine.from === this) {
+    if (activeLine.from === this || !this.isInput) {
       organizer.setActiveLine(null);
-    } else {
-      this.combineSchemas();
+      return;
     }
+
+    this.combineSchemas();
   }
 
   draw() {
