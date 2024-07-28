@@ -43,15 +43,19 @@ class Draggable {
     organizer.setDragActive(false);
   }
 
+  postUpdateCoordinates() {
+    throw new Error("You have to implement the method postUpdateCoordinates!");
+  }
+
   setCoordinates(x, y) {
     this.x = x;
     this.y = y;
+    this.postUpdateCoordinates();
   }
 
   updateCoordinates() {
     if (this.dragging) {
       this.setCoordinates(mouseX + this.offsetX, mouseY + this.offsetY);
-      this.neurons && this.updateNeuronsCoordinates();
     }
 
     this.layers && this.updateBorders(); // This is works because when you drag layer you also drag mlp

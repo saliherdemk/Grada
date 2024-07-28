@@ -3,8 +3,32 @@ class Schema extends Draggable {
     super(x, y);
     this.canvas = cnv;
     this.layers = [new DrawLayer(this.x, this.y, this, this.canvas)];
-
+    this.editModeOpen = true;
+    this.button;
     this.updateBorders();
+    this.initializeButton();
+  }
+
+  initializeButton() {
+    this.button = new CanvasButton(loadImage("lock-open.png"), () =>
+      this.toggleEditMode(),
+    );
+
+    this.updateButtonCoordinates();
+  }
+
+  toggleEditMode() {
+    this.editModeOpen = !this.editModeOpen;
+    this.button?.changeImg(this.editModeOpen ? "lockOpen" : "lock");
+  }
+
+  updateButtonCoordinates() {
+    const button = this.button;
+    button?.setCoordinates(this.x + this.w - button.w / 2, this.y + this.h + 5);
+  }
+
+  postUpdateCoordinates() {
+    this.updateButtonCoordinates();
   }
 
   getPrevAndNext(layer) {
@@ -34,6 +58,8 @@ class Schema extends Draggable {
 
   destroy() {
     this.canvas = null;
+    this.button.destroy();
+    this.button = null;
     this.getLayers().forEach((l) => l.destroy());
     this.setLayers([]);
     organizer.removeSchema(this);
@@ -61,7 +87,8 @@ class Schema extends Draggable {
     }
     this.w = lastX - firstX + 100;
     this.setCoordinates(firstX - 25, firstY - 25);
-    this.h = lastY - firstY + 50;
+    this.h = lastY - firstY + 75;
+    this.updateButtonCoordinates();
   }
 
   handlePressed() {
@@ -69,6 +96,7 @@ class Schema extends Draggable {
       layer.handlePressed();
     });
     if (organizer.getDragActive()) return;
+    this.button?.handlePressed();
     this.pressed();
   }
 
@@ -110,8 +138,9 @@ class Schema extends Draggable {
   }
 
   draw() {
+    this.button?.draw();
     this.getLayers().forEach((layer) => layer.draw());
-    this.getLayers().length > 1 && this.show();
+    this.show();
 
     !organizer.getDragActive() && this.over();
 
