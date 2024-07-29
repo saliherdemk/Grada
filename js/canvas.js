@@ -1,68 +1,73 @@
 var organizer;
 var editOrganizer;
+var iManager;
 
 function setup() {
   const mainCanvas = createCanvas(windowWidth, windowHeight);
+  mainCanvas.mouseWheel(scaleCanvas);
+
   const editCanvas = createGraphics(windowWidth, windowHeight);
+
   organizer = new Organizer(mainCanvas);
   editOrganizer = new EditOrganizer(editCanvas);
-
-  let mlp = new MLP([
-    new Layer(0, 3),
-    new Layer(3, 2),
-    new Layer(2, 1),
-    new Layer(1, 5),
-  ]);
+  iManager = new InteractionManager();
 
   organizer.addSchema(new Schema(300, 300));
-
-  // let xs = [
-  //   [2.0, 3.0, -1.0],
-  //   [3.0, -1.0, 0.5],
-  //   [0.5, 1.0, 1.0],
-  //   [1.0, 1.0, -1.0],
-  // ];
-  //
-  // let ys = [1.0, -1.0, -1.0, 1.0];
-  //
-  // console.log(mlp.train(xs, ys, 20));
 }
 
 function draw() {
   background(255);
 
+  iManager.applyTransforms();
   organizer.draw();
   editOrganizer.draw();
 }
 
 function mousePressed() {
-  if (editOrganizer.isEnabled()) return;
-  organizer.handlePressed();
+  handlePress(mouseX, mouseY);
 }
 
-function touchStarted() {
-  mousePressed();
+function mouseDragged() {
+  handleDrag(mouseX, mouseY);
+}
+
+function mousePressed() {
+  handlePress(mouseX, mouseY);
+}
+
+function mouseDragged() {
+  handleDrag(mouseX, mouseY);
 }
 
 function mouseReleased() {
-  organizer.handleReleased();
+  handleRelease();
+}
+
+function touchStarted() {
+  handlePress(touches[0].x, touches[0].y);
+  return false;
+}
+
+function touchMoved() {
+  handleDrag(touches[0].x, touches[0].y);
+  return false;
 }
 
 function touchEnded() {
-  mouseReleased();
+  handleRelease();
+  return false;
 }
 
-function doubleClicked() {
-  if (editOrganizer.isEnabled()) return;
-  organizer.handleDoubleClicked();
+function handlePress(x, y) {
+  iManager.handlePress(x, y);
 }
 
-function keyPressed() {
-  if (key === "Escape") {
-    editOrganizer.disable();
-    organizer.setActiveLine(null);
-  }
-  organizer.handleKeyPressed(key);
+function handleDrag(x, y) {
+  iManager.handleDrag(x, y);
+}
+
+function handleRelease() {
+  iManager.handleRelease();
 }
 
 function windowResized() {

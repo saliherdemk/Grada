@@ -24,14 +24,11 @@ class CanvasButton {
   }
 
   over() {
-    this.rollover =
-      mouseX > this.x &&
-      mouseX < this.x + this.w &&
-      mouseY > this.y &&
-      mouseY < this.y + this.h;
+    this.rollover = iManager.contains(mouseX, mouseY, this);
   }
 
   handlePressed() {
+    this.over();
     this.rollover && this.onClick();
   }
 
@@ -47,7 +44,6 @@ class CanvasButton {
   }
 
   draw() {
-    this.over();
     this.show();
   }
 }

@@ -37,3 +37,11 @@ function addLayer() {
 function logMLPs() {
   console.log(organizer.schemas);
 }
+
+function scaleCanvas(event) {
+  let scaleAmount = 1.1;
+  if (event.deltaY > 0) {
+    scaleAmount = 0.9;
+  }
+  iManager.scaleFactor *= scaleAmount;
+}

@@ -38,15 +38,14 @@ class Dot {
     const r = this.r + (this.rollover ? 5 : 0);
     const commands = [
       { func: "fill", args: this.isOccupied() ? [0, 255, 0] : [255, 0, 0] },
-      { func: "circle", args: [this.x, this.y, r, r] },
+      { func: "circle", args: [this.x, this.y, r] },
     ];
 
     executeDrawingCommands(this.parent.canvas, commands);
   }
 
   over() {
-    const d = dist(mouseX, mouseY, this.x, this.y);
-    this.rollover = d < this.r / 2;
+    this.rollover = iManager.contains(mouseX, mouseY, this);
   }
 
   combineSchemas() {
@@ -67,7 +66,6 @@ class Dot {
 
   handlePressed() {
     if (!this.rollover) return;
-
     const activeLine = organizer.getActiveLine();
 
     if (!activeLine) {

@@ -2,7 +2,6 @@ class Organizer {
   constructor(canvas) {
     this.canvas = canvas;
     this.dragActive = false;
-    this.lastUsedId = 0;
     this.activeLine = null;
     this.schemas = [];
     this.images = {
@@ -51,20 +50,12 @@ class Organizer {
       this.schemas.forEach((schema) => schema.handleKeyPressed());
   }
 
-  handlePressed() {
-    this.schemas.forEach((schema) => schema.handlePressed());
-  }
-
-  handleReleased() {
-    this.schemas.forEach((schema) => schema.handleReleased());
-  }
-
   handleDoubleClicked() {
     this.schemas.forEach((schema) => schema.handleDoubleClicked());
   }
 
   draw() {
-    this.getActiveLine()?.draw();
     this.schemas.forEach((schema) => schema.draw());
+    this.getActiveLine()?.draw();
   }
 }

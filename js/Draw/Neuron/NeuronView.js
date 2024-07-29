@@ -44,6 +44,7 @@ class DrawNeuron {
 
   show() {
     const commands = [
+      { func: "fill", args: [255] },
       { func: "circle", args: [this.x, this.y, 25, 25] },
       { func: "fill", args: [0] },
       {

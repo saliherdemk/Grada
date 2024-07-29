@@ -30,6 +30,12 @@ class DrawLayer extends Draggable {
     this.updateButtonCoordinates();
   }
 
+  setCoordinates(x, y) {
+    this.x = x;
+    this.y = y;
+    this.postUpdateCoordinates();
+  }
+
   updateButtonCoordinates() {
     const button = this.button;
     button?.setCoordinates(this.x + button.w / 4, this.y + this.h);
@@ -38,6 +44,11 @@ class DrawLayer extends Draggable {
   postUpdateCoordinates() {
     this.updateButtonCoordinates();
     this.updateNeuronsCoordinates();
+    this.parent.updateBorders();
+  }
+
+  isEditable() {
+    return this.parent ? this.parent.editModeOpen : false;
   }
 
   isShrank() {
@@ -202,10 +213,16 @@ class DrawLayer extends Draggable {
     this.button = null;
   }
 
-  handlePressed() {
-    this.pressed();
+  pressed(x, y) {
     this.dots.forEach((dot) => dot.handlePressed());
     this.button.handlePressed();
+    return iManager.checkRollout(x, y, this);
+  }
+
+  doubleClicked() {
+    if (this.rollover && !editOrganizer.getSelected()) {
+      editOrganizer.enable(this);
+    }
   }
 
   showInfoBox() {
@@ -238,7 +255,7 @@ class DrawLayer extends Draggable {
   }
 
   draw() {
-    if (this.parent.editModeOpen) {
+    if (this.isEditable()) {
       this.dots.forEach((dot) => dot.draw());
       this.button?.draw();
     }
@@ -246,8 +263,8 @@ class DrawLayer extends Draggable {
     this.isShrank() && this.showInfoBox();
 
     this.neurons.forEach((neuron) => neuron.draw());
-    !organizer.getDragActive() && this.over();
+    // !organizer.getDragActive() && this.over();
 
-    (organizer.getDragActive() || this.dragging) && this.updateCoordinates();
+    // (organizer.getDragActive() || this.dragging) && this.updateCoordinates();
   }
 }
