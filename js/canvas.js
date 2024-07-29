@@ -53,6 +53,7 @@ function touchEnded() {
 }
 
 function doubleClicked() {
+  if (editOrganizer.isEnabled()) return;
   organizer.handleDoubleClicked();
 }
 

@@ -8,6 +8,8 @@ class Organizer {
     this.images = {
       brokenLink: loadImage("broken-link.png"),
       delete: loadImage("delete-icon.png"),
+      lock: loadImage("lock.png"),
+      lockOpen: loadImage("lock-open.png"),
     };
   }
 
