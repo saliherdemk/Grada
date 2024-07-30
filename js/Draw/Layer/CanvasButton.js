@@ -1,12 +1,12 @@
 class CanvasButton {
-  constructor(image, onClick) {
+  constructor(imageKey, onClick) {
     this.x = 0;
     this.y = 0;
-    this.w = 50;
+    this.w = 25;
     this.h = 25;
     this.onClick = onClick;
-    this.rollover = false;
-    this.img = image;
+    this.img;
+    this.changeImg(imageKey);
   }
 
   destroy() {
@@ -23,31 +23,22 @@ class CanvasButton {
     this.y = y;
   }
 
-  over() {
-    this.rollover =
-      mouseX > this.x &&
-      mouseX < this.x + this.w &&
-      mouseY > this.y &&
-      mouseY < this.y + this.h;
-  }
-
   handlePressed() {
-    this.rollover && this.onClick();
+    iManager.isHovered(this) && this.onClick();
   }
 
   show() {
     const commands = [
       {
         func: "image",
-        args: [this.img, this.x, this.y, this.w / 2, this.h],
+        args: [this.img, this.x, this.y, this.w, this.h],
       },
     ];
 
-    executeDrawingCommands(this.canvas, commands);
+    executeDrawingCommands(commands);
   }
 
   draw() {
-    this.over();
     this.show();
   }
 }

@@ -10,9 +10,7 @@ class Schema extends Draggable {
   }
 
   initializeButton() {
-    this.button = new CanvasButton(loadImage("lock-open.png"), () =>
-      this.toggleEditMode(),
-    );
+    this.button = new CanvasButton("lockOpen", () => this.toggleEditMode());
 
     this.updateButtonCoordinates();
   }
@@ -22,13 +20,24 @@ class Schema extends Draggable {
     this.button?.changeImg(this.editModeOpen ? "lockOpen" : "lock");
   }
 
-  updateButtonCoordinates() {
-    const button = this.button;
-    button?.setCoordinates(this.x + this.w - button.w / 2, this.y + this.h + 5);
+  setCoordinates(x, y) {
+    this.updateLayersCoordinates(x, y);
+    this.x = x;
+    this.y = y;
+    this.updateButtonCoordinates();
   }
 
-  postUpdateCoordinates() {
-    this.updateButtonCoordinates();
+  updateButtonCoordinates() {
+    const button = this.button;
+    button?.setCoordinates(this.x + this.w - button.w, this.y + this.h + 5);
+  }
+
+  updateLayersCoordinates(newX, newY) {
+    const prevX = this.x;
+    const prevY = this.y;
+    this.layers.forEach((layer) => {
+      layer.updateCoordinates(newX + layer.x - prevX, newY + layer.y - prevY);
+    });
   }
 
   getPrevAndNext(layer) {
@@ -52,6 +61,7 @@ class Schema extends Draggable {
     this.getLayers().forEach((layer) => {
       targetSchema.pushLayer(layer);
     });
+    targetSchema.updateBorders();
     this.setLayers([]);
     this.destroy();
   }
@@ -71,10 +81,10 @@ class Schema extends Draggable {
   }
 
   updateBorders() {
-    let lastX = 0,
-      firstX = width,
-      firstY = height,
-      lastY = 0;
+    let lastX = -Infinity,
+      firstX = Infinity,
+      firstY = Infinity,
+      lastY = -Infinity;
 
     for (let i = 0; i < this.getLayers().length; i++) {
       const layer = this.getLayers()[i];
@@ -86,18 +96,25 @@ class Schema extends Draggable {
       lastY = Math.max(lastY, layer.y + layer.h);
     }
     this.w = lastX - firstX + 100;
-    this.setCoordinates(firstX - 25, firstY - 25);
+    // FIXME: find a way to call setCoordinates without adding base case
+    this.x = firstX - 25;
+    this.y = firstY - 25;
     this.h = lastY - firstY + 75;
     this.updateButtonCoordinates();
   }
 
-  handlePressed() {
-    this.getLayers().forEach((layer) => {
-      layer.handlePressed();
-    });
-    if (organizer.getDragActive()) return;
+  pressed() {
     this.button?.handlePressed();
-    this.pressed();
+    return iManager.checkRollout(this);
+  }
+
+  handlePressed() {
+    const isHandledByLayer = this.getLayers().some((layer) => layer.pressed());
+
+    if (isHandledByLayer || this.pressed()) return;
+
+    iManager.setCanvasDragging(true);
+    iManager.setLastMouseCoordinates();
   }
 
   resetCoordinates() {
@@ -114,7 +131,7 @@ class Schema extends Draggable {
   }
 
   handleKeyPressed() {
-    this.rollover && this.resetCoordinates();
+    iManager.isHovered(this) && this.resetCoordinates();
   }
 
   handleReleased() {
@@ -129,21 +146,14 @@ class Schema extends Draggable {
   }
 
   show() {
-    const commands = [
-      { func: "fill", args: [255, 255, 255, 0.5] },
-      { func: "rect", args: [this.x, this.y, this.w, this.h] },
-    ];
+    const commands = [{ func: "rect", args: [this.x, this.y, this.w, this.h] }];
 
-    executeDrawingCommands(this.canvas, commands);
+    executeDrawingCommands(commands, this.canvas);
   }
 
   draw() {
+    this.show();
     this.button?.draw();
     this.getLayers().forEach((layer) => layer.draw());
-    this.show();
-
-    !organizer.getDragActive() && this.over();
-
-    (organizer.getDragActive() || this.dragging) && this.updateCoordinates();
   }
 }

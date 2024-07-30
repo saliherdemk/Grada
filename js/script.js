@@ -1,6 +1,7 @@
-function executeDrawingCommands(cnv, arr) {
+function executeDrawingCommands(arr, cnv = organizer.getCanvas()) {
   const parent = cnv instanceof p5.Graphics ? cnv : window;
 
+  push();
   for (let i = 0; i < arr.length; i++) {
     let { func, args } = arr[i];
     if (typeof parent[func] === "function") {
@@ -9,6 +10,7 @@ function executeDrawingCommands(cnv, arr) {
       console.error(`Function '${func}' does not exist on canvas`);
     }
   }
+  pop();
 }
 
 function getElementById(el) {
@@ -36,4 +38,13 @@ function addLayer() {
 
 function logMLPs() {
   console.log(organizer.schemas);
+}
+
+function scaleCanvas(event) {
+  if (editOrganizer.isEnabled()) return;
+  let scaleAmount = 1.1;
+  if (event.deltaY > 0) {
+    scaleAmount = 0.9;
+  }
+  iManager.scaleFactor *= scaleAmount;
 }

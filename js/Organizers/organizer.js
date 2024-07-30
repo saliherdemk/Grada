@@ -1,15 +1,13 @@
 class Organizer {
   constructor(canvas) {
     this.canvas = canvas;
-    this.dragActive = false;
-    this.lastUsedId = 0;
     this.activeLine = null;
     this.schemas = [];
     this.images = {
-      brokenLink: loadImage("broken-link.png"),
-      delete: loadImage("delete-icon.png"),
-      lock: loadImage("lock.png"),
-      lockOpen: loadImage("lock-open.png"),
+      brokenLink: loadImage("media/broken-link.png"),
+      delete: loadImage("media/delete-icon.png"),
+      lock: loadImage("media/lock.png"),
+      lockOpen: loadImage("media/lock-open.png"),
     };
   }
 
@@ -38,33 +36,8 @@ class Organizer {
     this.activeLine = line;
   }
 
-  setDragActive(dragActive) {
-    this.dragActive = dragActive;
-  }
-
-  getDragActive() {
-    return this.dragActive;
-  }
-
-  handleKeyPressed(key) {
-    key.toLowerCase() == "e" &&
-      this.schemas.forEach((schema) => schema.handleKeyPressed());
-  }
-
-  handlePressed() {
-    this.schemas.forEach((schema) => schema.handlePressed());
-  }
-
-  handleReleased() {
-    this.schemas.forEach((schema) => schema.handleReleased());
-  }
-
-  handleDoubleClicked() {
-    this.schemas.forEach((schema) => schema.handleDoubleClicked());
-  }
-
   draw() {
-    this.getActiveLine()?.draw();
     this.schemas.forEach((schema) => schema.draw());
+    this.getActiveLine()?.draw();
   }
 }

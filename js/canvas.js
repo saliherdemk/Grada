@@ -1,68 +1,67 @@
-var organizer;
-var editOrganizer;
+let organizer;
+let editOrganizer;
+let iManager;
 
 function setup() {
   const mainCanvas = createCanvas(windowWidth, windowHeight);
+  mainCanvas.mouseWheel(scaleCanvas);
+
   const editCanvas = createGraphics(windowWidth, windowHeight);
+
   organizer = new Organizer(mainCanvas);
   editOrganizer = new EditOrganizer(editCanvas);
-
-  let mlp = new MLP([
-    new Layer(0, 3),
-    new Layer(3, 2),
-    new Layer(2, 1),
-    new Layer(1, 5),
-  ]);
+  iManager = new InteractionManager();
 
   organizer.addSchema(new Schema(300, 300));
-
-  // let xs = [
-  //   [2.0, 3.0, -1.0],
-  //   [3.0, -1.0, 0.5],
-  //   [0.5, 1.0, 1.0],
-  //   [1.0, 1.0, -1.0],
-  // ];
-  //
-  // let ys = [1.0, -1.0, -1.0, 1.0];
-  //
-  // console.log(mlp.train(xs, ys, 20));
 }
 
 function draw() {
   background(255);
 
+  push();
+  iManager.applyTransforms();
   organizer.draw();
+  pop();
   editOrganizer.draw();
 }
 
 function mousePressed() {
-  if (editOrganizer.isEnabled()) return;
-  organizer.handlePressed();
+  !editOrganizer.isEnabled() && iManager.handlePress();
 }
 
+function mouseDragged() {
+  !editOrganizer.isEnabled() && iManager.handleDrag();
+}
+
+function mouseReleased() {
+  iManager.handleRelease();
+}
+
+// touches[0].x, touches[0].y We don't need simultaneous touches
 function touchStarted() {
   mousePressed();
 }
 
-function mouseReleased() {
-  organizer.handleReleased();
+function touchMoved() {
+  mouseDragged();
 }
 
 function touchEnded() {
   mouseReleased();
 }
 
-function doubleClicked() {
-  if (editOrganizer.isEnabled()) return;
-  organizer.handleDoubleClicked();
+function keyPressed() {
+  const k = key.toLowerCase();
+  if (k == "e") {
+    organizer.schemas.forEach((schema) => schema.handleKeyPressed());
+  }
+  if (k == "escape" && editOrganizer.isEnabled()) {
+    editOrganizer.disable();
+  }
 }
 
-function keyPressed() {
-  if (key === "Escape") {
-    editOrganizer.disable();
-    organizer.setActiveLine(null);
-  }
-  organizer.handleKeyPressed(key);
+function doubleClicked() {
+  organizer.schemas.forEach((schema) => schema.handleDoubleClicked());
 }
 
 function windowResized() {

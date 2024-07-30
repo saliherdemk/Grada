@@ -34,26 +34,13 @@ class Dot {
     this.y = parent.y + parent.h / 2;
   }
 
-  show() {
-    const r = this.r + (this.rollover ? 5 : 0);
-    const commands = [
-      { func: "fill", args: this.isOccupied() ? [0, 255, 0] : [255, 0, 0] },
-      { func: "circle", args: [this.x, this.y, r, r] },
-    ];
-
-    executeDrawingCommands(this.parent.canvas, commands);
-  }
-
   over() {
-    const d = dist(mouseX, mouseY, this.x, this.y);
-    this.rollover = d < this.r / 2;
+    this.rollover = iManager.isHovered(this);
   }
 
   combineSchemas() {
     const activeLine = organizer.getActiveLine();
-    if (!activeLine || !activeLine.from) {
-      return;
-    }
+    if (!activeLine) return;
 
     const layer1 = activeLine.from.parent;
     const layer2 = this.parent;
@@ -67,15 +54,14 @@ class Dot {
 
   handlePressed() {
     if (!this.rollover) return;
-
     const activeLine = organizer.getActiveLine();
 
     if (!activeLine) {
-      !this.isInput && organizer.setActiveLine(new Line(this, null, true));
+      organizer.setActiveLine(new Line(this, null, true));
       return;
     }
 
-    if (activeLine.from === this || !this.isInput) {
+    if (activeLine.from === this) {
       organizer.setActiveLine(null);
       return;
     }
@@ -83,6 +69,15 @@ class Dot {
     this.combineSchemas();
   }
 
+  show() {
+    const r = this.r + (this.rollover ? 5 : 0);
+    const commands = [
+      { func: "fill", args: this.isOccupied() ? [0, 255, 0] : [255, 0, 0] },
+      { func: "circle", args: [this.x, this.y, r] },
+    ];
+
+    executeDrawingCommands(commands);
+  }
   draw() {
     this.show();
     this.over();
