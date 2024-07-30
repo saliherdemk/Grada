@@ -6,12 +6,6 @@ class Draggable {
     this.h = h;
   }
 
-  doubleClicked() {
-    if (this.rollover && !editOrganizer.getSelected()) {
-      editOrganizer.enable(this);
-    }
-  }
-
   setCoordinates() {
     throw new Error("You have to implement the method setCoordinates!");
   }

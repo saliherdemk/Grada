@@ -24,9 +24,7 @@ class DrawLayer extends Draggable {
   }
 
   initializeButton() {
-    this.button = new CanvasButton(loadImage("delete-icon.png"), () =>
-      this.handleRemove(),
-    );
+    this.button = new CanvasButton("delete", () => this.handleRemove());
     this.updateButtonCoordinates();
   }
 
@@ -38,13 +36,13 @@ class DrawLayer extends Draggable {
 
   updateButtonCoordinates() {
     const button = this.button;
-    button?.setCoordinates(this.x + button.w / 4, this.y + this.h);
+    button?.setCoordinates(this.x + (this.w - button.w) / 2, this.y + this.h);
   }
 
   postUpdateCoordinates() {
     this.updateButtonCoordinates();
     this.updateNeuronsCoordinates();
-    this.parent.updateBorders();
+    this.parent?.updateBorders();
   }
 
   isEditable() {
@@ -161,6 +159,8 @@ class DrawLayer extends Draggable {
     const newSchema = new Schema(new MLP(), organizer.getCanvas(), x, y);
 
     newSchema.setLayers(newLayers);
+    newSchema.updateBorders();
+    parent.updateBorders();
     organizer.addSchema(newSchema);
   }
 
@@ -172,7 +172,7 @@ class DrawLayer extends Draggable {
     next && this.connectNeurons(next);
 
     this.updateButtonCoordinates();
-    parent.updateBorders();
+    this.parent.updateBorders();
   }
 
   connectNeurons(targetLayer) {
@@ -188,6 +188,10 @@ class DrawLayer extends Draggable {
 
   connectLayer(targetLayer) {
     if (this.parent === targetLayer.parent) return;
+    if (this.dots[1].isOccupied()) {
+      const { next } = this.parent.getPrevAndNext(this);
+      this.splitMlp(next);
+    }
 
     if (targetLayer.dots[0].isOccupied()) {
       this.splitMlp(targetLayer);
@@ -213,14 +217,14 @@ class DrawLayer extends Draggable {
     this.button = null;
   }
 
-  pressed(x, y) {
+  pressed() {
     this.dots.forEach((dot) => dot.handlePressed());
     this.button.handlePressed();
-    return iManager.checkRollout(x, y, this);
+    return iManager.checkRollout(this);
   }
 
   doubleClicked() {
-    if (this.rollover && !editOrganizer.getSelected()) {
+    if (iManager.isHovered(this) && !editOrganizer.getSelected()) {
       editOrganizer.enable(this);
     }
   }
@@ -238,20 +242,15 @@ class DrawLayer extends Draggable {
         args: [this.infoBox.val.toString(), this.x, infoBoxY + 25, 50, 35],
       },
       { func: "text", args: [`.\n.\n.\n`, this.x, infoBoxY + 45, 50, 35] },
-      { func: "fill", args: [255] },
     ];
 
-    executeDrawingCommands(this.canvas, commands);
+    executeDrawingCommands(commands, this.canvas);
   }
 
   show() {
-    const commands = [
-      { func: "fill", args: [255] },
-      { func: "rect", args: [this.x, this.y, this.w, this.h] },
-      { func: "fill", args: [255] },
-    ];
+    const commands = [{ func: "rect", args: [this.x, this.y, this.w, this.h] }];
 
-    executeDrawingCommands(this.canvas, commands);
+    executeDrawingCommands(commands, this.canvas);
   }
 
   draw() {
@@ -263,8 +262,5 @@ class DrawLayer extends Draggable {
     this.isShrank() && this.showInfoBox();
 
     this.neurons.forEach((neuron) => neuron.draw());
-    // !organizer.getDragActive() && this.over();
-
-    // (organizer.getDragActive() || this.dragging) && this.updateCoordinates();
   }
 }

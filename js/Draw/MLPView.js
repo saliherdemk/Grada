@@ -10,9 +10,7 @@ class Schema extends Draggable {
   }
 
   initializeButton() {
-    this.button = new CanvasButton(loadImage("lock-open.png"), () =>
-      this.toggleEditMode(),
-    );
+    this.button = new CanvasButton("lockOpen", () => this.toggleEditMode());
 
     this.updateButtonCoordinates();
   }
@@ -31,7 +29,7 @@ class Schema extends Draggable {
 
   updateButtonCoordinates() {
     const button = this.button;
-    button?.setCoordinates(this.x + this.w - button.w / 2, this.y + this.h + 5);
+    button?.setCoordinates(this.x + this.w - button.w, this.y + this.h + 5);
   }
 
   updateLayersCoordinates(newX, newY) {
@@ -57,7 +55,6 @@ class Schema extends Draggable {
     layers.forEach((l) => {
       l.parent = this;
     });
-    this.updateBorders();
   }
 
   moveLayers(targetSchema) {
@@ -106,20 +103,18 @@ class Schema extends Draggable {
     this.updateButtonCoordinates();
   }
 
-  pressed(x, y) {
+  pressed() {
     this.button?.handlePressed();
-    return iManager.checkRollout(x, y, this);
+    return iManager.checkRollout(this);
   }
 
-  handlePressed(x, y) {
-    const isHandledByLayer = this.getLayers().some((layer) =>
-      layer.pressed(x, y),
-    );
+  handlePressed() {
+    const isHandledByLayer = this.getLayers().some((layer) => layer.pressed());
 
-    if (isHandledByLayer || this.pressed(x, y)) return;
+    if (isHandledByLayer || this.pressed()) return;
 
     iManager.setCanvasDragging(true);
-    iManager.setLastMouseCoordinates(x, y);
+    iManager.setLastMouseCoordinates();
   }
 
   resetCoordinates() {
@@ -136,7 +131,7 @@ class Schema extends Draggable {
   }
 
   handleKeyPressed() {
-    this.rollover && this.resetCoordinates();
+    iManager.isHovered(this) && this.resetCoordinates();
   }
 
   handleReleased() {
@@ -151,21 +146,14 @@ class Schema extends Draggable {
   }
 
   show() {
-    const commands = [
-      { func: "fill", args: [255] },
-      { func: "rect", args: [this.x, this.y, this.w, this.h] },
-    ];
+    const commands = [{ func: "rect", args: [this.x, this.y, this.w, this.h] }];
 
-    executeDrawingCommands(this.canvas, commands);
+    executeDrawingCommands(commands, this.canvas);
   }
 
   draw() {
     this.show();
     this.button?.draw();
     this.getLayers().forEach((layer) => layer.draw());
-
-    // !organizer.getDragActive() && this.over();
-
-    // (organizer.getDragActive() || this.dragging) && this.updateCoordinates();
   }
 }

@@ -123,7 +123,7 @@ class EditOrganizer {
         args: [this.originX, this.originY, this.w, this.h, 10, 10],
       },
     ];
-    executeDrawingCommands(this.canvas, commands);
+    executeDrawingCommands(commands, this.canvas);
 
     this.selectedCopy.draw();
     image(this.canvas, 0, 0);

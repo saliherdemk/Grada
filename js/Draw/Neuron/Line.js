@@ -14,12 +14,12 @@ class Line {
   }
 
   show() {
-    line(
-      this.from.x,
-      this.from.y,
-      this.isTemp() ? mouseX : this.to.x,
-      this.isTemp() ? mouseY : this.to.y,
-    );
+    const { x, y } = this.isTemp()
+      ? iManager.getAbsoluteCoordinates(mouseX, mouseY)
+      : { x: this.to.x, y: this.to.y };
+
+    const commands = [{ func: "line", args: [this.from.x, this.from.y, x, y] }];
+    executeDrawingCommands(commands);
   }
 
   draw() {

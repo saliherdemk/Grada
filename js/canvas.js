@@ -1,6 +1,6 @@
-var organizer;
-var editOrganizer;
-var iManager;
+let organizer;
+let editOrganizer;
+let iManager;
 
 function setup() {
   const mainCanvas = createCanvas(windowWidth, windowHeight);
@@ -18,56 +18,50 @@ function setup() {
 function draw() {
   background(255);
 
+  push();
   iManager.applyTransforms();
   organizer.draw();
+  pop();
   editOrganizer.draw();
 }
 
 function mousePressed() {
-  handlePress(mouseX, mouseY);
+  !editOrganizer.isEnabled() && iManager.handlePress();
 }
 
 function mouseDragged() {
-  handleDrag(mouseX, mouseY);
-}
-
-function mousePressed() {
-  handlePress(mouseX, mouseY);
-}
-
-function mouseDragged() {
-  handleDrag(mouseX, mouseY);
+  !editOrganizer.isEnabled() && iManager.handleDrag();
 }
 
 function mouseReleased() {
-  handleRelease();
+  iManager.handleRelease();
 }
 
+// touches[0].x, touches[0].y We don't need simultaneous touches
 function touchStarted() {
-  handlePress(touches[0].x, touches[0].y);
-  return false;
+  mousePressed();
 }
 
 function touchMoved() {
-  handleDrag(touches[0].x, touches[0].y);
-  return false;
+  mouseDragged();
 }
 
 function touchEnded() {
-  handleRelease();
-  return false;
+  mouseReleased();
 }
 
-function handlePress(x, y) {
-  iManager.handlePress(x, y);
+function keyPressed() {
+  const k = key.toLowerCase();
+  if (k == "e") {
+    organizer.schemas.forEach((schema) => schema.handleKeyPressed());
+  }
+  if (k == "escape" && editOrganizer.isEnabled()) {
+    editOrganizer.disable();
+  }
 }
 
-function handleDrag(x, y) {
-  iManager.handleDrag(x, y);
-}
-
-function handleRelease() {
-  iManager.handleRelease();
+function doubleClicked() {
+  organizer.schemas.forEach((schema) => schema.handleDoubleClicked());
 }
 
 function windowResized() {
