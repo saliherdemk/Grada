@@ -2,7 +2,7 @@ class Schema extends Draggable {
   constructor(x, y, cnv = organizer.getCanvas()) {
     super(x, y);
     this.canvas = cnv;
-    this.layers = [new DrawLayer(this.x, this.y, this, this.canvas)];
+    this.layers = [new HiddenLayer(this.x, this.y, this, this.canvas)];
     this.editModeOpen = true;
     this.button;
     this.updateBorders();
@@ -89,13 +89,13 @@ class Schema extends Draggable {
     for (let i = 0; i < this.getLayers().length; i++) {
       const layer = this.getLayers()[i];
 
-      lastX = Math.max(layer.x, lastX);
+      lastX = Math.max(layer.x + layer.w, lastX);
       firstX = Math.min(layer.x, firstX);
 
       firstY = Math.min(layer.y, firstY);
       lastY = Math.max(lastY, layer.y + layer.h);
     }
-    this.w = lastX - firstX + 100;
+    this.w = lastX - firstX + 50;
     // FIXME: find a way to call setCoordinates without adding base case
     this.x = firstX - 25;
     this.y = firstY - 25;
@@ -125,7 +125,6 @@ class Schema extends Draggable {
       const y = originLayer.y - (layer.h - originLayer.h) / 2;
       const x = originLayer.x + index * layer.w * 2;
       layer.setCoordinates(x, y);
-      layer.updateNeuronsCoordinates();
       layer.parent.updateBorders();
     });
   }

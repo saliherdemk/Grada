@@ -97,7 +97,7 @@ class EditOrganizer {
 
   enable(layer) {
     this.selected = layer;
-    const copy = new DrawLayer(0, 0, null, this.canvas, 0, 0);
+    const copy = new HiddenLayer(0, 0, null, this.canvas);
     this.copyNeurons(layer, copy);
     this.shrank = !layer.shrank; // will call toggleShrink. I wanted to use same function
     this.selectedCopy = copy;

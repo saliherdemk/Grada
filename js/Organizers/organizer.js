@@ -3,6 +3,7 @@ class Organizer {
     this.canvas = canvas;
     this.activeLine = null;
     this.schemas = [];
+    this.inputs = [];
     this.images = {
       brokenLink: loadImage("media/broken-link.png"),
       delete: loadImage("media/delete-icon.png"),
@@ -17,6 +18,15 @@ class Organizer {
 
   getCanvas() {
     return this.canvas;
+  }
+
+  addInput(input) {
+    this.inputs.push(input);
+  }
+
+  removeInput(input) {
+    let indexToRemove = this.inputs.findIndex((i) => i === input);
+    this.inputs.splice(indexToRemove, 1);
   }
 
   addSchema(schema) {
@@ -38,6 +48,7 @@ class Organizer {
 
   draw() {
     this.schemas.forEach((schema) => schema.draw());
+    this.inputs.forEach((input) => input.draw());
     this.getActiveLine()?.draw();
   }
 }
