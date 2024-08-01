@@ -15,7 +15,7 @@ class CanvasButton {
   }
 
   changeImg(imgKey) {
-    this.img = organizer.getImageByKey(imgKey);
+    this.img = mainOrganizer.getImageByKey(imgKey);
   }
 
   setCoordinates(x, y) {

@@ -1,70 +1,97 @@
-let organizer;
+let mainOrganizer;
 let editOrganizer;
 let iManager;
 
-function setup() {
-  const mainCanvas = createCanvas(windowWidth, windowHeight);
-  mainCanvas.mouseWheel(scaleCanvas);
+let canvasManager;
 
-  const editCanvas = createGraphics(windowWidth, windowHeight);
+let mainSketch = function (p) {
+  p.setup = function () {
+    p.createCanvas(p.windowWidth, p.windowHeight).parent(document.body);
 
-  organizer = new Organizer(mainCanvas);
-  editOrganizer = new EditOrganizer(editCanvas);
-  iManager = new InteractionManager();
+    // FIXME: FIX THAT PASSING NON-SENSE
+    // right now have to pass bottom of the tree
+    // find a convenient way -> NICE
 
-  organizer.addSchema(new Schema(300, 300));
-}
+    canvasManager = new CanvasManager(p);
+    mainOrganizer = new MainOrganizer();
+    iManager = new InteractionManager();
+    mainOrganizer.addSchema(new Schema(300, 300));
+  };
 
-function draw() {
-  background(255);
+  p.draw = function () {
+    canvasManager.setInstance(p);
+    p.background(255);
 
-  push();
-  iManager.applyTransforms();
-  organizer.draw();
-  pop();
-  editOrganizer.draw();
-}
+    iManager.applyTransforms();
+    mainOrganizer.draw();
+  };
 
-function mousePressed() {
-  !editOrganizer.isEnabled() && iManager.handlePress();
-}
+  p.mousePressed = function () {
+    !editOrganizer.isEnabled() && iManager.handlePress();
+  };
 
-function mouseDragged() {
-  !editOrganizer.isEnabled() && iManager.handleDrag();
-}
+  p.mouseDragged = function () {
+    !editOrganizer.isEnabled() && iManager.handleDrag();
+  };
 
-function mouseReleased() {
-  iManager.handleRelease();
-}
+  p.mouseReleased = function () {
+    iManager.handleRelease();
+  };
 
-// touches[0].x, touches[0].y We don't need simultaneous touches
-function touchStarted() {
-  mousePressed();
-}
+  // touches[0].x, touches[0].y We don't need simultaneous touches
+  p.touchStarted = function () {
+    p.mousePressed();
+  };
 
-function touchMoved() {
-  mouseDragged();
-}
+  p.touchMoved = function () {
+    p.mouseDragged();
+  };
 
-function touchEnded() {
-  mouseReleased();
-}
+  p.touchEnded = function () {
+    p.mouseReleased();
+  };
 
-function keyPressed() {
-  const k = key.toLowerCase();
-  if (k == "e") {
-    organizer.schemas.forEach((schema) => schema.handleKeyPressed());
-  }
-  if (k == "escape" && editOrganizer.isEnabled()) {
-    editOrganizer.disable();
-  }
-}
+  p.keyPressed = function () {
+    const k = p.key.toLowerCase();
+    if (k == "e") {
+      mainOrganizer.schemas.forEach((schema) => schema.handleKeyPressed());
+    }
+  };
 
-function doubleClicked() {
-  organizer.schemas.forEach((schema) => schema.handleDoubleClicked());
-}
+  p.doubleClicked = function () {
+    mainOrganizer.schemas.forEach((schema) => schema.handleDoubleClicked());
+  };
+  p.windowResized = function () {
+    p.resizeCanvas(p.windowWidth, p.windowHeight);
+  };
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  editOrganizer.isEnabled() && editOrganizer.resize();
-}
+  p.mouseWheel = function (event) {
+    scaleCanvas(event, p);
+  };
+};
+
+let editSketch = function (p) {
+  p.setup = function () {
+    p.createCanvas(500, 500).parent("canvas-parent").addClass("editCanvas");
+    editOrganizer = new EditOrganizer();
+  };
+
+  p.draw = function () {
+    canvasManager.setInstance(p);
+    editOrganizer.draw();
+  };
+
+  p.keyPressed = function () {
+    const k = p.key.toLowerCase();
+    if (k == "escape" && editOrganizer.isEnabled()) {
+      editOrganizer.disable();
+    }
+  };
+
+  p.windowResized = function () {
+    editOrganizer.isEnabled() && editOrganizer.resize();
+  };
+};
+
+new p5(editSketch);
+new p5(mainSketch);

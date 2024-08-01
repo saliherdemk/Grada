@@ -11,37 +11,54 @@
       <button onclick="logMLPs()" type="">Log Mlps</button>
     </div>
 
-    <div id="edit-panel">
-      <div class="grid-container">
-        <div id="info-message-container">
-          Layer will be display with <span id="info-message">hey</span> neurons
-        </div>
-        <div class="grid-item">
-          <span>Number of shown neurons: </span>
+    <div id="disable-background">
+      <div id="canvas-parent">
+        <div id="edit-panel">
+          <div class="grid-container">
+            <div id="info-message-container">
+              Layer will be display with
+              <span id="info-message">hey</span> neurons
+            </div>
+            <div class="grid-item">
+              <span>Number of shown neurons: </span>
 
-          <input id="set-shown-neuron" type="range" min="1" max="100" />
+              <input id="set-shown-neuron" type="range" min="1" max="100" />
 
-          <input class="inp" id="shown-neuron-inp" type="text" maxlength="4" />
-        </div>
+              <input
+                class="inp"
+                id="shown-neuron-inp"
+                type="text"
+                maxlength="4"
+              />
+            </div>
 
-        <div class="grid-item">
-          <span>Number of neurons: </span>
-          <input class="inp" id="set-neuron-num" type="text" maxlength="4" />
-          <button class="btn grid-item" id="toggle-shrink-btn">Expanded</button>
+            <div class="grid-item">
+              <span>Number of neurons: </span>
+              <input
+                class="inp"
+                id="set-neuron-num"
+                type="text"
+                maxlength="4"
+              />
+              <button class="btn grid-item" id="toggle-shrink-btn">
+                Expanded
+              </button>
 
-          <button class="btn grid-item" id="save-btn" type="button">
-            Save
-          </button>
+              <button class="btn grid-item" id="save-btn" type="button">
+                Save
+              </button>
+            </div>
+          </div>
+
+          <img
+            id="cancel-icon"
+            src="media/close.png"
+            alt=""
+            width="25"
+            height="25"
+          />
         </div>
       </div>
-
-      <img
-        id="cancel-icon"
-        src="media/close.png"
-        alt=""
-        width="25"
-        height="25"
-      />
     </div>
 
     <script
@@ -53,10 +70,11 @@
 
     <script src="js/script.js"></script>
 
+    <script src="js/Managers/canvasManager.js"></script>
     <script src="js/Managers/interactionManager.js"></script>
     <script src="js/Managers/eventManager.js"></script>
 
-    <script src="js/Organizers/organizer.js"></script>
+    <script src="js/Organizers/mainOrganizer.js"></script>
     <script src="js/Organizers/editOrganizer.js"></script>
 
     <script src="js/MLP/Value.js"></script>
@@ -70,6 +88,7 @@
     <script src="js/Draw/Layer/CanvasButton.js"></script>
     <script src="js/Draw/Layer/Dot.js"></script>
     <script src="js/Draw/Layer/LayerView.js"></script>
+    <script src="js/Draw/Layer/HiddenLayer.js"></script>
 
     <script src="js/Draw/Neuron/Line.js"></script>
     <script src="js/Draw/Neuron/NeuronView.js"></script>

@@ -14,6 +14,7 @@ class Line {
   }
 
   show() {
+    const { mouseX, mouseY } = getCurrentMouseCoordinates();
     const { x, y } = this.isTemp()
       ? iManager.getAbsoluteCoordinates(mouseX, mouseY)
       : { x: this.to.x, y: this.to.y };

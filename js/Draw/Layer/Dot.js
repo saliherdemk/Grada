@@ -1,11 +1,14 @@
 class Dot {
-  constructor(parent, isInput) {
+  constructor(parent) {
     this.parent = parent;
-    this.isInput = isInput;
     this.rollover = false;
     this.occupied = false;
     this.r = 20;
     this.updateCoordinates();
+  }
+
+  isInput() {
+    return this.parent.inputDot == this;
   }
 
   isOccupied() {
@@ -14,14 +17,15 @@ class Dot {
 
   occupy() {
     this.occupied = true;
-    this.parent.button.changeImg("brokenLink");
+    this.parent.removeButton.changeImg("brokenLink");
   }
 
   free() {
     this.occupied = false;
-    const allFree = this.parent.dots.every((d) => !d.isOccupied());
+    const parent = this.parent;
+    const allFree = parent.getDots().every((d) => !d.isOccupied());
 
-    allFree && this.parent.button.changeImg("delete");
+    allFree && parent.removeButton.changeImg("delete");
   }
 
   destroy() {
@@ -30,7 +34,7 @@ class Dot {
 
   updateCoordinates() {
     const parent = this.parent;
-    this.x = this.isInput ? parent.x : parent.x + parent.w;
+    this.x = this.isInput() ? parent.x : parent.x + parent.w;
     this.y = parent.y + parent.h / 2;
   }
 
@@ -39,30 +43,30 @@ class Dot {
   }
 
   combineSchemas() {
-    const activeLine = organizer.getActiveLine();
+    const activeLine = mainOrganizer.getActiveLine();
     if (!activeLine) return;
 
     const layer1 = activeLine.from.parent;
     const layer2 = this.parent;
-    const [majorLayer, minorLayer] = this.isInput
+    const [majorLayer, minorLayer] = this.isInput()
       ? [layer1, layer2]
       : [layer2, layer1];
 
     majorLayer.connectLayer(minorLayer);
-    organizer.setActiveLine(null);
+    mainOrganizer.setActiveLine(null);
   }
 
   handlePressed() {
     if (!this.rollover) return;
-    const activeLine = organizer.getActiveLine();
+    const activeLine = mainOrganizer.getActiveLine();
 
     if (!activeLine) {
-      organizer.setActiveLine(new Line(this, null, true));
+      mainOrganizer.setActiveLine(new Line(this, null, true));
       return;
     }
 
     if (activeLine.from === this) {
-      organizer.setActiveLine(null);
+      mainOrganizer.setActiveLine(null);
       return;
     }
 

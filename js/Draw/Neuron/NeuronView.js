@@ -1,6 +1,5 @@
 class DrawNeuron {
-  constructor(cnv) {
-    this.canvas = cnv;
+  constructor() {
     this.x;
     this.y;
     this.hidden = false;
@@ -39,7 +38,7 @@ class DrawNeuron {
 
   destroy() {
     this.removeLines();
-    this.canvas = null;
+    this.instance = null;
   }
 
   show() {
@@ -56,7 +55,7 @@ class DrawNeuron {
         args: [this.output?.grad.toFixed(2), this.x + 30, this.y + 25],
       },
     ];
-    executeDrawingCommands(commands, this.canvas);
+    executeDrawingCommands(commands);
   }
 
   draw() {

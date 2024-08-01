@@ -1,23 +1,20 @@
 class Schema extends Draggable {
-  constructor(x, y, cnv = organizer.getCanvas()) {
+  constructor(x, y) {
     super(x, y);
-    this.canvas = cnv;
-    this.layers = [new DrawLayer(this.x, this.y, this, this.canvas)];
-    this.editModeOpen = true;
-    this.button;
+    this.layers = [new HiddenLayer(this.x, this.y, this)];
+    this.editMode = true;
     this.updateBorders();
-    this.initializeButton();
   }
 
-  initializeButton() {
-    this.button = new CanvasButton("lockOpen", () => this.toggleEditMode());
-
-    this.updateButtonCoordinates();
+  isEditModeOpen() {
+    return this.editMode;
   }
 
   toggleEditMode() {
-    this.editModeOpen = !this.editModeOpen;
-    this.button?.changeImg(this.editModeOpen ? "lockOpen" : "lock");
+    this.editMode = !this.editMode;
+    this.layers.forEach((layer) => {
+      this.editMode != layer.isEditModeOpen() && layer.toggleEditMode();
+    });
   }
 
   setCoordinates(x, y) {
@@ -28,8 +25,8 @@ class Schema extends Draggable {
   }
 
   updateButtonCoordinates() {
-    const button = this.button;
-    button?.setCoordinates(this.x + this.w - button.w, this.y + this.h + 5);
+    // const button = this.button;
+    // button?.setCoordinates(this.x + this.w - button.w, this.y + this.h + 5);
   }
 
   updateLayersCoordinates(newX, newY) {
@@ -67,12 +64,9 @@ class Schema extends Draggable {
   }
 
   destroy() {
-    this.canvas = null;
-    this.button.destroy();
-    this.button = null;
     this.getLayers().forEach((l) => l.destroy());
     this.setLayers([]);
-    organizer.removeSchema(this);
+    mainOrganizer.removeSchema(this);
   }
 
   pushLayer(layer) {
@@ -89,13 +83,13 @@ class Schema extends Draggable {
     for (let i = 0; i < this.getLayers().length; i++) {
       const layer = this.getLayers()[i];
 
-      lastX = Math.max(layer.x, lastX);
+      lastX = Math.max(layer.x + layer.w, lastX);
       firstX = Math.min(layer.x, firstX);
 
       firstY = Math.min(layer.y, firstY);
       lastY = Math.max(lastY, layer.y + layer.h);
     }
-    this.w = lastX - firstX + 100;
+    this.w = lastX - firstX + 50;
     // FIXME: find a way to call setCoordinates without adding base case
     this.x = firstX - 25;
     this.y = firstY - 25;
@@ -104,15 +98,16 @@ class Schema extends Draggable {
   }
 
   pressed() {
-    this.button?.handlePressed();
-    return iManager.checkRollout(this);
+    if (iManager.checkRollout(this) && getMouseButton() == "right") {
+      this.toggleEditMode();
+    }
   }
 
   handlePressed() {
-    const isHandledByLayer = this.getLayers().some((layer) => layer.pressed());
-
-    if (isHandledByLayer || this.pressed()) return;
-
+    this.getLayers().some((layer) => layer.pressed());
+    if (iManager.isBusy()) return;
+    this.pressed();
+    if (iManager.isBusy()) return;
     iManager.setCanvasDragging(true);
     iManager.setLastMouseCoordinates();
   }
@@ -125,7 +120,6 @@ class Schema extends Draggable {
       const y = originLayer.y - (layer.h - originLayer.h) / 2;
       const x = originLayer.x + index * layer.w * 2;
       layer.setCoordinates(x, y);
-      layer.updateNeuronsCoordinates();
       layer.parent.updateBorders();
     });
   }
@@ -148,12 +142,11 @@ class Schema extends Draggable {
   show() {
     const commands = [{ func: "rect", args: [this.x, this.y, this.w, this.h] }];
 
-    executeDrawingCommands(commands, this.canvas);
+    executeDrawingCommands(commands);
   }
 
   draw() {
     this.show();
-    this.button?.draw();
     this.getLayers().forEach((layer) => layer.draw());
   }
 }
