@@ -1,6 +1,5 @@
 class DrawNeuron {
-  constructor(instance) {
-    this.p = instance;
+  constructor() {
     this.x;
     this.y;
     this.hidden = false;
@@ -56,7 +55,7 @@ class DrawNeuron {
         args: [this.output?.grad.toFixed(2), this.x + 30, this.y + 25],
       },
     ];
-    executeDrawingCommands(commands, this.p);
+    executeDrawingCommands(commands);
   }
 
   draw() {

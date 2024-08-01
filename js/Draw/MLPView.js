@@ -1,8 +1,7 @@
 class Schema extends Draggable {
-  constructor(x, y, instance = organizer.getInstance()) {
+  constructor(x, y) {
     super(x, y);
-    this.p = instance;
-    this.layers = [new HiddenLayer(this.x, this.y, this, this.p)];
+    this.layers = [new HiddenLayer(this.x, this.y, this)];
     this.editMode = true;
     this.updateBorders();
   }
@@ -65,10 +64,9 @@ class Schema extends Draggable {
   }
 
   destroy() {
-    this.p = null;
     this.getLayers().forEach((l) => l.destroy());
     this.setLayers([]);
-    organizer.removeSchema(this);
+    mainOrganizer.removeSchema(this);
   }
 
   pushLayer(layer) {
@@ -100,7 +98,7 @@ class Schema extends Draggable {
   }
 
   pressed() {
-    if (iManager.checkRollout(this) && this.p?.mouseButton == "right") {
+    if (iManager.checkRollout(this) && getMouseButton() == "right") {
       this.toggleEditMode();
     }
   }
@@ -144,7 +142,7 @@ class Schema extends Draggable {
   show() {
     const commands = [{ func: "rect", args: [this.x, this.y, this.w, this.h] }];
 
-    executeDrawingCommands(commands, this.p);
+    executeDrawingCommands(commands);
   }
 
   draw() {

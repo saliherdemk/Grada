@@ -1,7 +1,6 @@
 class LayerView extends Draggable {
-  constructor(x, y, w, h, parent, instance) {
+  constructor(x, y, w, h, parent) {
     super(x, y, w, h);
-    this.p = instance;
     this.parent = parent;
     this.inputDot = null;
     this.outputDot = null;
@@ -85,7 +84,7 @@ class LayerView extends Draggable {
     newSchema.setLayers(newLayers);
     newSchema.updateBorders();
     parent.updateBorders();
-    organizer.addSchema(newSchema);
+    mainOrganizer.addSchema(newSchema);
   }
 
   reconnectNeurons() {
@@ -128,7 +127,7 @@ class LayerView extends Draggable {
   pressed() {
     this.getDots().forEach((dot) => dot?.handlePressed());
     this.removeButton?.handlePressed();
-    if (iManager.checkRollout(this) && getMouseButton(this.p) == "right") {
+    if (iManager.checkRollout(this) && getMouseButton() == "right") {
       this.toggleEditMode();
     }
   }

@@ -1,6 +1,8 @@
-let organizer;
+let mainOrganizer;
 let editOrganizer;
 let iManager;
+
+let canvasManager;
 
 let mainSketch = function (p) {
   p.setup = function () {
@@ -8,17 +10,20 @@ let mainSketch = function (p) {
 
     // FIXME: FIX THAT PASSING NON-SENSE
     // right now have to pass bottom of the tree
-    // find a convenient way
-    organizer = new Organizer(p);
-    iManager = new InteractionManager(p);
-    organizer.addSchema(new Schema(300, 300));
+    // find a convenient way -> NICE
+
+    canvasManager = new CanvasManager(p);
+    mainOrganizer = new MainOrganizer();
+    iManager = new InteractionManager();
+    mainOrganizer.addSchema(new Schema(300, 300));
   };
 
   p.draw = function () {
+    canvasManager.setInstance(p);
     p.background(255);
 
     iManager.applyTransforms();
-    organizer.draw();
+    mainOrganizer.draw();
   };
 
   p.mousePressed = function () {
@@ -49,12 +54,12 @@ let mainSketch = function (p) {
   p.keyPressed = function () {
     const k = p.key.toLowerCase();
     if (k == "e") {
-      organizer.schemas.forEach((schema) => schema.handleKeyPressed());
+      mainOrganizer.schemas.forEach((schema) => schema.handleKeyPressed());
     }
   };
 
   p.doubleClicked = function () {
-    organizer.schemas.forEach((schema) => schema.handleDoubleClicked());
+    mainOrganizer.schemas.forEach((schema) => schema.handleDoubleClicked());
   };
   p.windowResized = function () {
     p.resizeCanvas(p.windowWidth, p.windowHeight);
@@ -68,10 +73,11 @@ let mainSketch = function (p) {
 let editSketch = function (p) {
   p.setup = function () {
     p.createCanvas(500, 500).parent("canvas-parent").addClass("editCanvas");
-    editOrganizer = new EditOrganizer(p);
+    editOrganizer = new EditOrganizer();
   };
 
   p.draw = function () {
+    canvasManager.setInstance(p);
     editOrganizer.draw();
   };
 

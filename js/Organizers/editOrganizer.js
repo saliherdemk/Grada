@@ -1,6 +1,5 @@
 class EditOrganizer {
-  constructor(instance) {
-    this.p = instance;
+  constructor() {
     this.enabled = false;
     this.selected = null;
     this.selectedCopy = null;
@@ -95,7 +94,7 @@ class EditOrganizer {
   enable(layer) {
     getElementById("disable-background").style.display = "flex";
     this.selected = layer;
-    const copy = new HiddenLayer(0, 0, null, this.p);
+    const copy = new HiddenLayer(0, 0, null);
     this.copyNeurons(layer, copy);
     this.shrank = !layer.shrank; // will call toggleShrink. I wanted to use same function
     this.selectedCopy = copy;
@@ -116,7 +115,7 @@ class EditOrganizer {
       { func: "background", args: [255] },
       { func: "fill", args: [255] },
     ];
-    executeDrawingCommands(commands, this.p);
+    executeDrawingCommands(commands);
 
     this.selectedCopy.draw();
   }

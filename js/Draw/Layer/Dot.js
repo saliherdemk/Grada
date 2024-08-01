@@ -43,7 +43,7 @@ class Dot {
   }
 
   combineSchemas() {
-    const activeLine = organizer.getActiveLine();
+    const activeLine = mainOrganizer.getActiveLine();
     if (!activeLine) return;
 
     const layer1 = activeLine.from.parent;
@@ -53,20 +53,20 @@ class Dot {
       : [layer2, layer1];
 
     majorLayer.connectLayer(minorLayer);
-    organizer.setActiveLine(null);
+    mainOrganizer.setActiveLine(null);
   }
 
   handlePressed() {
     if (!this.rollover) return;
-    const activeLine = organizer.getActiveLine();
+    const activeLine = mainOrganizer.getActiveLine();
 
     if (!activeLine) {
-      organizer.setActiveLine(new Line(this, null, true));
+      mainOrganizer.setActiveLine(new Line(this, null, true));
       return;
     }
 
     if (activeLine.from === this) {
-      organizer.setActiveLine(null);
+      mainOrganizer.setActiveLine(null);
       return;
     }
 

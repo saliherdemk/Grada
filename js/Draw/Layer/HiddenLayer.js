@@ -1,6 +1,6 @@
 class HiddenLayer extends LayerView {
-  constructor(x, y, parent, instance) {
-    super(x, y, 50, 0, parent, instance);
+  constructor(x, y, parent) {
+    super(x, y, 50, 0, parent);
     this.neurons = [];
     this.yGap = 40;
     this.infoBox = { h: 70, y: 0, val: 0 };
@@ -21,7 +21,7 @@ class HiddenLayer extends LayerView {
   initializeNeurons() {
     const numOfNeurons = parseInt(Math.random() * 7) + 1;
     for (let i = 0; i < numOfNeurons; i++) {
-      this.neurons.push(new DrawNeuron(this.p));
+      this.neurons.push(new DrawNeuron());
     }
 
     this.setShownNeuronsNum(this.getNeuronNum());
@@ -43,7 +43,7 @@ class HiddenLayer extends LayerView {
   }
 
   pushNeuron() {
-    this.neurons.push(new DrawNeuron(this.p));
+    this.neurons.push(new DrawNeuron());
   }
 
   popNeuron() {
@@ -116,7 +116,7 @@ class HiddenLayer extends LayerView {
     const commands = [
       { func: "fill", args: [0] },
       { func: "textSize", args: [18] },
-      { func: "textAlign", args: [this.p.CENTER, this.p.CENTER] },
+      { func: "textAlign", args: [CENTER, CENTER] },
       { func: "textLeading", args: [4] },
       { func: "text", args: [`.\n.\n.\n`, this.x, infoBoxY, 50, 35] },
       {
@@ -126,13 +126,13 @@ class HiddenLayer extends LayerView {
       { func: "text", args: [`.\n.\n.\n`, this.x, infoBoxY + 45, 50, 35] },
     ];
 
-    executeDrawingCommands(commands, this.p);
+    executeDrawingCommands(commands);
   }
 
   show() {
     const commands = [{ func: "rect", args: [this.x, this.y, this.w, this.h] }];
 
-    executeDrawingCommands(commands, this.p);
+    executeDrawingCommands(commands);
   }
 
   draw() {

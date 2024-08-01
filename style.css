@@ -6,7 +6,6 @@ body {
 
 #disable-background {
     position: absolute;
-    display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
@@ -14,7 +13,6 @@ body {
     background-color: rgba(0, 0, 0, 0.2);
     display: none;
 }
-
 
 #canvas-parent {
     position: relative;
@@ -34,7 +32,6 @@ body {
     position: absolute;
     z-index: 2;
     display: flex;
-    flex-direction: row;
     height: 500px;
     width: 500px;
     align-items: end;
