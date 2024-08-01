@@ -1,23 +1,21 @@
 class Schema extends Draggable {
-  constructor(x, y, cnv = organizer.getCanvas()) {
+  constructor(x, y, instance = organizer.getInstance()) {
     super(x, y);
-    this.canvas = cnv;
-    this.layers = [new HiddenLayer(this.x, this.y, this, this.canvas)];
-    this.editModeOpen = true;
-    this.button;
+    this.p = instance;
+    this.layers = [new HiddenLayer(this.x, this.y, this, this.p)];
+    this.editMode = true;
     this.updateBorders();
-    this.initializeButton();
   }
 
-  initializeButton() {
-    this.button = new CanvasButton("lockOpen", () => this.toggleEditMode());
-
-    this.updateButtonCoordinates();
+  isEditModeOpen() {
+    return this.editMode;
   }
 
   toggleEditMode() {
-    this.editModeOpen = !this.editModeOpen;
-    this.button?.changeImg(this.editModeOpen ? "lockOpen" : "lock");
+    this.editMode = !this.editMode;
+    this.layers.forEach((layer) => {
+      this.editMode != layer.isEditModeOpen() && layer.toggleEditMode();
+    });
   }
 
   setCoordinates(x, y) {
@@ -28,8 +26,8 @@ class Schema extends Draggable {
   }
 
   updateButtonCoordinates() {
-    const button = this.button;
-    button?.setCoordinates(this.x + this.w - button.w, this.y + this.h + 5);
+    // const button = this.button;
+    // button?.setCoordinates(this.x + this.w - button.w, this.y + this.h + 5);
   }
 
   updateLayersCoordinates(newX, newY) {
@@ -67,9 +65,7 @@ class Schema extends Draggable {
   }
 
   destroy() {
-    this.canvas = null;
-    this.button.destroy();
-    this.button = null;
+    this.p = null;
     this.getLayers().forEach((l) => l.destroy());
     this.setLayers([]);
     organizer.removeSchema(this);
@@ -104,15 +100,16 @@ class Schema extends Draggable {
   }
 
   pressed() {
-    this.button?.handlePressed();
-    return iManager.checkRollout(this);
+    if (iManager.checkRollout(this) && this.p?.mouseButton == "right") {
+      this.toggleEditMode();
+    }
   }
 
   handlePressed() {
-    const isHandledByLayer = this.getLayers().some((layer) => layer.pressed());
-
-    if (isHandledByLayer || this.pressed()) return;
-
+    this.getLayers().some((layer) => layer.pressed());
+    if (iManager.isBusy()) return;
+    this.pressed();
+    if (iManager.isBusy()) return;
     iManager.setCanvasDragging(true);
     iManager.setLastMouseCoordinates();
   }
@@ -147,12 +144,11 @@ class Schema extends Draggable {
   show() {
     const commands = [{ func: "rect", args: [this.x, this.y, this.w, this.h] }];
 
-    executeDrawingCommands(commands, this.canvas);
+    executeDrawingCommands(commands, this.p);
   }
 
   draw() {
     this.show();
-    this.button?.draw();
     this.getLayers().forEach((layer) => layer.draw());
   }
 }

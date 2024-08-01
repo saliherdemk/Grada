@@ -1,7 +1,7 @@
 class LayerView extends Draggable {
-  constructor(x, y, w, h, parent, cnv) {
+  constructor(x, y, w, h, parent, instance) {
     super(x, y, w, h);
-    this.canvas = cnv;
+    this.p = instance;
     this.parent = parent;
     this.inputDot = null;
     this.outputDot = null;
@@ -128,17 +128,18 @@ class LayerView extends Draggable {
   pressed() {
     this.getDots().forEach((dot) => dot?.handlePressed());
     this.removeButton?.handlePressed();
-    const isRollout = iManager.checkRollout(this);
-    if (isRollout && mouseButton == "right") {
+    if (iManager.checkRollout(this) && getMouseButton(this.p) == "right") {
       this.toggleEditMode();
     }
-    return isRollout;
   }
 
   doubleClicked() {
-    if (iManager.isHovered(this) && !editOrganizer.getSelected()) {
-      editOrganizer.enable(this);
-    }
+    const allowed =
+      iManager.isHovered(this) &&
+      this.isEditModeOpen() &&
+      !editOrganizer.getSelected();
+
+    allowed && editOrganizer.enable(this);
   }
 
   destroy() {
@@ -147,7 +148,7 @@ class LayerView extends Draggable {
     this.getDots().forEach((dot) => dot?.destroy());
     this.inputDot = null;
     this.outputDot = null;
-    this.canvas = null;
+    this.instance = null;
     this.button?.destroy();
     this.button = null;
   }

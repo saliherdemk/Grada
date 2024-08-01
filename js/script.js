@@ -1,18 +1,24 @@
 document.addEventListener("contextmenu", (event) => event.preventDefault());
 
-function executeDrawingCommands(arr, cnv = organizer.getCanvas()) {
-  const parent = cnv instanceof p5.Graphics ? cnv : window;
-
-  push();
+function executeDrawingCommands(arr, cnv = organizer.getInstance()) {
+  cnv.push();
   for (let i = 0; i < arr.length; i++) {
     let { func, args } = arr[i];
-    if (typeof parent[func] === "function") {
-      parent[func](...args);
+    if (typeof cnv[func] === "function") {
+      cnv[func](...args);
     } else {
       console.error(`Function '${func}' does not exist on canvas`);
     }
   }
-  pop();
+  cnv.pop();
+}
+
+function getCurrentMouseCoordinates(instance) {
+  return { mouseX: instance.mouseX, mouseY: instance.mouseY };
+}
+
+function getMouseButton(instance) {
+  return instance.mouseButton;
 }
 
 function getElementById(el) {
@@ -43,7 +49,7 @@ function logMLPs() {
   console.log(organizer.schemas);
 }
 
-function scaleCanvas(event) {
+function scaleCanvas(event, p) {
   if (editOrganizer.isEnabled()) return;
 
   let scaleAmount = 1.1;
@@ -54,6 +60,7 @@ function scaleCanvas(event) {
   const newScaleFactor = iManager.scaleFactor * scaleAmount;
 
   const scaleDiff = newScaleFactor / iManager.scaleFactor;
+  const { mouseX, mouseY } = getCurrentMouseCoordinates(p);
 
   iManager.panX = mouseX - (mouseX - iManager.panX) * scaleDiff;
   iManager.panY = mouseY - (mouseY - iManager.panY) * scaleDiff;

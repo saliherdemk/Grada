@@ -1,11 +1,12 @@
 class InteractionManager {
-  constructor() {
+  constructor(instance) {
+    this.p = instance;
     this.offsetX;
     this.offsetY;
     this.scaleFactor = 1;
     this.panX = 0;
     this.panY = 0;
-    this.selected;
+    this.selected = null;
     this.canvasDragging = false;
     this.lastMouseX;
     this.lastMouseY;
@@ -19,8 +20,13 @@ class InteractionManager {
     return this.canvasDragging;
   }
 
+  isBusy() {
+    return !(this.selected == null);
+  }
+
   setOffsets() {
     const selected = this.getSelected();
+    const { mouseX, mouseY } = getCurrentMouseCoordinates(this.p);
     this.offsetX = mouseX - (selected.x * this.scaleFactor + this.panX);
     this.offsetY = mouseY - (selected.y * this.scaleFactor + this.panY);
   }
@@ -34,17 +40,20 @@ class InteractionManager {
   }
 
   setLastMouseCoordinates() {
+    const { mouseX, mouseY } = getCurrentMouseCoordinates(this.p);
     this.lastMouseX = mouseX;
     this.lastMouseY = mouseY;
   }
 
   updatePanCoordinates() {
+    const { mouseX, mouseY } = getCurrentMouseCoordinates(this.p);
     this.panX += mouseX - this.lastMouseX;
     this.panY += mouseY - this.lastMouseY;
     this.setLastMouseCoordinates();
   }
 
   updateSelectedCoordinates() {
+    const { mouseX, mouseY } = getCurrentMouseCoordinates(this.p);
     const x = (mouseX - this.offsetX - this.panX) / this.scaleFactor;
     const y = (mouseY - this.offsetY - this.panY) / this.scaleFactor;
     this.selected.updateCoordinates(x, y);
@@ -78,6 +87,7 @@ class InteractionManager {
   }
 
   isHovered(obj) {
+    const { mouseX, mouseY } = getCurrentMouseCoordinates(this.p);
     const { x: px, y: py } = this.getAbsoluteCoordinates(mouseX, mouseY);
     if (obj.r) {
       const d = Math.sqrt((px - obj.x) ** 2 + (py - obj.y) ** 2);
@@ -97,7 +107,7 @@ class InteractionManager {
 
   applyTransforms() {
     // executeDrawingCommands pop's the changes but we need apply to canvas before poping out
-    translate(this.panX, this.panY);
-    scale(this.scaleFactor);
+    this.p.translate(this.panX, this.panY);
+    this.p.scale(this.scaleFactor);
   }
 }

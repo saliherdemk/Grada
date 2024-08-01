@@ -1,14 +1,14 @@
 class Organizer {
-  constructor(canvas) {
-    this.canvas = canvas;
+  constructor(instance) {
+    this.p = instance;
     this.activeLine = null;
     this.schemas = [];
     this.inputs = [];
     this.images = {
-      brokenLink: loadImage("media/broken-link.png"),
-      delete: loadImage("media/delete-icon.png"),
-      lock: loadImage("media/lock.png"),
-      lockOpen: loadImage("media/lock-open.png"),
+      brokenLink: this.p.loadImage("media/broken-link.png"),
+      delete: this.p.loadImage("media/delete-icon.png"),
+      lock: this.p.loadImage("media/lock.png"),
+      lockOpen: this.p.loadImage("media/lock-open.png"),
     };
   }
 
@@ -16,8 +16,8 @@ class Organizer {
     return this.images[key];
   }
 
-  getCanvas() {
-    return this.canvas;
+  getInstance() {
+    return this.p;
   }
 
   addInput(input) {
@@ -48,7 +48,6 @@ class Organizer {
 
   draw() {
     this.schemas.forEach((schema) => schema.draw());
-    this.inputs.forEach((input) => input.draw());
     this.getActiveLine()?.draw();
   }
 }

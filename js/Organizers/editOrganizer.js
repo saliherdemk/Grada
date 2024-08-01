@@ -1,6 +1,6 @@
 class EditOrganizer {
-  constructor(canvas) {
-    this.canvas = canvas;
+  constructor(instance) {
+    this.p = instance;
     this.enabled = false;
     this.selected = null;
     this.selectedCopy = null;
@@ -40,8 +40,8 @@ class EditOrganizer {
   }
 
   adjustOrigins() {
-    this.originX = (width - 500) / 2;
-    this.originY = 150;
+    this.originX = 0;
+    this.originY = 0;
   }
 
   placeSelected() {
@@ -54,9 +54,6 @@ class EditOrganizer {
 
   setLayout() {
     this.adjustOrigins();
-    this.editPanel.style.left = this.originX + "px";
-    this.editPanel.style.top = this.originY + "px";
-    this.editPanel.style.display = "flex";
     this.placeSelected();
   }
 
@@ -84,7 +81,7 @@ class EditOrganizer {
     this.selectedCopy.destroy();
     this.selectedCopy = null;
     this.shrank = false;
-    this.editPanel.style.display = "none";
+    getElementById("disable-background").style.display = "none";
   }
 
   copyNeurons(from, to) {
@@ -96,8 +93,9 @@ class EditOrganizer {
   }
 
   enable(layer) {
+    getElementById("disable-background").style.display = "flex";
     this.selected = layer;
-    const copy = new HiddenLayer(0, 0, null, this.canvas);
+    const copy = new HiddenLayer(0, 0, null, this.p);
     this.copyNeurons(layer, copy);
     this.shrank = !layer.shrank; // will call toggleShrink. I wanted to use same function
     this.selectedCopy = copy;
@@ -107,7 +105,7 @@ class EditOrganizer {
   }
 
   resize() {
-    this.getCanvas().resizeCanvas(windowWidth, windowHeight);
+    // this.getCanvas().resizeCanvas(this.p.windowWidth, this.p.windowHeight);
     this.setLayout();
   }
 
@@ -115,17 +113,11 @@ class EditOrganizer {
     if (!this.enabled || !this.selectedCopy) return;
 
     const commands = [
-      { func: "clear", args: [] },
-      { func: "background", args: [0, 50] },
+      { func: "background", args: [255] },
       { func: "fill", args: [255] },
-      {
-        func: "rect",
-        args: [this.originX, this.originY, this.w, this.h, 10, 10],
-      },
     ];
-    executeDrawingCommands(commands, this.canvas);
+    executeDrawingCommands(commands, this.p);
 
     this.selectedCopy.draw();
-    image(this.canvas, 0, 0);
   }
 }
