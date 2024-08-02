@@ -1,5 +1,6 @@
 let mainOrganizer;
 let editOrganizer;
+let editMLPOrganizer;
 let iManager;
 
 let canvasManager;
@@ -14,6 +15,7 @@ let mainSketch = function (p) {
 
     canvasManager = new CanvasManager(p);
     mainOrganizer = new MainOrganizer();
+    editMLPOrganizer = new EditMLPOrganizer();
     iManager = new InteractionManager();
     mainOrganizer.addSchema(new Schema(300, 300));
   };

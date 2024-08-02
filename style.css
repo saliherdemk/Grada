@@ -12,6 +12,7 @@ body {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.2);
     display: none;
+    z-index: 2;
 }
 
 #canvas-parent {
@@ -20,12 +21,15 @@ body {
     height: 500px;
 }
 
-.editCanvas {
+#edit-label-container {
     position: absolute;
-    left: 0;
-    top: 0;
-    border: 1px solid black;
-    border-radius: 10px;
+    top: 5px;
+    left: 10px;
+
+}
+
+#label-input {
+    width: 100px;
 }
 
 #edit-panel {
@@ -57,7 +61,7 @@ body {
 
 #info-message-container {
     position: absolute;
-    top: 50px;
+    top: 55px;
     left: 0;
     width: 100%;
     text-align: center;
@@ -68,6 +72,34 @@ body {
 
 #info-message {
     color: blue;
+}
+
+#mlp-edit-container {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    padding: 2%;
+    box-sizing: border-box;
+    background-color: white;
+    box-shadow: 0px 1px 10px #999;
+    border-radius: 10px;
+    top: 2%;
+    z-index: 1;
+    left: -300px;
+    transition: left 0.3s ease;
+}
+
+#mlp-edit-container.active {
+    left: 0;
+}
+
+
+.editCanvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1px solid black;
+    border-radius: 10px;
 }
 
 .grid-container {

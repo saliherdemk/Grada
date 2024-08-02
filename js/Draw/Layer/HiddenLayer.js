@@ -130,7 +130,10 @@ class HiddenLayer extends LayerView {
   }
 
   show() {
-    const commands = [{ func: "rect", args: [this.x, this.y, this.w, this.h] }];
+    const commands = [
+      { func: "rect", args: [this.x, this.y, this.w, this.h] },
+      { func: "text", args: [this.label, this.x, this.y - 15, this.w, 25] },
+    ];
 
     executeDrawingCommands(commands);
   }

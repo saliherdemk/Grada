@@ -4,6 +4,7 @@ class LayerView extends Draggable {
     this.parent = parent;
     this.inputDot = null;
     this.outputDot = null;
+    this.label = "";
     this.removeButton;
     this.editMode = true;
     this.initializeDots();
@@ -41,6 +42,10 @@ class LayerView extends Draggable {
     this.x = x;
     this.y = y;
     this.postUpdateCoordinates();
+  }
+
+  setLabel(label) {
+    this.label = label;
   }
 
   isEditModeOpen() {
@@ -125,16 +130,17 @@ class LayerView extends Draggable {
   }
 
   pressed() {
-    this.getDots().forEach((dot) => dot?.handlePressed());
-    this.removeButton?.handlePressed();
     if (iManager.checkRollout(this) && getMouseButton() == "right") {
       this.toggleEditMode();
     }
+    if (!this.isEditModeOpen()) return;
+    this.getDots().forEach((dot) => dot?.handlePressed());
+    this.removeButton?.handlePressed();
   }
 
   doubleClicked() {
     const allowed =
-      iManager.isHovered(this) &&
+      iManager.checkRollout(this) &&
       this.isEditModeOpen() &&
       !editOrganizer.getSelected();
 

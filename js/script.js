@@ -47,6 +47,10 @@ function addLayer() {
   mainOrganizer.addSchema(new Schema(x, y));
 }
 
+function createInput() {
+  return canvasManager.getInstance().createInput();
+}
+
 function logMLPs() {
   console.log(mainOrganizer.schemas);
 }

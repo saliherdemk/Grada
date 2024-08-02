@@ -11,9 +11,24 @@
       <button onclick="logMLPs()" type="">Log Mlps</button>
     </div>
 
+    <div id="mlp-edit-container">
+      <label for="mlp-label">Name</label>
+      <input type="" name="mlp-label" value="" />
+
+      <label for="mlp-lr">Learning Rate</label>
+      <input type="range" name="mlp-lr" value="" />
+
+      <label for="mlp-batch-size">Batch Size</label>
+      <input type="range" name="mlp-batch-size" value="" />
+    </div>
+
     <div id="disable-background">
       <div id="canvas-parent">
         <div id="edit-panel">
+          <div id="edit-label-container">
+            <span>Layer name: </span>
+            <input id="label-input" class="inp" type="" name="" value="" />
+          </div>
           <div class="grid-container">
             <div id="info-message-container">
               Layer will be display with
@@ -75,6 +90,7 @@
     <script src="js/Managers/eventManager.js"></script>
 
     <script src="js/Organizers/mainOrganizer.js"></script>
+    <script src="js/Organizers/editMlpOrganizer.js"></script>
     <script src="js/Organizers/editOrganizer.js"></script>
 
     <script src="js/MLP/Value.js"></script>

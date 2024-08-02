@@ -2,31 +2,33 @@ class Schema extends Draggable {
   constructor(x, y) {
     super(x, y);
     this.layers = [new HiddenLayer(this.x, this.y, this)];
-    this.editMode = true;
+    this.label = "MLP1";
+    this.lr = 0.1;
+    this.batchSize = 1;
+    this.selected = false;
     this.updateBorders();
   }
 
-  isEditModeOpen() {
-    return this.editMode;
+  select() {
+    this.selected = true;
   }
 
-  toggleEditMode() {
-    this.editMode = !this.editMode;
-    this.layers.forEach((layer) => {
-      this.editMode != layer.isEditModeOpen() && layer.toggleEditMode();
-    });
+  deSelect() {
+    this.selected = false;
+  }
+
+  isSelected() {
+    return this.selected;
   }
 
   setCoordinates(x, y) {
     this.updateLayersCoordinates(x, y);
     this.x = x;
     this.y = y;
-    this.updateButtonCoordinates();
   }
 
-  updateButtonCoordinates() {
-    // const button = this.button;
-    // button?.setCoordinates(this.x + this.w - button.w, this.y + this.h + 5);
+  setLabel(label) {
+    this.label = label;
   }
 
   updateLayersCoordinates(newX, newY) {
@@ -92,9 +94,8 @@ class Schema extends Draggable {
     this.w = lastX - firstX + 50;
     // FIXME: find a way to call setCoordinates without adding base case
     this.x = firstX - 25;
-    this.y = firstY - 25;
+    this.y = firstY - 35;
     this.h = lastY - firstY + 75;
-    this.updateButtonCoordinates();
   }
 
   pressed() {
@@ -104,7 +105,7 @@ class Schema extends Draggable {
   }
 
   handlePressed() {
-    this.getLayers().some((layer) => layer.pressed());
+    this.getLayers().forEach((layer) => layer.pressed());
     if (iManager.isBusy()) return;
     this.pressed();
     if (iManager.isBusy()) return;
@@ -137,10 +138,17 @@ class Schema extends Draggable {
 
   handleDoubleClicked() {
     this.getLayers().forEach((layer) => layer.doubleClicked());
+    if (iManager.isBusy()) return;
+    iManager.checkRollout(this) && editMLPOrganizer.setSelected(this);
   }
 
   show() {
-    const commands = [{ func: "rect", args: [this.x, this.y, this.w, this.h] }];
+    const commands = [
+      { func: "stroke", args: [this.isSelected() ? "lightblue" : 123] },
+      { func: "rect", args: [this.x, this.y, this.w, this.h, 10, 10] },
+      { func: "noStroke", args: [] },
+      { func: "text", args: [this.label, this.x + 5, this.y + 5, this.w, 25] },
+    ];
 
     executeDrawingCommands(commands);
   }

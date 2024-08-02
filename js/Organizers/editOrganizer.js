@@ -63,6 +63,8 @@ class EditOrganizer {
     setElementProperties("set-neuron-num", {
       value: this.selectedCopy.getNeuronNum(),
     });
+
+    setElementProperties("label-input", { value: this.selectedCopy.label });
     this.eventManager.setMaxShownNeuronInput();
   }
 
@@ -71,6 +73,7 @@ class EditOrganizer {
     const copy = this.selectedCopy;
     this.copyNeurons(copy, original);
     original.shrank = this.shrank;
+    original.setLabel(copy.label);
     original.setShownNeuronsNum(copy.getShownNeuronsNum());
     original.reconnectNeurons();
   }
@@ -96,6 +99,7 @@ class EditOrganizer {
     this.selected = layer;
     const copy = new HiddenLayer(0, 0, null);
     this.copyNeurons(layer, copy);
+    copy.setLabel(layer.label);
     this.shrank = !layer.shrank; // will call toggleShrink. I wanted to use same function
     this.selectedCopy = copy;
     this.eventManager.setShownNeuronsNum(layer.getShownNeuronsNum());

@@ -38,6 +38,11 @@ class EventManager {
         event: "input",
         handler: this.onSetShownNeuron.bind(this, "set-shown-neuron"),
       },
+      {
+        id: "label-input",
+        event: "input",
+        handler: this.onLabelInput.bind(this),
+      },
     ];
 
     events.forEach(({ id, event, handler }) => {
@@ -96,6 +101,10 @@ class EventManager {
     let val = parseInt(e.target.value) || 1;
     val = Math.max(1, Math.min(val, this.context.selectedCopy.getNeuronNum()));
     setElementProperties("shown-neuron-inp", { value: val });
+  }
+
+  onLabelInput(e) {
+    this.context.selectedCopy.setLabel(e.target.value);
   }
 
   makeInputValid(val) {
