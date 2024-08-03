@@ -25,7 +25,6 @@ body {
     position: absolute;
     top: 5px;
     left: 10px;
-
 }
 
 #label-input {
@@ -39,24 +38,6 @@ body {
     height: 500px;
     width: 500px;
     align-items: end;
-}
-
-#cancel-icon {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 5px;
-    cursor: pointer;
-    background: black;
-    border-radius: 100%;
-}
-
-#save-btn {
-    background-color: #1C64F2;
-}
-
-#toggle-shrink-btn {
-    background-color: #06b6d4
 }
 
 #info-message-container {
@@ -78,6 +59,7 @@ body {
     position: absolute;
     display: flex;
     flex-direction: column;
+    gap: 10px;
     padding: 2%;
     box-sizing: border-box;
     background-color: white;
@@ -86,13 +68,55 @@ body {
     top: 2%;
     z-index: 1;
     left: -300px;
-    transition: left 0.3s ease;
+    transition: left 0.3s cubic-bezier(.68, -0.55, .27, 1.55);
 }
 
 #mlp-edit-container.active {
     left: 0;
 }
 
+
+.cancel-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+    cursor: pointer;
+    background: black;
+    border-radius: 100%;
+}
+
+.btn-cyan {
+    background-color: #06b6d4
+}
+
+.btn-cyan:active {
+    background-color: #059cb0;
+}
+
+.btn-blue {
+    background-color: #1C64F2;
+}
+
+.btn-blue:active {
+    background-color: #134dbf;
+}
+
+.btn-rose {
+    background-color: #f43f5e;
+}
+
+.btn-rose:active {
+    background-color: #c72c48;
+}
+
+.btn-yellow {
+    background-color: #facc15;
+}
+
+.btn-yellow:active {
+    background-color: #c89b13;
+}
 
 .editCanvas {
     position: absolute;

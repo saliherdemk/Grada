@@ -63,7 +63,7 @@ class HiddenLayer extends LayerView {
       ? shownNeuronsNum
       : this.getNeuronNum();
     this.setShownNeurons();
-    editOrganizer.isEnabled && editOrganizer.setInfoText();
+    editLayerOrganizer.isEnabled && editLayerOrganizer.setInfoText();
   }
 
   // GIANT MESS -> LESS GIANT MESS -> Acceptable mess

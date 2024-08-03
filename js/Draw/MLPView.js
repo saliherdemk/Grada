@@ -5,7 +5,9 @@ class Schema extends Draggable {
     this.label = "MLP1";
     this.lr = 0.1;
     this.batchSize = 1;
+    this.propsShown = true;
     this.selected = false;
+    this.layersLocked = false; // maybe we can get rid of this
     this.updateBorders();
   }
 
@@ -29,6 +31,33 @@ class Schema extends Draggable {
 
   setLabel(label) {
     this.label = label;
+  }
+
+  setLr(lr) {
+    this.lr = lr;
+  }
+
+  setBatchSize(batchSize) {
+    this.batchSize = batchSize;
+  }
+
+  isPropsShown() {
+    return this.propsShown;
+  }
+
+  togglePropsShown() {
+    this.propsShown = !this.propsShown;
+  }
+
+  toggleLayersLocks() {
+    this.layersLocked = !this.layersLocked;
+    this.layers.forEach((layer) => {
+      this.layersLocked == layer.isEditModeOpen() && layer.toggleEditMode();
+    });
+  }
+
+  areLayersLocked() {
+    return this.layersLocked;
   }
 
   updateLayersCoordinates(newX, newY) {
@@ -68,6 +97,9 @@ class Schema extends Draggable {
   destroy() {
     this.getLayers().forEach((l) => l.destroy());
     this.setLayers([]);
+    if (editMLPOrganizer.getSelected() == this) {
+      editMLPOrganizer.disable();
+    }
     mainOrganizer.removeSchema(this);
   }
 
@@ -100,7 +132,7 @@ class Schema extends Draggable {
 
   pressed() {
     if (iManager.checkRollout(this) && getMouseButton() == "right") {
-      this.toggleEditMode();
+      this.toggleLayersLocks();
     }
   }
 
@@ -109,7 +141,7 @@ class Schema extends Draggable {
     if (iManager.isBusy()) return;
     this.pressed();
     if (iManager.isBusy()) return;
-    iManager.setCanvasDragging(true);
+    iManager.enableCanvasDragging();
     iManager.setLastMouseCoordinates();
   }
 
@@ -138,8 +170,34 @@ class Schema extends Draggable {
 
   handleDoubleClicked() {
     this.getLayers().forEach((layer) => layer.doubleClicked());
-    if (iManager.isBusy()) return;
+    if (iManager.isBusy()) {
+      iManager.handleRelease();
+      return;
+    }
     iManager.checkRollout(this) && editMLPOrganizer.setSelected(this);
+    iManager.handleRelease();
+    // Double click fires after two clicks =
+    // pressed-released pressed-released handleDoubleClicked
+    // iManager selected values: obj->null->obj->null -> obj
+    // So we need to call handleRelease to free iManager
+  }
+
+  showProps() {
+    const commands = [
+      {
+        func: "text",
+        args: [
+          `Learning Rate: ${this.lr} \n
+          Batch Size: ${this.batchSize}`,
+          this.x + 5,
+          this.y + this.h + 5,
+          this.w + 50,
+          50,
+        ],
+      },
+    ];
+
+    executeDrawingCommands(commands);
   }
 
   show() {
@@ -155,6 +213,7 @@ class Schema extends Draggable {
 
   draw() {
     this.show();
+    this.isPropsShown() && this.showProps();
     this.getLayers().forEach((layer) => layer.draw());
   }
 }

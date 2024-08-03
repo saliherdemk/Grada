@@ -6,7 +6,7 @@ class EventManager {
 
   initEventListeners() {
     const events = [
-      { id: "cancel-icon", event: "click", handler: this.disable },
+      { id: "edit-layer-close", event: "click", handler: this.disable },
       {
         id: "toggle-shrink-btn",
         event: "click",

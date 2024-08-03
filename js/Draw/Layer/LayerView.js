@@ -142,9 +142,9 @@ class LayerView extends Draggable {
     const allowed =
       iManager.checkRollout(this) &&
       this.isEditModeOpen() &&
-      !editOrganizer.getSelected();
+      !editLayerOrganizer.getSelected();
 
-    allowed && editOrganizer.enable(this);
+    allowed && editLayerOrganizer.enable(this);
   }
 
   destroy() {
