@@ -23,6 +23,14 @@ function getMouseButton() {
   return canvasManager.getInstance().mouseButton;
 }
 
+function getFps() {
+  return canvasManager.getInstance().frameRate();
+}
+
+function getFrameCount() {
+  return canvasManager.getInstance().frameCount;
+}
+
 function getElementById(el) {
   return document.getElementById(el);
 }
@@ -47,12 +55,16 @@ function addLayer() {
   mainOrganizer.addSchema(new Schema(x, y));
 }
 
+function createInput() {
+  return canvasManager.getInstance().createInput();
+}
+
 function logMLPs() {
   console.log(mainOrganizer.schemas);
 }
 
 function scaleCanvas(event) {
-  if (editOrganizer.isEnabled()) return;
+  if (editLayerOrganizer.isEnabled()) return;
 
   let scaleAmount = 1.1;
   if (event.deltaY > 0) {

@@ -6,7 +6,7 @@ class EventManager {
 
   initEventListeners() {
     const events = [
-      { id: "cancel-icon", event: "click", handler: this.disable },
+      { id: "edit-layer-close", event: "click", handler: this.disable },
       {
         id: "toggle-shrink-btn",
         event: "click",
@@ -37,6 +37,11 @@ class EventManager {
         id: "shown-neuron-inp",
         event: "input",
         handler: this.onSetShownNeuron.bind(this, "set-shown-neuron"),
+      },
+      {
+        id: "label-input",
+        event: "input",
+        handler: this.onLabelInput.bind(this),
       },
     ];
 
@@ -96,6 +101,10 @@ class EventManager {
     let val = parseInt(e.target.value) || 1;
     val = Math.max(1, Math.min(val, this.context.selectedCopy.getNeuronNum()));
     setElementProperties("shown-neuron-inp", { value: val });
+  }
+
+  onLabelInput(e) {
+    this.context.selectedCopy.setLabel(e.target.value);
   }
 
   makeInputValid(val) {

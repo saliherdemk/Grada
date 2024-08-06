@@ -34,8 +34,12 @@ class InteractionManager {
     this.selected = obj;
   }
 
-  setCanvasDragging(value) {
-    this.canvasDragging = value;
+  enableCanvasDragging() {
+    this.canvasDragging = true;
+  }
+
+  disableCanvasDragging() {
+    this.canvasDragging = false;
   }
 
   setLastMouseCoordinates() {
@@ -82,7 +86,7 @@ class InteractionManager {
 
   handleRelease() {
     this.selected = null;
-    this.setCanvasDragging(false);
+    this.disableCanvasDragging();
   }
 
   isHovered(obj) {

@@ -11,9 +11,65 @@
       <button onclick="logMLPs()" type="">Log Mlps</button>
     </div>
 
+    <div id="mlp-edit-container">
+      <div>
+        <label for="mlp-label">Name</label><br />
+        <input id="mlp-label" type="text" value="" />
+      </div>
+
+      <div>
+        <label for="mlp-lr">Learning Rate</label> <br />
+        <input id="mlp-lr" type="range" value="" step="0.1" max="1" min="0" />
+      </div>
+
+      <div>
+        <label>Batch Size</label>
+        <div id="mlp-batch-size">
+          <input type="radio" id="batch1" name="mlp-batch-size" value="1" />
+          <label for="batch1">1</label>
+
+          <input type="radio" id="batch32" name="mlp-batch-size" value="32" />
+          <label for="batch32">32</label>
+
+          <input type="radio" id="batch64" name="mlp-batch-size" value="64" />
+          <label for="batch64">64</label>
+
+          <input type="radio" id="batch128" name="mlp-batch-size" value="128" />
+          <label for="batch128">128</label>
+        </div>
+      </div>
+
+      <button id="toggle-mlp-props" class="btn btn-cyan" type="button">
+        Hide Props
+      </button>
+
+      <button id="mlp-reset-btn" class="btn btn-yellow" type="button">
+        Reset Coordinates
+      </button>
+      <button id="toggle-layers-locks" class="btn btn-blue" type="button">
+        Lock Layers
+      </button>
+
+      <button id="mlp-delete-btn" class="btn btn-rose" type="button">
+        Delete
+      </button>
+
+      <img
+        id="mlp-layer-close"
+        class="cancel-icon"
+        src="media/close.png"
+        alt=""
+        width="20"
+        height="20"
+      />
+    </div>
     <div id="disable-background">
       <div id="canvas-parent">
         <div id="edit-panel">
+          <div id="edit-label-container">
+            <span>Layer name: </span>
+            <input id="label-input" class="inp" type="" name="" value="" />
+          </div>
           <div class="grid-container">
             <div id="info-message-container">
               Layer will be display with
@@ -40,18 +96,23 @@
                 type="text"
                 maxlength="4"
               />
-              <button class="btn grid-item" id="toggle-shrink-btn">
+              <button class="btn btn-cyan grid-item" id="toggle-shrink-btn">
                 Expanded
               </button>
 
-              <button class="btn grid-item" id="save-btn" type="button">
+              <button
+                class="btn btn-blue grid-item"
+                id="save-btn"
+                type="button"
+              >
                 Save
               </button>
             </div>
           </div>
 
           <img
-            id="cancel-icon"
+            id="edit-layer-close"
+            class="cancel-icon"
             src="media/close.png"
             alt=""
             width="25"
@@ -76,6 +137,8 @@
 
     <script src="js/Organizers/mainOrganizer.js"></script>
     <script src="js/Organizers/editOrganizer.js"></script>
+    <script src="js/Organizers/editLayerOrganizer.js"></script>
+    <script src="js/Organizers/editMlpOrganizer.js"></script>
 
     <script src="js/MLP/Value.js"></script>
     <script src="js/MLP/ActFunctions.js"></script>
@@ -83,15 +146,16 @@
     <script src="js/MLP/Layer.js"></script>
     <script src="js/MLP/MLP.js"></script>
 
-    <script src="js/Draw/draggable.js"></script>
+    <script src="js/draggable.js"></script>
 
-    <script src="js/Draw/Layer/CanvasButton.js"></script>
-    <script src="js/Draw/Layer/Dot.js"></script>
+    <script src="js/Draw/Minors/CanvasButton.js"></script>
+    <script src="js/Draw/Minors/Dot.js"></script>
+    <script src="js/Draw/Minors/Line.js"></script>
+
     <script src="js/Draw/Layer/LayerView.js"></script>
     <script src="js/Draw/Layer/HiddenLayer.js"></script>
 
-    <script src="js/Draw/Neuron/Line.js"></script>
-    <script src="js/Draw/Neuron/NeuronView.js"></script>
+    <script src="js/Draw/NeuronView.js"></script>
 
     <script src="js/Draw/MLPView.js"></script>
 

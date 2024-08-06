@@ -1,5 +1,6 @@
 let mainOrganizer;
-let editOrganizer;
+let editLayerOrganizer;
+let editMLPOrganizer;
 let iManager;
 
 let canvasManager;
@@ -14,6 +15,7 @@ let mainSketch = function (p) {
 
     canvasManager = new CanvasManager(p);
     mainOrganizer = new MainOrganizer();
+    editMLPOrganizer = new EditMLPOrganizer();
     iManager = new InteractionManager();
     mainOrganizer.addSchema(new Schema(300, 300));
   };
@@ -27,11 +29,11 @@ let mainSketch = function (p) {
   };
 
   p.mousePressed = function () {
-    !editOrganizer.isEnabled() && iManager.handlePress();
+    !editLayerOrganizer.isEnabled() && iManager.handlePress();
   };
 
   p.mouseDragged = function () {
-    !editOrganizer.isEnabled() && iManager.handleDrag();
+    !editLayerOrganizer.isEnabled() && iManager.handleDrag();
   };
 
   p.mouseReleased = function () {
@@ -56,6 +58,10 @@ let mainSketch = function (p) {
     if (k == "e") {
       mainOrganizer.schemas.forEach((schema) => schema.handleKeyPressed());
     }
+
+    if (k == "escape") {
+      editMLPOrganizer.disable();
+    }
   };
 
   p.doubleClicked = function () {
@@ -73,23 +79,19 @@ let mainSketch = function (p) {
 let editSketch = function (p) {
   p.setup = function () {
     p.createCanvas(500, 500).parent("canvas-parent").addClass("editCanvas");
-    editOrganizer = new EditOrganizer();
+    editLayerOrganizer = new EditLayerOrganizer();
   };
 
   p.draw = function () {
     canvasManager.setInstance(p);
-    editOrganizer.draw();
+    editLayerOrganizer.draw();
   };
 
   p.keyPressed = function () {
     const k = p.key.toLowerCase();
-    if (k == "escape" && editOrganizer.isEnabled()) {
-      editOrganizer.disable();
+    if (k == "escape" && editLayerOrganizer.isEnabled()) {
+      editLayerOrganizer.disable();
     }
-  };
-
-  p.windowResized = function () {
-    editOrganizer.isEnabled() && editOrganizer.resize();
   };
 };
 

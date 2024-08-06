@@ -2,6 +2,9 @@ class MainOrganizer {
   constructor() {
     this.activeLine = null;
     this.schemas = [];
+    this.displayedFps = 0;
+    this.fps = 0;
+    this.counter = 0;
     this.setImages();
   }
 
@@ -13,6 +16,17 @@ class MainOrganizer {
       lock: p.loadImage("media/lock.png"),
       lockOpen: p.loadImage("media/lock-open.png"),
     };
+  }
+
+  accumulateFps() {
+    this.fps += getFps();
+    this.counter++;
+  }
+
+  updateDisplay() {
+    this.displayedFps = parseFloat((this.fps / this.counter).toFixed(2));
+    this.counter = 0;
+    this.fps = 0;
   }
 
   getImageByKey(key) {
@@ -36,7 +50,21 @@ class MainOrganizer {
     this.activeLine = line;
   }
 
+  showFps() {
+    const commands = [
+      {
+        func: "text",
+        args: ["FPS:" + this.displayedFps, 500, 10, 25, 25],
+      },
+    ];
+
+    executeDrawingCommands(commands);
+  }
+
   draw() {
+    this.showFps();
+    this.accumulateFps();
+    this.counter == 100 && this.updateDisplay();
     this.schemas.forEach((schema) => schema.draw());
     this.getActiveLine()?.draw();
   }

@@ -12,6 +12,7 @@ body {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.2);
     display: none;
+    z-index: 2;
 }
 
 #canvas-parent {
@@ -20,12 +21,14 @@ body {
     height: 500px;
 }
 
-.editCanvas {
+#edit-label-container {
     position: absolute;
-    left: 0;
-    top: 0;
-    border: 1px solid black;
-    border-radius: 10px;
+    top: 5px;
+    left: 10px;
+}
+
+#label-input {
+    width: 100px;
 }
 
 #edit-panel {
@@ -37,27 +40,9 @@ body {
     align-items: end;
 }
 
-#cancel-icon {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 5px;
-    cursor: pointer;
-    background: black;
-    border-radius: 100%;
-}
-
-#save-btn {
-    background-color: #1C64F2;
-}
-
-#toggle-shrink-btn {
-    background-color: #06b6d4
-}
-
 #info-message-container {
     position: absolute;
-    top: 50px;
+    top: 55px;
     left: 0;
     width: 100%;
     text-align: center;
@@ -68,6 +53,77 @@ body {
 
 #info-message {
     color: blue;
+}
+
+#mlp-edit-container {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 2%;
+    box-sizing: border-box;
+    background-color: white;
+    box-shadow: 0px 1px 10px #999;
+    border-radius: 10px;
+    top: 2%;
+    z-index: 1;
+    left: -300px;
+    transition: left 0.3s cubic-bezier(.68, -0.55, .27, 1.55);
+}
+
+#mlp-edit-container.active {
+    left: 0;
+}
+
+
+.cancel-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+    cursor: pointer;
+    background: black;
+    border-radius: 100%;
+}
+
+.btn-cyan {
+    background-color: #06b6d4
+}
+
+.btn-cyan:active {
+    background-color: #059cb0;
+}
+
+.btn-blue {
+    background-color: #1C64F2;
+}
+
+.btn-blue:active {
+    background-color: #134dbf;
+}
+
+.btn-rose {
+    background-color: #f43f5e;
+}
+
+.btn-rose:active {
+    background-color: #c72c48;
+}
+
+.btn-yellow {
+    background-color: #facc15;
+}
+
+.btn-yellow:active {
+    background-color: #c89b13;
+}
+
+.editCanvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1px solid black;
+    border-radius: 10px;
 }
 
 .grid-container {
