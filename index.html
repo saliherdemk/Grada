@@ -2,6 +2,7 @@
 <html>
   <head>
     <link href="style.css" rel="stylesheet" />
+    <link href="table.css" rel="stylesheet" />
   </head>
   <body>
     <div style="position: absolute">
@@ -9,6 +10,7 @@
         Add Layer
       </button>
       <button onclick="logMLPs()" type="">Log Mlps</button>
+      <button onclick="openCreateDataset()" type="">Create Dataset</button>
     </div>
 
     <div id="mlp-edit-container">
@@ -118,6 +120,57 @@
             width="25"
             height="25"
           />
+        </div>
+      </div>
+
+      <div id="create-dataset-container">
+        <img
+          id="create-dataset-close"
+          class="cancel-icon"
+          src="media/close.png"
+          alt=""
+          width="25"
+          height="25"
+          onclick="closeCreateDataset()"
+        />
+        <div id="scrollable-container">
+          <table id="dynamicTable">
+            <tr>
+              <th class="left-0 top-0 z-4">
+                <button
+                  id="add-row-btn"
+                  class="table-add-btn"
+                  onclick="addRow()"
+                >
+                  +
+                </button>
+              </th>
+              <th class="left-1 top-0 z-3">
+                <input type="text" value="X1" />
+              </th>
+              <th class="right-0 top-0 z-3">
+                <input type="text" value="Y" />
+              </th>
+            </tr>
+            <tr>
+              <td class="left-0 z-3"></td>
+              <td class="left-1 z-2"><input type="text" value="Cell 1-1" /></td>
+              <td class="right-0"><input type="text" value="Cell 1-2" /></td>
+            </tr>
+            <tr>
+              <td class="left-0 bottom-0 z-3"></td>
+              <td class="left-1 bottom-0 z-2">
+                <button
+                  id="add-col-btn"
+                  class="table-add-btn"
+                  onclick="addColumn()"
+                >
+                  +
+                </button>
+              </td>
+              <td class="right-0 bottom-0"></td>
+            </tr>
+          </table>
         </div>
       </div>
     </div>

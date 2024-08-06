@@ -17,7 +17,7 @@ let mainSketch = function (p) {
     mainOrganizer = new MainOrganizer();
     editMLPOrganizer = new EditMLPOrganizer();
     iManager = new InteractionManager();
-    mainOrganizer.addSchema(new Schema(300, 300));
+    // mainOrganizer.addSchema(new Schema(300, 300));
   };
 
   p.draw = function () {

@@ -1,0 +1,176 @@
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+
+
+
+#create-dataset-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    display: none;
+    text-align: end;
+
+}
+
+#scrollable-container {
+    box-sizing: border-box;
+    max-width: 870px;
+    max-height: 500px;
+    overflow: auto;
+
+}
+
+#scrollable-container {
+    scrollbar-width: auto;
+    scrollbar-color: gray white;
+}
+
+#scrollable-container::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+#scrollable-container::-webkit-scrollbar-thumb {
+    background-color: gray;
+}
+
+#scrollable-container::-webkit-scrollbar-thumb:hover {
+    background-color: white;
+}
+
+#scrollable-container::-webkit-scrollbar-track {
+    background-color: white;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th,
+td {
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle;
+
+}
+
+.remove-row-btn,
+.remove-col-btn {
+    font-size: 24px;
+    color: #f43f5e;
+    cursor: pointer;
+
+}
+
+.remove-row-btn {
+    display: block;
+}
+
+.remove-col-btn {
+    top: 60px;
+}
+
+.table-add-btn {
+    background: rgba(74, 222, 128, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.table-add-btn:hover {
+    background: rgba(74, 222, 128, 0.7);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.table-add-btn:focus {
+    outline: none;
+}
+
+
+.left-0,
+.left-1,
+.right-0,
+.top-0,
+.bottom-0 {
+    position: sticky;
+    background-color: white;
+    z-index: 1;
+}
+
+.left-0 {
+    left: 0;
+}
+
+.left-1 {
+    left: 51px;
+}
+
+.right-0 {
+    right: 0;
+    padding-right: 20px
+}
+
+.top-0 {
+    top: 0;
+}
+
+.bottom-0 {
+    bottom: 0;
+    padding-bottom: 20px;
+}
+
+.z-1 {
+    z-index: 1;
+}
+
+.z-2 {
+    z-index: 2;
+}
+
+.z-3 {
+    z-index: 3;
+}
+
+.z-4 {
+    z-index: 4;
+}
+
+
+
+table input {
+    display: block;
+    padding: 0.625rem;
+    border-radius: 0.5rem;
+    border-width: 1px;
+    border-color: #D1D5DB;
+    width: 100%;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #111827;
+    background-color: #F9FAFB;
+    box-sizing: border-box;
+    min-width: 120px;
+}

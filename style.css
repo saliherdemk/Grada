@@ -12,13 +12,14 @@ body {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.2);
     display: none;
-    z-index: 2;
+    z-index: 99;
 }
 
 #canvas-parent {
     position: relative;
     width: 500px;
     height: 500px;
+    display: none;
 }
 
 #edit-label-container {
@@ -75,11 +76,14 @@ body {
     left: 0;
 }
 
-
-.cancel-icon {
+#edit-layer-close {
     position: absolute;
     top: 0;
     right: 0;
+}
+
+.cancel-icon {
+
     margin: 5px;
     cursor: pointer;
     background: black;
