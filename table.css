@@ -15,15 +15,12 @@ td {
     background: transparent;
 }
 
-
-
 #create-dataset-container {
     background-color: white;
     border-radius: 10px;
     padding: 10px;
     display: none;
     text-align: end;
-
 }
 
 #scrollable-container {
@@ -31,7 +28,6 @@ td {
     max-width: 870px;
     max-height: 500px;
     overflow: auto;
-
 }
 
 #scrollable-container {
@@ -157,8 +153,6 @@ td {
 .z-4 {
     z-index: 4;
 }
-
-
 
 table input {
     display: block;

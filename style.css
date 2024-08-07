@@ -76,7 +76,8 @@ body {
     left: 0;
 }
 
-#edit-layer-close {
+#edit-layer-close,
+#mlp-layer-close {
     position: absolute;
     top: 0;
     right: 0;

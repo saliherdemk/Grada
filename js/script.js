@@ -23,14 +23,6 @@ function getMouseButton() {
   return canvasManager.getInstance().mouseButton;
 }
 
-function getFps() {
-  return canvasManager.getInstance().frameRate();
-}
-
-function getFrameCount() {
-  return canvasManager.getInstance().frameCount;
-}
-
 function getElementById(el) {
   return document.getElementById(el);
 }
@@ -64,27 +56,25 @@ function logMLPs() {
 }
 
 function openCreateDataset() {
-  getElementById("disable-background").style.display = "flex";
+  mainOrganizer.disable();
   getElementById("create-dataset-container").style.display = "initial";
 }
 
 function closeCreateDataset() {
-  getElementById("disable-background").style.display = "none";
-  getElementById("create-dataset-container").style.display = "none";
+  mainOrganizer.enable();
 }
 
 function openEditLayer() {
-  getElementById("disable-background").style.display = "flex";
+  mainOrganizer.disable();
   getElementById("canvas-parent").style.display = "initial";
 }
 
 function closeEditLayer() {
-  getElementById("disable-background").style.display = "none";
-  getElementById("canvas-parent").style.display = "none";
+  mainOrganizer.enable();
 }
 
 function scaleCanvas(event) {
-  if (editLayerOrganizer.isEnabled()) return;
+  if (mainOrganizer.isDisabled()) return;
 
   let scaleAmount = 1.1;
   if (event.deltaY > 0) {
@@ -139,6 +129,7 @@ function addColumn() {
 
     let newCell = table.rows[i].insertCell(cellIndex);
     if (i == rowCount - 1) continue;
+
     let input = document.createElement("input");
     input.type = "text";
     if (i == 0) {

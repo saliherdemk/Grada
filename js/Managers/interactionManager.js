@@ -70,10 +70,12 @@ class InteractionManager {
   }
 
   handlePress() {
+    if (mainOrganizer.isDisabled()) return;
     mainOrganizer.schemas.forEach((schema) => schema.handlePressed());
   }
 
   handleDrag() {
+    if (mainOrganizer.isDisabled()) return;
     if (this.getSelected()) {
       this.updateSelectedCoordinates();
       return;
@@ -87,6 +89,11 @@ class InteractionManager {
   handleRelease() {
     this.selected = null;
     this.disableCanvasDragging();
+  }
+
+  handleDoubleClicked() {
+    if (mainOrganizer.isDisabled()) return;
+    mainOrganizer.schemas.forEach((schema) => schema.handleDoubleClicked());
   }
 
   isHovered(obj) {

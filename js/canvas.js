@@ -61,11 +61,12 @@ let mainSketch = function (p) {
 
     if (k == "escape") {
       editMLPOrganizer.disable();
+      mainOrganizer.enable();
     }
   };
 
   p.doubleClicked = function () {
-    mainOrganizer.schemas.forEach((schema) => schema.handleDoubleClicked());
+    iManager.handleDoubleClicked();
   };
   p.windowResized = function () {
     p.resizeCanvas(p.windowWidth, p.windowHeight);
