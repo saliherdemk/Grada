@@ -2,6 +2,7 @@ let mainOrganizer;
 let editLayerOrganizer;
 let editMLPOrganizer;
 let iManager;
+let tableOrganizer;
 
 let canvasManager;
 
@@ -17,6 +18,7 @@ let mainSketch = function (p) {
     mainOrganizer = new MainOrganizer();
     editMLPOrganizer = new EditMLPOrganizer();
     iManager = new InteractionManager();
+    tableOrganizer = new TableOrganizer();
     // mainOrganizer.addSchema(new Schema(300, 300));
   };
 

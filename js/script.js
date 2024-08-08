@@ -91,3 +91,7 @@ function scaleCanvas(event) {
 
   iManager.scaleFactor = newScaleFactor;
 }
+
+function handleCreateDataset() {
+  tableOrganizer.createDataset();
+}

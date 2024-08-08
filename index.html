@@ -124,21 +124,25 @@
       </div>
 
       <div id="create-dataset-container">
-        <img
-          id="create-dataset-close"
-          class="cancel-icon"
-          src="media/close.png"
-          alt=""
-          width="25"
-          height="25"
-          onclick="closeCreateDataset()"
-        />
+        <div id="dataset-control-container">
+          <div class="flex-center">
+            <label for="">Name: </label>
+            <input id="dataset-name-inp" class="inp" type="" name="" value="" />
+          </div>
+          <img
+            id="create-dataset-close"
+            class="cancel-icon"
+            src="media/close.png"
+            alt=""
+            width="25"
+            height="25"
+            onclick="closeCreateDataset()"
+          />
+        </div>
         <div id="scrollable-container">
           <table id="dynamicTable">
             <tr>
-              <th class="left-0 top-0 z-4">
-                <button class="table-add-btn" onclick="addRow()">+</button>
-              </th>
+              <th class="left-0 top-0 z-4"></th>
               <th class="left-1 top-0 z-3"></th>
               <th class="right-0 top-0 z-3"></th>
             </tr>
@@ -149,12 +153,16 @@
             </tr>
             <tr>
               <td class="left-0 bottom-0 z-3"></td>
-              <td class="left-1 bottom-0 z-2">
-                <button class="table-add-btn" onclick="addColumn()">+</button>
-              </td>
+              <td class="left-1 bottom-0 z-2"></td>
               <td class="right-0 bottom-0"></td>
             </tr>
           </table>
+        </div>
+
+        <div class="flex-end">
+          <button class="btn btn-blue" type="" onclick="handleCreateDataset()">
+            Create
+          </button>
         </div>
       </div>
     </div>
@@ -167,12 +175,12 @@
     ></script>
 
     <script src="js/script.js"></script>
-    <script src="js/table.js"></script>
 
     <script src="js/Managers/canvasManager.js"></script>
     <script src="js/Managers/interactionManager.js"></script>
     <script src="js/Managers/eventManager.js"></script>
 
+    <script src="js/Organizers/tableOrganizer.js"></script>
     <script src="js/Organizers/mainOrganizer.js"></script>
     <script src="js/Organizers/editOrganizer.js"></script>
     <script src="js/Organizers/editLayerOrganizer.js"></script>
