@@ -23,14 +23,6 @@ function getMouseButton() {
   return canvasManager.getInstance().mouseButton;
 }
 
-function getFps() {
-  return canvasManager.getInstance().frameRate();
-}
-
-function getFrameCount() {
-  return canvasManager.getInstance().frameCount;
-}
-
 function getElementById(el) {
   return document.getElementById(el);
 }
@@ -43,6 +35,7 @@ function setElementProperties(elId, properties) {
 }
 
 function addEventToElement(elId, eventName, func) {
+  console.log(elId);
   getElementById(elId).addEventListener(eventName, func);
 }
 
@@ -63,8 +56,26 @@ function logMLPs() {
   console.log(mainOrganizer.schemas);
 }
 
+function openCreateDataset() {
+  mainOrganizer.disable();
+  getElementById("create-dataset-container").style.display = "initial";
+}
+
+function closeCreateDataset() {
+  mainOrganizer.enable();
+}
+
+function openEditLayer() {
+  mainOrganizer.disable();
+  getElementById("canvas-parent").style.display = "initial";
+}
+
+function closeEditLayer() {
+  mainOrganizer.enable();
+}
+
 function scaleCanvas(event) {
-  if (editLayerOrganizer.isEnabled()) return;
+  if (mainOrganizer.isDisabled()) return;
 
   let scaleAmount = 1.1;
   if (event.deltaY > 0) {
@@ -80,4 +91,22 @@ function scaleCanvas(event) {
   iManager.panY = mouseY - (mouseY - iManager.panY) * scaleDiff;
 
   iManager.scaleFactor = newScaleFactor;
+}
+
+function handleCreateDataset() {
+  tableOrganizer.createDataset();
+}
+
+function createButton(parentId = null) {
+  const btn = document.createElement("button");
+  const parent = getElementById(parentId);
+  if (parent) {
+    parent.appendChild(btn);
+  }
+  return btn;
+}
+
+function toggleDatasetsContainer() {
+  getElementById("datasets-container").classList.toggle("active");
+  getElementById("toggle-dataset-btn").classList.toggle("active");
 }

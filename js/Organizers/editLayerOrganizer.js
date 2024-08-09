@@ -61,7 +61,7 @@ class EditLayerOrganizer extends EditOrganizer {
     this.selectedCopy = null;
     this.shrank = false;
     this.enabled = false;
-    getElementById("disable-background").style.display = "none";
+    closeEditLayer();
   }
 
   copyNeurons(from, to) {
@@ -73,7 +73,7 @@ class EditLayerOrganizer extends EditOrganizer {
   }
 
   enable(layer) {
-    getElementById("disable-background").style.display = "flex";
+    openEditLayer();
     this.selected = layer;
     const copy = new HiddenLayer(0, 0, null);
     this.copyNeurons(layer, copy);

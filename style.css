@@ -1,3 +1,23 @@
+:root {
+    --cyan: #06b6d4;
+    --cyan-active: #059cb0;
+    --blue: #1C64F2;
+    --blue-active: #132dbf;
+    --rose: #f43f5e;
+    --rose-active: #c72c48;
+    --yellow: #facc15;
+    --yellow-active: #c89b13;
+    --green: #4ade80;
+    --green-active: #3c8d60;
+    --white: #ffffff;
+    --white-active: #e6e6e6;
+    --gray: #6b7280;
+    --dark-gray: #4A4A4A;
+    --sky: #4A90E2;
+    --sky-active: #1C64F2
+}
+
+
 body {
     margin: 0;
     padding: 0;
@@ -12,13 +32,15 @@ body {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.2);
     display: none;
-    z-index: 2;
+    z-index: 99;
 }
 
 #canvas-parent {
     position: relative;
     width: 500px;
     height: 500px;
+    filter: drop-shadow(0 1px 10px #999);
+    display: none;
 }
 
 #edit-label-container {
@@ -75,47 +97,104 @@ body {
     left: 0;
 }
 
-
-.cancel-icon {
+#edit-layer-close,
+#mlp-layer-close {
     position: absolute;
     top: 0;
     right: 0;
+}
+
+.cancel-icon {
+
     margin: 5px;
     cursor: pointer;
     background: black;
     border-radius: 100%;
 }
 
-.btn-cyan {
-    background-color: #06b6d4
+.btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 35px;
+    border: none;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 0.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
 }
 
+.btn-sky {
+    background-color: var(--sky);
+}
+
+.btn-sky:hover,
+.btn-sky:active {
+    background-color: var(--sky-active);
+}
+
+.btn-cyan {
+    background-color: var(--cyan);
+}
+
+.btn-cyan:hover,
 .btn-cyan:active {
-    background-color: #059cb0;
+    background-color: var(--cyan-active);
 }
 
 .btn-blue {
-    background-color: #1C64F2;
+    background-color: var(--blue);
 }
 
+.btn-blue:hover,
 .btn-blue:active {
-    background-color: #134dbf;
+    background-color: var(--blue-active);
 }
 
 .btn-rose {
-    background-color: #f43f5e;
+    background-color: var(--rose);
 }
 
+.btn-rose:hover,
 .btn-rose:active {
-    background-color: #c72c48;
+    background-color: var(--rose-active);
 }
 
 .btn-yellow {
-    background-color: #facc15;
+    background-color: var(--yellow);
 }
 
+.btn-yellow:hover,
 .btn-yellow:active {
-    background-color: #c89b13;
+    background-color: var(--yellow-active);
+}
+
+.btn-green {
+    background-color: var(--green);
+}
+
+.btn-green:hover,
+.btn-green:active {
+    background-color: var(--green-active);
+}
+
+.btn-white {
+    background-color: var(--white);
+    color: black;
+}
+
+.btn-white:hover,
+.btn-white:active {
+    background-color: var(--white-active);
+    color: black;
+}
+
+.btn-gray {
+    background-color: var(--gray);
 }
 
 .editCanvas {
@@ -127,21 +206,14 @@ body {
 }
 
 .grid-container {
-    display: grid;
-    flex: 1;
-    grid-template-columns: auto;
-    grid-template-rows: auto;
-    gap: 2px;
-    justify-items: center;
-    align-items: center;
     padding: 5px;
 }
 
 .grid-item {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto auto 1fr 1fr;
     align-items: center;
     gap: 5px;
-    width: 100%;
 }
 
 .inp {
@@ -163,22 +235,6 @@ body {
     position: absolute;
 }
 
-.btn {
-    flex: 1;
-    height: 35px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: none;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    border-radius: 0.25rem;
-    font-weight: 700;
-    color: #ffffff;
-    cursor: pointer;
-}
 
 .clear-line-btn {
     width: 50px;
@@ -187,4 +243,94 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-end {
+    display: flex;
+    justify-content: end;
+}
+
+.control-container {
+    position: absolute;
+    bottom: 0;
+    margin: 5px;
+    width: 200px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#datasets-container {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    background-color: var(--white-active);
+    height: 0;
+    transition: height 1s ease;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+#datasets-container.active {
+    height: 300px;
+}
+
+#datasets-container div:first-child {
+    padding: 10px;
+    background: var(--dark-gray);
+    color: white;
+    font-weight: 700;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+}
+
+#datasets-container button {
+    border-radius: 0px;
+}
+
+#dataset-scrollable {
+    width: 100%;
+    flex: 1;
+    max-height: 300px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-sizing: border-box;
+    padding: 10px;
+
+}
+
+#add-layer {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+#toggle-dataset-container {
+    width: 100%;
+    text-align: center;
+}
+
+#toggle-dataset-btn {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    padding: 5px;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    border-radius: 100%;
+    box-shadow: 0px 1px 10px #999;
+    transition: transform 1s ease;
+}
+
+#toggle-dataset-btn.active {
+    transform: rotate(-180deg);
 }

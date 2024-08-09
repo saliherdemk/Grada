@@ -2,6 +2,8 @@ let mainOrganizer;
 let editLayerOrganizer;
 let editMLPOrganizer;
 let iManager;
+let tableOrganizer;
+let datasetOrganizer;
 
 let canvasManager;
 
@@ -17,7 +19,9 @@ let mainSketch = function (p) {
     mainOrganizer = new MainOrganizer();
     editMLPOrganizer = new EditMLPOrganizer();
     iManager = new InteractionManager();
-    mainOrganizer.addSchema(new Schema(300, 300));
+    tableOrganizer = new TableOrganizer();
+    datasetOrganizer = new DatasetOrganizer();
+    // mainOrganizer.addSchema(new Schema(300, 300));
   };
 
   p.draw = function () {
@@ -61,11 +65,12 @@ let mainSketch = function (p) {
 
     if (k == "escape") {
       editMLPOrganizer.disable();
+      mainOrganizer.enable();
     }
   };
 
   p.doubleClicked = function () {
-    mainOrganizer.schemas.forEach((schema) => schema.handleDoubleClicked());
+    iManager.handleDoubleClicked();
   };
   p.windowResized = function () {
     p.resizeCanvas(p.windowWidth, p.windowHeight);

@@ -2,10 +2,24 @@ class MainOrganizer {
   constructor() {
     this.activeLine = null;
     this.schemas = [];
-    this.displayedFps = 0;
-    this.fps = 0;
-    this.counter = 0;
+    this.mainDisabled = false;
     this.setImages();
+  }
+
+  enable() {
+    getElementById("disable-background").style.display = "none";
+    getElementById("create-dataset-container").style.display = "none";
+    getElementById("canvas-parent").style.display = "none";
+    this.mainDisabled = false;
+  }
+
+  disable() {
+    getElementById("disable-background").style.display = "flex";
+    this.mainDisabled = true;
+  }
+
+  isDisabled() {
+    return this.mainDisabled;
   }
 
   setImages() {
@@ -17,18 +31,6 @@ class MainOrganizer {
       lockOpen: p.loadImage("media/lock-open.png"),
     };
   }
-
-  accumulateFps() {
-    this.fps += getFps();
-    this.counter++;
-  }
-
-  updateDisplay() {
-    this.displayedFps = parseFloat((this.fps / this.counter).toFixed(2));
-    this.counter = 0;
-    this.fps = 0;
-  }
-
   getImageByKey(key) {
     return this.images[key];
   }
@@ -50,21 +52,7 @@ class MainOrganizer {
     this.activeLine = line;
   }
 
-  showFps() {
-    const commands = [
-      {
-        func: "text",
-        args: ["FPS:" + this.displayedFps, 500, 10, 25, 25],
-      },
-    ];
-
-    executeDrawingCommands(commands);
-  }
-
   draw() {
-    this.showFps();
-    this.accumulateFps();
-    this.counter == 100 && this.updateDisplay();
     this.schemas.forEach((schema) => schema.draw());
     this.getActiveLine()?.draw();
   }
