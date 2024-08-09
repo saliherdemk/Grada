@@ -35,6 +35,7 @@ function setElementProperties(elId, properties) {
 }
 
 function addEventToElement(elId, eventName, func) {
+  console.log(elId);
   getElementById(elId).addEventListener(eventName, func);
 }
 
@@ -94,4 +95,18 @@ function scaleCanvas(event) {
 
 function handleCreateDataset() {
   tableOrganizer.createDataset();
+}
+
+function createButton(parentId = null) {
+  const btn = document.createElement("button");
+  const parent = getElementById(parentId);
+  if (parent) {
+    parent.appendChild(btn);
+  }
+  return btn;
+}
+
+function toggleDatasetsContainer() {
+  getElementById("datasets-container").classList.toggle("active");
+  getElementById("toggle-dataset-btn").classList.toggle("active");
 }

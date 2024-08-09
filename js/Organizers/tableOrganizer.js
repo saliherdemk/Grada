@@ -7,7 +7,19 @@ class TableOrganizer {
 
   createDataset() {
     const { table, rowCount, colCount } = this.getTableProps();
-    console.log(table.querySelectorAll("input"));
+    const name = getElementById("dataset-name-inp").value;
+    const data = [];
+
+    for (let i = 0; i < rowCount - 1; i++) {
+      const values = [];
+      for (let j = 1; j < colCount; j++) {
+        const cellInput = table.rows[i].cells[j].querySelector("input");
+        values.push(cellInput.value);
+      }
+      data.push(values);
+    }
+
+    datasetOrganizer.addDataset(name, data);
   }
 
   getTableProps() {
@@ -41,14 +53,14 @@ class TableOrganizer {
   }
 
   createAddButtons() {
-    const addRowBtn = document.createElement("button");
+    const addRowBtn = createButton();
     addRowBtn.innerText = "+";
     addRowBtn.classList.add("table-add-btn");
     addRowBtn.onclick = () => {
       this.addRow();
     };
 
-    const addColBtn = document.createElement("button");
+    const addColBtn = createButton();
     addColBtn.innerText = "+";
     addColBtn.classList.add("table-add-btn");
     addColBtn.onclick = () => {

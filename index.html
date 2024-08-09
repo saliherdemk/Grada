@@ -5,14 +5,6 @@
     <link href="table.css" rel="stylesheet" />
   </head>
   <body>
-    <div style="position: absolute">
-      <button id="add-layer" type="button" onclick="addLayer()">
-        Add Layer
-      </button>
-      <button onclick="logMLPs()" type="">Log Mlps</button>
-      <button onclick="openCreateDataset()" type="">Create Dataset</button>
-    </div>
-
     <div id="mlp-edit-container">
       <div>
         <label for="mlp-label">Name</label><br />
@@ -167,12 +159,36 @@
       </div>
     </div>
 
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"
-      integrity="sha512-d6sc8kbZEtA2LwB9m/ck0FhvyUwVfdmvTeyJRprmj7Wg9wRFtHDIpr6qk4g/y3Ix3O9I6KHIv6SGu9f7RaP1Gw=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
+    <div class="control-container">
+      <div id="toggle-dataset-container">
+        <img
+          class="active"
+          id="toggle-dataset-btn"
+          src="media/arrow.svg"
+          onclick="toggleDatasetsContainer()"
+          alt=""
+        />
+      </div>
+      <div id="datasets-container">
+        <div>Datasets</div>
+        <div id="dataset-scrollable"></div>
+        <button onclick="openCreateDataset()" class="btn btn-sky">
+          Create Dataset
+        </button>
+        <button
+          id="add-layer"
+          type="button"
+          class="btn btn-green"
+          onclick="addLayer()"
+        >
+          Add Layer
+        </button>
+      </div>
+    </div>
+
+    <button onclick="logMLPs()" type="">Log Mlps</button>
+
+    <script src="js/p5.min.js"></script>
 
     <script src="js/script.js"></script>
 
@@ -181,11 +197,13 @@
     <script src="js/Managers/eventManager.js"></script>
 
     <script src="js/Organizers/tableOrganizer.js"></script>
+    <script src="js/Organizers/datasetOrganizer.js"></script>
     <script src="js/Organizers/mainOrganizer.js"></script>
     <script src="js/Organizers/editOrganizer.js"></script>
     <script src="js/Organizers/editLayerOrganizer.js"></script>
     <script src="js/Organizers/editMlpOrganizer.js"></script>
 
+    <script src="js/MLP/Dataset.js"></script>
     <script src="js/MLP/Value.js"></script>
     <script src="js/MLP/ActFunctions.js"></script>
     <script src="js/MLP/Neuron.js"></script>
