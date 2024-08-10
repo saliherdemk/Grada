@@ -2,11 +2,15 @@ class LayerView extends Draggable {
   constructor(x, y, w, h, parent) {
     super(x, y, w, h);
     this.parent = parent;
+    this.neurons = [];
     this.inputDot = null;
     this.outputDot = null;
     this.label = "";
     this.removeButton;
     this.editMode = true;
+    this.shrank = false;
+    this.shownNeurons = { num: 0, indexes: [] };
+
     this.initializeDots();
   }
 
@@ -38,6 +42,12 @@ class LayerView extends Draggable {
     return [this.inputDot, this.outputDot];
   }
 
+  postUpdateCoordinates() {
+    this.updateButtonCoordinates();
+    this.updateNeuronsCoordinates();
+    this.parent?.updateBorders();
+  }
+
   setCoordinates(x, y) {
     this.x = x;
     this.y = y;
@@ -48,12 +58,65 @@ class LayerView extends Draggable {
     this.label = label;
   }
 
+  setParent(parent) {
+    this.parent = parent;
+  }
+
   isEditModeOpen() {
     return this.editMode;
   }
 
+  isShrank() {
+    return this.shrank;
+  }
+
   toggleEditMode() {
     this.editMode = !this.editMode;
+  }
+
+  pushNeuron() {
+    this.neurons.push(new DrawNeuron());
+  }
+
+  popNeuron() {
+    this.neurons.pop();
+  }
+
+  getNeuronNum() {
+    return this.neurons.length;
+  }
+
+  getShownNeuronsNum() {
+    return this.shownNeurons.num;
+  }
+
+  setShownNeuronsNum(shownNeuronsNum) {
+    this.shownNeurons.num = this.isShrank()
+      ? shownNeuronsNum
+      : this.getNeuronNum();
+    this.setShownNeurons();
+    editLayerOrganizer.isEnabled && editLayerOrganizer.setInfoText();
+  }
+
+  // GIANT MESS -> LESS GIANT MESS -> Acceptable mess
+  setShownNeurons() {
+    this.shownNeurons.indexes = [];
+    const shownNeuronsNum = this.getShownNeuronsNum();
+    const neuronsNum = this.getNeuronNum();
+    this.infoBox.val = neuronsNum - shownNeuronsNum;
+    const mid =
+      (this.parent ? shownNeuronsNum : Math.min(shownNeuronsNum, 5)) / 2;
+
+    this.neurons.forEach((neuron, i) => {
+      if (i < mid || i >= neuronsNum - mid) {
+        neuron.visible();
+        this.shownNeurons.indexes.push(i);
+      } else {
+        neuron.hide();
+      }
+    });
+
+    this.updateNeuronsCoordinates();
   }
 
   isIsolated() {
@@ -84,12 +147,12 @@ class LayerView extends Draggable {
     const [x, y] = [newLayers[0].x, newLayers[0].y];
 
     // FIXME: Don't destroy and recreate, just move -> Done but not satisfying
-    const newSchema = new Schema(x, y);
+    const newMlpView = new MlpView(x, y);
 
-    newSchema.setLayers(newLayers);
-    newSchema.updateBorders();
+    newMlpView.setLayers(newLayers);
+    newMlpView.updateBorders();
     parent.updateBorders();
-    mainOrganizer.addSchema(newSchema);
+    mainOrganizer.addMlpView(newMlpView);
   }
 
   reconnectNeurons() {

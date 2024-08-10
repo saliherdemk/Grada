@@ -60,7 +60,7 @@ let mainSketch = function (p) {
   p.keyPressed = function () {
     const k = p.key.toLowerCase();
     if (k == "e") {
-      mainOrganizer.schemas.forEach((schema) => schema.handleKeyPressed());
+      mainOrganizer.mlpViews.forEach((mlpView) => mlpView.handleKeyPressed());
     }
 
     if (k == "escape") {

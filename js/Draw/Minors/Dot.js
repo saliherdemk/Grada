@@ -17,15 +17,15 @@ class Dot {
 
   occupy() {
     this.occupied = true;
-    this.parent.removeButton.changeImg("brokenLink");
+    this.parent.removeButton?.changeImg("brokenLink");
   }
 
   free() {
     this.occupied = false;
     const parent = this.parent;
-    const allFree = parent.getDots().every((d) => !d.isOccupied());
+    const allFree = parent.getDots().every((d) => !d?.isOccupied());
 
-    allFree && parent.removeButton.changeImg("delete");
+    allFree && parent.removeButton?.changeImg("delete");
   }
 
   destroy() {
@@ -42,7 +42,7 @@ class Dot {
     this.rollover = iManager.isHovered(this);
   }
 
-  combineSchemas() {
+  combineMlpViews() {
     const activeLine = mainOrganizer.getActiveLine();
     if (!activeLine) return;
 
@@ -52,6 +52,7 @@ class Dot {
       ? [layer1, layer2]
       : [layer2, layer1];
 
+    console.log(majorLayer, minorLayer);
     majorLayer.connectLayer(minorLayer);
     mainOrganizer.setActiveLine(null);
   }
@@ -70,7 +71,7 @@ class Dot {
       return;
     }
 
-    this.combineSchemas();
+    this.combineMlpViews();
   }
 
   show() {

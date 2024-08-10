@@ -162,14 +162,13 @@
     <div class="control-container">
       <div id="toggle-dataset-container">
         <img
-          class="active"
           id="toggle-dataset-btn"
           src="media/arrow.svg"
           onclick="toggleDatasetsContainer()"
           alt=""
         />
       </div>
-      <div id="datasets-container">
+      <div id="datasets-container" class="active">
         <div>Datasets</div>
         <div id="dataset-scrollable"></div>
         <button onclick="openCreateDataset()" class="btn btn-sky">
@@ -218,6 +217,9 @@
 
     <script src="js/Draw/Layer/LayerView.js"></script>
     <script src="js/Draw/Layer/HiddenLayer.js"></script>
+
+    <script src="js/Draw/InputView.js"></script>
+    <script src="js/Draw/OutputView.js"></script>
 
     <script src="js/Draw/NeuronView.js"></script>
 

@@ -8,6 +8,16 @@ class DatasetOrganizer {
     const btn = createButton("dataset-scrollable");
     btn.innerText = name;
     btn.setAttribute("id", id);
+    btn.onclick = () => {
+      const dataset = this.getDatasetById(id);
+      const newMlpView = new MlpView(
+        500,
+        500,
+        new InputView(name, dataset.trainX),
+      );
+      mainOrganizer.addMlpView(newMlpView);
+      mainOrganizer.addOutputView(new OutputView(name, dataset.trainY));
+    };
     btn.classList.add("btn", "btn-gray");
   }
 
@@ -22,6 +32,6 @@ class DatasetOrganizer {
   }
 
   getDatasetById(id) {
-    return this.datasets.filter((d) => d.id == id);
+    return this.datasets.find((d) => d.id == id);
   }
 }

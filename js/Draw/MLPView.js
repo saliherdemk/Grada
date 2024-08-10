@@ -1,14 +1,21 @@
-class Schema extends Draggable {
-  constructor(x, y) {
+class MlpView extends Draggable {
+  constructor(x, y, initialLayer = null) {
     super(x, y);
-    this.layers = [new HiddenLayer(this.x, this.y, this)];
+    this.layers = [];
     this.label = "MLP1";
     this.lr = 0.1;
     this.batchSize = 1;
     this.propsShown = true;
     this.selected = false;
     this.layersLocked = false; // maybe we can get rid of this
+    this.initializeLayers(initialLayer);
     this.updateBorders();
+  }
+
+  initializeLayers(initialLayer) {
+    const layer = initialLayer ?? new HiddenLayer(this.x, this.y, this);
+    layer.setParent(this);
+    this.layers.push(layer);
   }
 
   select() {
@@ -39,6 +46,11 @@ class Schema extends Draggable {
 
   setBatchSize(batchSize) {
     this.batchSize = batchSize;
+  }
+
+  setLayers(layers) {
+    this.layers.forEach((l) => l.destroy());
+    this.layers = layers;
   }
 
   isPropsShown() {
@@ -81,15 +93,15 @@ class Schema extends Draggable {
   setLayers(layers) {
     this.layers = layers;
     layers.forEach((l) => {
-      l.parent = this;
+      l.setParent(this);
     });
   }
 
-  moveLayers(targetSchema) {
+  moveLayers(targetMlpView) {
     this.getLayers().forEach((layer) => {
-      targetSchema.pushLayer(layer);
+      targetMlpView.pushLayer(layer);
     });
-    targetSchema.updateBorders();
+    targetMlpView.updateBorders();
     this.setLayers([]);
     this.destroy();
   }
@@ -100,7 +112,7 @@ class Schema extends Draggable {
     if (editMLPOrganizer.getSelected() == this) {
       editMLPOrganizer.disable();
     }
-    mainOrganizer.removeSchema(this);
+    mainOrganizer.removeMlpView(this);
   }
 
   pushLayer(layer) {
@@ -140,18 +152,18 @@ class Schema extends Draggable {
     this.getLayers().forEach((layer) => layer.pressed());
     if (iManager.isBusy()) return;
     this.pressed();
-    if (iManager.isBusy()) return;
-    iManager.enableCanvasDragging();
-    iManager.setLastMouseCoordinates();
   }
 
   resetCoordinates() {
     const layers = this.getLayers();
     const originLayer = layers[0];
 
+    let lastX = originLayer.x;
+
     layers.forEach((layer, index) => {
       const y = originLayer.y - (layer.h - originLayer.h) / 2;
-      const x = originLayer.x + index * layer.w * 2;
+      const x = lastX + (index != 0) * layer.w * 2;
+      lastX = x + layer.w;
       layer.setCoordinates(x, y);
       layer.parent.updateBorders();
     });
