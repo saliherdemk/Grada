@@ -31,6 +31,9 @@ class MainOrganizer {
       delete: p.loadImage("media/delete-icon.png"),
       lock: p.loadImage("media/lock.png"),
       lockOpen: p.loadImage("media/lock-open.png"),
+      goOnce: p.loadImage("media/goOnce.png"),
+      play: p.loadImage("media/play.png"),
+      pause: p.loadImage("media/pause.png"),
     };
   }
   getImageByKey(key) {

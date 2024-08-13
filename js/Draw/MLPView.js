@@ -3,19 +3,84 @@ class MlpView extends Draggable {
     super(x, y);
     this.layers = [];
     this.label = "MLP1";
+    this.origin = null;
     this.lr = 0.1;
     this.batchSize = 1;
     this.propsShown = true;
     this.selected = false;
-    this.layersLocked = false; // maybe we can get rid of this
+    this.initialized = false;
+    this.buttons = [];
+    this.initializeButtons();
     this.initializeLayers(initialLayer);
     this.updateBorders();
+  }
+
+  getToggleMlpButton() {
+    return this.buttons[0];
+  }
+
+  isInitialized() {
+    return this.initialized;
+  }
+
+  createToggleMlpButton() {
+    const btn = new TextButton("Initialize MLP", () => {
+      this.toggleMlp();
+    });
+    btn.setDimensions(100, 25).disable();
+    return btn;
+  }
+
+  initializeButtons() {
+    this.buttons.push(this.createToggleMlpButton());
   }
 
   initializeLayers(initialLayer) {
     const layer = initialLayer ?? new HiddenLayer(this.x, this.y, this);
     layer.setParent(this);
     this.layers.push(layer);
+  }
+
+  toggleMlp() {
+    if (this.initialized) {
+      this.destroyMlp();
+      this.updateToggleMlpButton("Initialize MLP", "blue");
+    } else {
+      this.createMlp();
+      this.updateToggleMlpButton("Terminate MLP", "red");
+    }
+    this.toggleLockLayers();
+  }
+
+  updateToggleMlpButton(text, theme) {
+    this.getToggleMlpButton().setText(text).setTheme(theme);
+  }
+
+  createMlp() {
+    const layers = this.layers;
+    const mlp = new MLP([], this.lr, this.batchSize);
+    for (let i = 1; i < layers.length; i++) {
+      const layer = layers[i];
+      const layerOrigin = new Layer(
+        layers[i - 1].neurons.length,
+        layer.neurons.length,
+      );
+      layer.setOrigin(layerOrigin);
+      mlp.addLayer(layerOrigin);
+    }
+    this.setOrigin(mlp);
+    this.initialized = true;
+  }
+
+  clearOrigin() {
+    this.layers.forEach((l) => l.clearOrigin());
+    this.origin = null;
+  }
+
+  destroyMlp() {
+    this.origin.destroy();
+    this.clearOrigin();
+    this.initialized = false;
   }
 
   select() {
@@ -32,8 +97,16 @@ class MlpView extends Draggable {
 
   setCoordinates(x, y) {
     this.updateLayersCoordinates(x, y);
-    this.x = x;
-    this.y = y;
+    super.setCoordinates(x, y);
+    this.updateButtonsCoordinates();
+  }
+
+  updateButtonsCoordinates() {
+    const buttons = this.buttons;
+    buttons[0].setCoordinates(
+      this.x + this.w - this.buttons[0].w,
+      this.y + this.h + 5,
+    );
   }
 
   setLabel(label) {
@@ -57,19 +130,22 @@ class MlpView extends Draggable {
     return this.propsShown;
   }
 
+  isCompleted() {
+    const layers = this.layers;
+    return (
+      layers[0] instanceof InputLayer &&
+      layers[layers.length - 1] instanceof OutputLayer
+    );
+  }
+
   togglePropsShown() {
     this.propsShown = !this.propsShown;
   }
 
-  toggleLayersLocks() {
-    this.layersLocked = !this.layersLocked;
+  toggleLockLayers() {
     this.layers.forEach((layer) => {
-      this.layersLocked == layer.isEditModeOpen() && layer.toggleEditMode();
+      this.initialized == layer.isEditModeOpen() && layer.toggleEditMode();
     });
-  }
-
-  areLayersLocked() {
-    return this.layersLocked;
   }
 
   updateLayersCoordinates(newX, newY) {
@@ -97,11 +173,21 @@ class MlpView extends Draggable {
     });
   }
 
+  checkMlpCompleted() {
+    const initializeButton = this.buttons[0];
+    this.isCompleted() ? initializeButton.enable() : initializeButton.disable();
+  }
+
+  setOrigin(obj) {
+    this.origin = obj;
+  }
+
   moveLayers(targetMlpView) {
     this.getLayers().forEach((layer) => {
       targetMlpView.pushLayer(layer);
     });
     targetMlpView.updateBorders();
+    targetMlpView.checkMlpCompleted();
     this.setLayers([]);
     this.destroy();
   }
@@ -140,17 +226,18 @@ class MlpView extends Draggable {
     this.x = firstX - 25;
     this.y = firstY - 35;
     this.h = lastY - firstY + 75;
+    this.updateButtonsCoordinates();
   }
 
   pressed() {
-    if (iManager.checkRollout(this) && getMouseButton() == "right") {
-      this.toggleLayersLocks();
-    }
+    iManager.checkRollout(this);
   }
 
   handlePressed() {
     this.getLayers().forEach((layer) => layer.pressed());
     if (iManager.isBusy()) return;
+
+    this.buttons.forEach((btn) => btn.handlePressed());
     this.pressed();
   }
 
@@ -162,7 +249,7 @@ class MlpView extends Draggable {
 
     layers.forEach((layer, index) => {
       const y = originLayer.y - (layer.h - originLayer.h) / 2;
-      const x = lastX + (index != 0) * layer.w * 2;
+      const x = lastX + (index != 0) * 50;
       lastX = x + layer.w;
       layer.setCoordinates(x, y);
       layer.parent.updateBorders();
@@ -227,5 +314,6 @@ class MlpView extends Draggable {
     this.show();
     this.isPropsShown() && this.showProps();
     this.getLayers().forEach((layer) => layer.draw());
+    this.buttons.forEach((btn) => btn.draw());
   }
 }

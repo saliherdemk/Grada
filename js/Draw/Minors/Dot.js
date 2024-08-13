@@ -52,7 +52,6 @@ class Dot {
       ? [layer1, layer2]
       : [layer2, layer1];
 
-    console.log(majorLayer, minorLayer);
     majorLayer.connectLayer(minorLayer);
     mainOrganizer.setActiveLine(null);
   }
@@ -76,9 +75,12 @@ class Dot {
 
   show() {
     const r = this.r + (this.rollover ? 5 : 0);
+    const start = this.isInput() ? HALF_PI : PI + TWO_PI + HALF_PI;
+    const stop = this.isInput() ? HALF_PI + PI : HALF_PI;
+
     const commands = [
       { func: "fill", args: this.isOccupied() ? [0, 255, 0] : [255, 0, 0] },
-      { func: "circle", args: [this.x, this.y, r] },
+      { func: "arc", args: [this.x, this.y, r, r, start, stop] },
     ];
 
     executeDrawingCommands(commands);

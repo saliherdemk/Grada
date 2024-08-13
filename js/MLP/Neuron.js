@@ -25,4 +25,9 @@ class Neuron {
   change_act_func(act_func) {
     this.act_func = act_func;
   }
+
+  destroy() {
+    this.b = null;
+    this.w = [];
+  }
 }

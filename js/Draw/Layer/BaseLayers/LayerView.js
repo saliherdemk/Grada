@@ -2,6 +2,7 @@ class LayerView extends Draggable {
   constructor(x, y, w, h, parent) {
     super(x, y, w, h);
     this.parent = parent;
+    this.origin = null;
     this.neurons = [];
     this.inputDot = null;
     this.outputDot = null;
@@ -17,7 +18,7 @@ class LayerView extends Draggable {
   initializeDots() {}
 
   initializeButton() {
-    this.removeButton = new CanvasButton("delete", () => this.handleRemove());
+    this.removeButton = new ImageButton("delete", () => this.handleRemove());
     this.updateButtonCoordinates();
   }
 
@@ -48,9 +49,25 @@ class LayerView extends Draggable {
     this.parent?.updateBorders();
   }
 
+  clearOrigin() {
+    this.neurons.forEach((n) => n.clearOrigin());
+    this.origin = null;
+  }
+
+  setOrigin(obj) {
+    // Thanks to MLP class, we can't get rid of this mess. There is no input layer in original MLP class and all weights belongs to target neurons. Too much work to change. Maybe later.
+    const { prev } = this.parent.getPrevAndNext(this);
+    for (let i = 0; i < this.neurons.length; i++) {
+      for (let j = 0; j < prev.neurons.length; j++) {
+        this.neurons[i].setOrigin(obj.neurons[i]);
+        prev.neurons[j].lines[i].setOrigin(obj.neurons[i].w[j]);
+      }
+    }
+    this.origin = obj;
+  }
+
   setCoordinates(x, y) {
-    this.x = x;
-    this.y = y;
+    super.setCoordinates(x, y);
     this.postUpdateCoordinates();
   }
 
@@ -75,7 +92,7 @@ class LayerView extends Draggable {
   }
 
   pushNeuron() {
-    this.neurons.push(new DrawNeuron());
+    this.neurons.push(new NeuronView());
   }
 
   popNeuron() {
@@ -152,6 +169,7 @@ class LayerView extends Draggable {
     newMlpView.setLayers(newLayers);
     newMlpView.updateBorders();
     parent.updateBorders();
+    parent.checkMlpCompleted();
     mainOrganizer.addMlpView(newMlpView);
   }
 
@@ -168,7 +186,7 @@ class LayerView extends Draggable {
 
   connectNeurons(targetLayer) {
     this.neurons.forEach((n1) => {
-      n1.setLines([]);
+      n1.removeLines();
       targetLayer.neurons.forEach((n2) => {
         n1.addLine(new Line(n1, n2));
       });

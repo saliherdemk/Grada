@@ -40,9 +40,6 @@
       <button id="mlp-reset-btn" class="btn btn-yellow" type="button">
         Reset Coordinates
       </button>
-      <button id="toggle-layers-locks" class="btn btn-blue" type="button">
-        Lock Layers
-      </button>
 
       <button id="mlp-delete-btn" class="btn btn-rose" type="button">
         Delete
@@ -211,15 +208,17 @@
 
     <script src="js/draggable.js"></script>
 
-    <script src="js/Draw/Minors/CanvasButton.js"></script>
+    <script src="js/Draw/Minors/Buttons/CanvasButton.js"></script>
+    <script src="js/Draw/Minors/Buttons/ImageButton.js"></script>
+    <script src="js/Draw/Minors/Buttons/TextButton.js"></script>
     <script src="js/Draw/Minors/Dot.js"></script>
     <script src="js/Draw/Minors/Line.js"></script>
 
-    <script src="js/Draw/Layer/LayerView.js"></script>
+    <script src="js/Draw/Layer/BaseLayers/LayerView.js"></script>
+    <script src="js/Draw/Layer/BaseLayers/IOLayer.js"></script>
     <script src="js/Draw/Layer/HiddenLayer.js"></script>
-
-    <script src="js/Draw/InputView.js"></script>
-    <script src="js/Draw/OutputView.js"></script>
+    <script src="js/Draw/Layer/InputLayer.js"></script>
+    <script src="js/Draw/Layer/OutputLayer.js"></script>
 
     <script src="js/Draw/NeuronView.js"></script>
 

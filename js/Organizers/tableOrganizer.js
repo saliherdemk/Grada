@@ -168,10 +168,10 @@ class TableOrganizer {
     const removeRowBtn = document.createElement("span");
     removeRowBtn.className = "remove-row-btn";
     removeRowBtn.innerText = "-";
-    removeRowBtn.onclick = function () {
-      const { table } = getTableProps();
+    removeRowBtn.onclick = () => {
+      const { table } = this.getTableProps();
       table.deleteRow(i);
-      updateRemoveButtons();
+      this.updateRemoveButtons();
     };
     return removeRowBtn;
   }
@@ -180,12 +180,12 @@ class TableOrganizer {
     const removeColBtn = document.createElement("span");
     removeColBtn.className = "remove-col-btn";
     removeColBtn.innerText = "-";
-    removeColBtn.onclick = function () {
+    removeColBtn.onclick = () => {
       const { table, rowCount } = this.getTableProps();
       for (let j = 0; j < rowCount; j++) {
         table.rows[j].deleteCell(i);
       }
-      updateRemoveButtons();
+      this.updateRemoveButtons();
     };
 
     return removeColBtn;

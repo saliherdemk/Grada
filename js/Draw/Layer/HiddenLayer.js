@@ -18,7 +18,7 @@ class HiddenLayer extends LayerView {
   initializeNeurons() {
     const numOfNeurons = parseInt(Math.random() * 7) + 1;
     for (let i = 0; i < numOfNeurons; i++) {
-      this.neurons.push(new DrawNeuron());
+      this.neurons.push(new NeuronView());
     }
 
     this.setShownNeuronsNum(this.getNeuronNum());

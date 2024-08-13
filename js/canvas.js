@@ -11,17 +11,12 @@ let mainSketch = function (p) {
   p.setup = function () {
     p.createCanvas(p.windowWidth, p.windowHeight).parent(document.body);
 
-    // FIXME: FIX THAT PASSING NON-SENSE
-    // right now have to pass bottom of the tree
-    // find a convenient way -> NICE
-
     canvasManager = new CanvasManager(p);
     mainOrganizer = new MainOrganizer();
     editMLPOrganizer = new EditMLPOrganizer();
     iManager = new InteractionManager();
     tableOrganizer = new TableOrganizer();
     datasetOrganizer = new DatasetOrganizer();
-    // mainOrganizer.addSchema(new Schema(300, 300));
   };
 
   p.draw = function () {

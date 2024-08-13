@@ -1,9 +1,19 @@
-class DrawNeuron {
+class NeuronView {
   constructor() {
     this.x;
     this.y;
     this.hidden = false;
     this.lines = [];
+    this.origin = null;
+  }
+
+  clearOrigin() {
+    this.lines.forEach((l) => l.clearOrigin());
+    this.origin = null;
+  }
+
+  setOrigin(obj) {
+    this.origin = obj;
   }
 
   isHidden() {
