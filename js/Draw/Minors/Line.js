@@ -19,7 +19,7 @@ class Line {
   }
 
   getWeight() {
-    return this.w?.data.toFixed(4).toString() ?? "";
+    return this.w?.getFixedData(4) ?? "";
   }
 
   destroy() {
@@ -48,7 +48,7 @@ class Line {
     let offsetX = (lineLength - totalTextWidth) / 2;
 
     let x = x1 + cos(angle) * offsetX;
-    let y = y1 + sin(angle) * offsetX;
+    let y = y1 - 2 + sin(angle) * offsetX;
 
     for (let i = 0; i < text.length; i++) {
       const commands = [
@@ -57,6 +57,7 @@ class Line {
           args: [x, y],
         },
         { func: "rotate", args: [angle] },
+        { func: "textSize", args: [8] },
         { func: "text", args: [text[i], 0, 0] },
       ];
       executeDrawingCommands(commands);

@@ -4,6 +4,7 @@ let editMLPOrganizer;
 let iManager;
 let tableOrganizer;
 let datasetOrganizer;
+let themeManager;
 
 let canvasManager;
 
@@ -11,6 +12,7 @@ let mainSketch = function (p) {
   p.setup = function () {
     p.createCanvas(p.windowWidth, p.windowHeight).parent(document.body);
 
+    themeManager = new ThemeManager();
     canvasManager = new CanvasManager(p);
     mainOrganizer = new MainOrganizer();
     editMLPOrganizer = new EditMLPOrganizer();

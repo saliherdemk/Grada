@@ -9,14 +9,11 @@ class MlpView extends Draggable {
     this.propsShown = true;
     this.selected = false;
     this.initialized = false;
-    this.buttons = [];
-    this.initializeButtons();
+    this.controlButtons = [];
+    this.initButton;
+    this.createToggleMlpButton();
     this.initializeLayers(initialLayer);
     this.updateBorders();
-  }
-
-  getToggleMlpButton() {
-    return this.buttons[0];
   }
 
   isInitialized() {
@@ -27,12 +24,34 @@ class MlpView extends Draggable {
     const btn = new TextButton("Initialize MLP", () => {
       this.toggleMlp();
     });
-    btn.setDimensions(100, 25).disable();
-    return btn;
+    btn.setDimensions(100, 35).disable();
+    this.initButton = btn;
   }
 
-  initializeButtons() {
-    this.buttons.push(this.createToggleMlpButton());
+  createGoOnceButton() {
+    const btn = new TextButton("Go Once", () => {
+      console.log("go once");
+    });
+    btn.setDimensions(75, 35).setTheme("green");
+    this.controlButtons.push(btn);
+  }
+  createTogglePlayButton() {
+    const btn = new TextButton("Play", () => {
+      console.log("play");
+    });
+    btn.setDimensions(75, 35).setTheme("cyan");
+    this.controlButtons.push(btn);
+  }
+
+  destroyControlButtons() {
+    this.controlButtons.forEach((b) => b.destroy()); // probably no needed
+    this.controlButtons = [];
+  }
+
+  createControlButtons() {
+    this.createGoOnceButton();
+    this.createTogglePlayButton();
+    this.updateButtonsCoordinates();
   }
 
   initializeLayers(initialLayer) {
@@ -42,21 +61,15 @@ class MlpView extends Draggable {
   }
 
   toggleMlp() {
-    if (this.initialized) {
-      this.destroyMlp();
-      this.updateToggleMlpButton("Initialize MLP", "blue");
-    } else {
-      this.createMlp();
-      this.updateToggleMlpButton("Terminate MLP", "red");
-    }
+    this.isInitialized() ? this.destroyMlp() : this.initializeMlp();
     this.toggleLockLayers();
   }
 
   updateToggleMlpButton(text, theme) {
-    this.getToggleMlpButton().setText(text).setTheme(theme);
+    this.initButton.setText(text).setTheme(theme);
   }
 
-  createMlp() {
+  initializeMlp() {
     const layers = this.layers;
     const mlp = new MLP([], this.lr, this.batchSize);
     for (let i = 1; i < layers.length; i++) {
@@ -70,6 +83,8 @@ class MlpView extends Draggable {
     }
     this.setOrigin(mlp);
     this.initialized = true;
+    this.updateToggleMlpButton("Terminate MLP", "red");
+    this.createControlButtons();
   }
 
   clearOrigin() {
@@ -81,6 +96,8 @@ class MlpView extends Draggable {
     this.origin.destroy();
     this.clearOrigin();
     this.initialized = false;
+    this.updateToggleMlpButton("Initialize MLP", "blue");
+    this.destroyControlButtons();
   }
 
   select() {
@@ -102,11 +119,14 @@ class MlpView extends Draggable {
   }
 
   updateButtonsCoordinates() {
-    const buttons = this.buttons;
-    buttons[0].setCoordinates(
-      this.x + this.w - this.buttons[0].w,
-      this.y + this.h + 5,
-    );
+    const initBtn = this.initButton;
+    const y = this.y + this.h + 5;
+    initBtn.setCoordinates(this.x + this.w - initBtn.w, y);
+
+    this.controlButtons.forEach((b, i) => {
+      const x = this.x + (this.w - b.w) / 2 + (i % 2 ? 1 : -1) * 40;
+      b.setCoordinates(x, y);
+    });
   }
 
   setLabel(label) {
@@ -174,8 +194,8 @@ class MlpView extends Draggable {
   }
 
   checkMlpCompleted() {
-    const initializeButton = this.buttons[0];
-    this.isCompleted() ? initializeButton.enable() : initializeButton.disable();
+    const initBtn = this.initButton;
+    this.isCompleted() ? initBtn.enable() : initBtn.disable();
   }
 
   setOrigin(obj) {
@@ -190,15 +210,6 @@ class MlpView extends Draggable {
     targetMlpView.checkMlpCompleted();
     this.setLayers([]);
     this.destroy();
-  }
-
-  destroy() {
-    this.getLayers().forEach((l) => l.destroy());
-    this.setLayers([]);
-    if (editMLPOrganizer.getSelected() == this) {
-      editMLPOrganizer.disable();
-    }
-    mainOrganizer.removeMlpView(this);
   }
 
   pushLayer(layer) {
@@ -237,7 +248,8 @@ class MlpView extends Draggable {
     this.getLayers().forEach((layer) => layer.pressed());
     if (iManager.isBusy()) return;
 
-    this.buttons.forEach((btn) => btn.handlePressed());
+    this.controlButtons.forEach((btn) => btn.handlePressed());
+    this.initButton.handlePressed();
     this.pressed();
   }
 
@@ -281,6 +293,15 @@ class MlpView extends Draggable {
     // So we need to call handleRelease to free iManager
   }
 
+  destroy() {
+    this.getLayers().forEach((l) => l.destroy());
+    this.setLayers([]);
+    if (editMLPOrganizer.getSelected() == this) {
+      editMLPOrganizer.disable();
+    }
+    mainOrganizer.removeMlpView(this);
+  }
+
   showProps() {
     const commands = [
       {
@@ -314,6 +335,7 @@ class MlpView extends Draggable {
     this.show();
     this.isPropsShown() && this.showProps();
     this.getLayers().forEach((layer) => layer.draw());
-    this.buttons.forEach((btn) => btn.draw());
+    this.controlButtons.forEach((btn) => btn.draw());
+    this.initButton.draw();
   }
 }

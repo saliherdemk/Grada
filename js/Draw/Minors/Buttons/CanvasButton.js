@@ -32,7 +32,6 @@ class CanvasButton {
 
   destroy() {
     this.onClick = null;
-    this.img = null;
   }
 
   setCoordinates(x, y) {

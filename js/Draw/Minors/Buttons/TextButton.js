@@ -13,17 +13,11 @@ class TextButton extends CanvasButton {
 
   getTheme() {
     const alpha = this.isDisabled() ? 125 : 255;
-    let defaultColor;
-    let activeColor;
-    if (this.theme == "blue") {
-      defaultColor = [0, 86, 179, alpha];
-      activeColor = [0, 123, 255, alpha];
-    } else if (this.theme == "red") {
-      defaultColor = [244, 63, 94, alpha];
-      activeColor = [199, 44, 72, alpha];
-    }
-
-    return { defaultColor, activeColor };
+    const { defaultColor, activeColor } = themeManager.getTheme(this.theme);
+    return {
+      defaultColor: [...defaultColor, alpha],
+      activeColor: [...activeColor, alpha],
+    };
   }
 
   setText(text) {
