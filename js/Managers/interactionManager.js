@@ -71,7 +71,15 @@ class InteractionManager {
 
   handlePress() {
     if (mainOrganizer.isDisabled()) return;
-    mainOrganizer.schemas.forEach((schema) => schema.handlePressed());
+
+    mainOrganizer.inputViews.forEach((dsView) => dsView.handlePressed());
+    mainOrganizer.outputViews.forEach((dsView) => dsView.handlePressed());
+    if (iManager.isBusy()) return;
+    mainOrganizer.mlpViews.forEach((mlpView) => mlpView.handlePressed());
+    if (iManager.isBusy()) return;
+
+    iManager.enableCanvasDragging();
+    iManager.setLastMouseCoordinates();
   }
 
   handleDrag() {
@@ -93,7 +101,7 @@ class InteractionManager {
 
   handleDoubleClicked() {
     if (mainOrganizer.isDisabled()) return;
-    mainOrganizer.schemas.forEach((schema) => schema.handleDoubleClicked());
+    mainOrganizer.mlpViews.forEach((mlpView) => mlpView.handleDoubleClicked());
   }
 
   isHovered(obj) {

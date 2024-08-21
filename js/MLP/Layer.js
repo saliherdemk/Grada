@@ -17,4 +17,8 @@ class Layer {
     this.act_func = act_func;
     this.neurons.forEach((neuron) => neuron.change_act_func(this.act_func));
   }
+
+  destroy() {
+    this.neurons.forEach((neuron) => neuron.destroy());
+  }
 }

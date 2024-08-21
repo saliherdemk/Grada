@@ -1,7 +1,9 @@
 class MainOrganizer {
   constructor() {
     this.activeLine = null;
-    this.schemas = [];
+    this.inputViews = [];
+    this.mlpViews = [];
+    this.outputViews = [];
     this.mainDisabled = false;
     this.setImages();
   }
@@ -29,19 +31,30 @@ class MainOrganizer {
       delete: p.loadImage("media/delete-icon.png"),
       lock: p.loadImage("media/lock.png"),
       lockOpen: p.loadImage("media/lock-open.png"),
+      goOnce: p.loadImage("media/goOnce.png"),
+      play: p.loadImage("media/play.png"),
+      pause: p.loadImage("media/pause.png"),
     };
   }
   getImageByKey(key) {
     return this.images[key];
   }
 
-  addSchema(schema) {
-    this.schemas.push(schema);
+  addMlpView(mlpView) {
+    this.mlpViews.push(mlpView);
   }
 
-  removeSchema(schema) {
-    let indexToRemove = this.schemas.findIndex((s) => s === schema);
-    this.schemas.splice(indexToRemove, 1);
+  removeMlpView(mlpView) {
+    let indexToRemove = this.mlpViews.findIndex((s) => s === mlpView);
+    this.mlpViews.splice(indexToRemove, 1);
+  }
+
+  addInputView(inputView) {
+    this.inputViews.push(inputView);
+  }
+
+  addOutputView(outputView) {
+    this.outputViews.push(outputView);
   }
 
   getActiveLine() {
@@ -53,7 +66,9 @@ class MainOrganizer {
   }
 
   draw() {
-    this.schemas.forEach((schema) => schema.draw());
+    this.mlpViews.forEach((mlpView) => mlpView.draw());
+    this.inputViews.forEach((inputView) => inputView.draw());
+    this.outputViews.forEach((outputView) => outputView.draw());
     this.getActiveLine()?.draw();
   }
 }

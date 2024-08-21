@@ -1,6 +1,12 @@
 class MLP {
-  constructor(layers = []) {
+  constructor(layers = [], lr = 0.1, batch_size = 1) {
     this.layers = layers;
+    this.lr = lr;
+    this.batch_size = batch_size;
+  }
+
+  addLayer(layer) {
+    this.layers.push(layer);
   }
 
   predict(x) {
@@ -19,7 +25,16 @@ class MLP {
     return this.layers.flatMap((layer) => layer.parameters());
   }
 
-  train(x_train, y_train, epochs, learning_rate = 0.01) {
+  goOneCycle(trainXData, trainYData) {
+    const loss = loss.add(
+      this.mse(this.predict(trainXData), new Value(trainYData)),
+    );
+    this.getParameters().forEach((p) => (p.grad = 0.0));
+    loss.backprop();
+    this.getParameters().forEach((p) => (p.data += -this.lr * p.grad));
+  }
+
+  train(x_train, y_train, epochs) {
     for (let i = 0; i < epochs; i++) {
       let loss = new Value(0);
       for (let i = 0; i < y_train.length; i++) {
@@ -29,7 +44,11 @@ class MLP {
       }
       this.getParameters().forEach((p) => (p.grad = 0.0));
       loss.backprop();
-      this.getParameters().forEach((p) => (p.data += -learning_rate * p.grad));
+      this.getParameters().forEach((p) => (p.data += -this.lr * p.grad));
     }
+  }
+
+  destroy() {
+    this.layers.forEach((layer) => layer.destroy());
   }
 }

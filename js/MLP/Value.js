@@ -8,6 +8,14 @@ class Value {
     this.backward = () => {};
   }
 
+  getFixedData(fixedNum) {
+    return this.data.toFixed(fixedNum);
+  }
+
+  getFixedGrad() {
+    return this.grad.toFixed(4);
+  }
+
   convert(val) {
     return val instanceof Value ? val : new Value(val);
   }

@@ -17,15 +17,15 @@ class Dot {
 
   occupy() {
     this.occupied = true;
-    this.parent.removeButton.changeImg("brokenLink");
+    this.parent.removeButton?.changeImg("brokenLink");
   }
 
   free() {
     this.occupied = false;
     const parent = this.parent;
-    const allFree = parent.getDots().every((d) => !d.isOccupied());
+    const allFree = parent.getDots().every((d) => !d?.isOccupied());
 
-    allFree && parent.removeButton.changeImg("delete");
+    allFree && parent.removeButton?.changeImg("delete");
   }
 
   destroy() {
@@ -42,7 +42,7 @@ class Dot {
     this.rollover = iManager.isHovered(this);
   }
 
-  combineSchemas() {
+  combineMlpViews() {
     const activeLine = mainOrganizer.getActiveLine();
     if (!activeLine) return;
 
@@ -70,14 +70,17 @@ class Dot {
       return;
     }
 
-    this.combineSchemas();
+    this.combineMlpViews();
   }
 
   show() {
     const r = this.r + (this.rollover ? 5 : 0);
+    const start = this.isInput() ? HALF_PI : PI + TWO_PI + HALF_PI;
+    const stop = this.isInput() ? HALF_PI + PI : HALF_PI;
+
     const commands = [
       { func: "fill", args: this.isOccupied() ? [0, 255, 0] : [255, 0, 0] },
-      { func: "circle", args: [this.x, this.y, r] },
+      { func: "arc", args: [this.x, this.y, r, r, start, stop] },
     ];
 
     executeDrawingCommands(commands);

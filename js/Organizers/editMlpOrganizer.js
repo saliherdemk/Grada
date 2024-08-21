@@ -38,11 +38,6 @@ class EditMLPOrganizer extends EditOrganizer {
         handler: this.handleResetCoordinates,
       },
       {
-        id: "toggle-layers-locks",
-        event: "click",
-        handler: this.toggleLayersLocks,
-      },
-      {
         id: "mlp-delete-btn",
         event: "click",
         handler: this.handleDelete,
@@ -84,21 +79,8 @@ class EditMLPOrganizer extends EditOrganizer {
     });
   }
 
-  setLayersBtnText() {
-    setElementProperties("toggle-layers-locks", {
-      innerText: this.selected.areLayersLocked()
-        ? "Unlock Layers"
-        : "Lock Layers",
-    });
-  }
-
   handleResetCoordinates() {
     this.getSelected().resetCoordinates();
-  }
-
-  toggleLayersLocks() {
-    this.selected.toggleLayersLocks();
-    this.setLayersBtnText();
   }
 
   handleDelete() {
@@ -111,7 +93,6 @@ class EditMLPOrganizer extends EditOrganizer {
     setElementProperties("mlp-lr", { value: selected.lr });
     setElementProperties(`batch${selected.batchSize}`, { checked: true });
     this.setPropsBtnText();
-    this.setLayersBtnText();
   }
 
   setSelected(mlp) {

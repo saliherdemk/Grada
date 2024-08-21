@@ -4,6 +4,7 @@ let editMLPOrganizer;
 let iManager;
 let tableOrganizer;
 let datasetOrganizer;
+let themeManager;
 
 let canvasManager;
 
@@ -11,17 +12,13 @@ let mainSketch = function (p) {
   p.setup = function () {
     p.createCanvas(p.windowWidth, p.windowHeight).parent(document.body);
 
-    // FIXME: FIX THAT PASSING NON-SENSE
-    // right now have to pass bottom of the tree
-    // find a convenient way -> NICE
-
+    themeManager = new ThemeManager();
     canvasManager = new CanvasManager(p);
     mainOrganizer = new MainOrganizer();
     editMLPOrganizer = new EditMLPOrganizer();
     iManager = new InteractionManager();
     tableOrganizer = new TableOrganizer();
     datasetOrganizer = new DatasetOrganizer();
-    // mainOrganizer.addSchema(new Schema(300, 300));
   };
 
   p.draw = function () {
@@ -60,7 +57,7 @@ let mainSketch = function (p) {
   p.keyPressed = function () {
     const k = p.key.toLowerCase();
     if (k == "e") {
-      mainOrganizer.schemas.forEach((schema) => schema.handleKeyPressed());
+      mainOrganizer.mlpViews.forEach((mlpView) => mlpView.handleKeyPressed());
     }
 
     if (k == "escape") {

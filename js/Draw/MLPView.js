@@ -1,14 +1,103 @@
-class Schema extends Draggable {
-  constructor(x, y) {
+class MlpView extends Draggable {
+  constructor(x, y, initialLayer = null) {
     super(x, y);
-    this.layers = [new HiddenLayer(this.x, this.y, this)];
+    this.layers = [];
     this.label = "MLP1";
+    this.origin = null;
     this.lr = 0.1;
     this.batchSize = 1;
     this.propsShown = true;
     this.selected = false;
-    this.layersLocked = false; // maybe we can get rid of this
+    this.initialized = false;
+    this.controlButtons = [];
+    this.initButton;
+    this.createToggleMlpButton();
+    this.initializeLayers(initialLayer);
     this.updateBorders();
+  }
+
+  isInitialized() {
+    return this.initialized;
+  }
+
+  createToggleMlpButton() {
+    const btn = new TextButton("Initialize MLP", () => {
+      this.toggleMlp();
+    });
+    btn.setDimensions(100, 35).disable();
+    this.initButton = btn;
+  }
+
+  createGoOnceButton() {
+    const btn = new TextButton("Go Once", () => {
+      console.log("go once");
+    });
+    btn.setDimensions(75, 35).setTheme("green");
+    this.controlButtons.push(btn);
+  }
+  createTogglePlayButton() {
+    const btn = new TextButton("Play", () => {
+      console.log("play");
+    });
+    btn.setDimensions(75, 35).setTheme("cyan");
+    this.controlButtons.push(btn);
+  }
+
+  destroyControlButtons() {
+    this.controlButtons.forEach((b) => b.destroy()); // probably no needed
+    this.controlButtons = [];
+  }
+
+  createControlButtons() {
+    this.createGoOnceButton();
+    this.createTogglePlayButton();
+    this.updateButtonsCoordinates();
+  }
+
+  initializeLayers(initialLayer) {
+    const layer = initialLayer ?? new HiddenLayer(this.x, this.y, this);
+    layer.setParent(this);
+    this.layers.push(layer);
+  }
+
+  toggleMlp() {
+    this.isInitialized() ? this.destroyMlp() : this.initializeMlp();
+    this.toggleLockLayers();
+  }
+
+  updateToggleMlpButton(text, theme) {
+    this.initButton.setText(text).setTheme(theme);
+  }
+
+  initializeMlp() {
+    const layers = this.layers;
+    const mlp = new MLP([], this.lr, this.batchSize);
+    for (let i = 1; i < layers.length; i++) {
+      const layer = layers[i];
+      const layerOrigin = new Layer(
+        layers[i - 1].neurons.length,
+        layer.neurons.length,
+      );
+      layer.setOrigin(layerOrigin);
+      mlp.addLayer(layerOrigin);
+    }
+    this.setOrigin(mlp);
+    this.initialized = true;
+    this.updateToggleMlpButton("Terminate MLP", "red");
+    this.createControlButtons();
+  }
+
+  clearOrigin() {
+    this.layers.forEach((l) => l.clearOrigin());
+    this.origin = null;
+  }
+
+  destroyMlp() {
+    this.origin.destroy();
+    this.clearOrigin();
+    this.initialized = false;
+    this.updateToggleMlpButton("Initialize MLP", "blue");
+    this.destroyControlButtons();
   }
 
   select() {
@@ -25,8 +114,19 @@ class Schema extends Draggable {
 
   setCoordinates(x, y) {
     this.updateLayersCoordinates(x, y);
-    this.x = x;
-    this.y = y;
+    super.setCoordinates(x, y);
+    this.updateButtonsCoordinates();
+  }
+
+  updateButtonsCoordinates() {
+    const initBtn = this.initButton;
+    const y = this.y + this.h + 5;
+    initBtn.setCoordinates(this.x + this.w - initBtn.w, y);
+
+    this.controlButtons.forEach((b, i) => {
+      const x = this.x + (this.w - b.w) / 2 + (i % 2 ? 1 : -1) * 40;
+      b.setCoordinates(x, y);
+    });
   }
 
   setLabel(label) {
@@ -41,23 +141,31 @@ class Schema extends Draggable {
     this.batchSize = batchSize;
   }
 
+  setLayers(layers) {
+    this.layers.forEach((l) => l.destroy());
+    this.layers = layers;
+  }
+
   isPropsShown() {
     return this.propsShown;
+  }
+
+  isCompleted() {
+    const layers = this.layers;
+    return (
+      layers[0] instanceof InputLayer &&
+      layers[layers.length - 1] instanceof OutputLayer
+    );
   }
 
   togglePropsShown() {
     this.propsShown = !this.propsShown;
   }
 
-  toggleLayersLocks() {
-    this.layersLocked = !this.layersLocked;
+  toggleLockLayers() {
     this.layers.forEach((layer) => {
-      this.layersLocked == layer.isEditModeOpen() && layer.toggleEditMode();
+      this.initialized == layer.isEditModeOpen() && layer.toggleEditMode();
     });
-  }
-
-  areLayersLocked() {
-    return this.layersLocked;
   }
 
   updateLayersCoordinates(newX, newY) {
@@ -81,26 +189,27 @@ class Schema extends Draggable {
   setLayers(layers) {
     this.layers = layers;
     layers.forEach((l) => {
-      l.parent = this;
+      l.setParent(this);
     });
   }
 
-  moveLayers(targetSchema) {
+  checkMlpCompleted() {
+    const initBtn = this.initButton;
+    this.isCompleted() ? initBtn.enable() : initBtn.disable();
+  }
+
+  setOrigin(obj) {
+    this.origin = obj;
+  }
+
+  moveLayers(targetMlpView) {
     this.getLayers().forEach((layer) => {
-      targetSchema.pushLayer(layer);
+      targetMlpView.pushLayer(layer);
     });
-    targetSchema.updateBorders();
+    targetMlpView.updateBorders();
+    targetMlpView.checkMlpCompleted();
     this.setLayers([]);
     this.destroy();
-  }
-
-  destroy() {
-    this.getLayers().forEach((l) => l.destroy());
-    this.setLayers([]);
-    if (editMLPOrganizer.getSelected() == this) {
-      editMLPOrganizer.disable();
-    }
-    mainOrganizer.removeSchema(this);
   }
 
   pushLayer(layer) {
@@ -128,30 +237,32 @@ class Schema extends Draggable {
     this.x = firstX - 25;
     this.y = firstY - 35;
     this.h = lastY - firstY + 75;
+    this.updateButtonsCoordinates();
   }
 
   pressed() {
-    if (iManager.checkRollout(this) && getMouseButton() == "right") {
-      this.toggleLayersLocks();
-    }
+    iManager.checkRollout(this);
   }
 
   handlePressed() {
     this.getLayers().forEach((layer) => layer.pressed());
     if (iManager.isBusy()) return;
+
+    this.controlButtons.forEach((btn) => btn.handlePressed());
+    this.initButton.handlePressed();
     this.pressed();
-    if (iManager.isBusy()) return;
-    iManager.enableCanvasDragging();
-    iManager.setLastMouseCoordinates();
   }
 
   resetCoordinates() {
     const layers = this.getLayers();
     const originLayer = layers[0];
 
+    let lastX = originLayer.x;
+
     layers.forEach((layer, index) => {
       const y = originLayer.y - (layer.h - originLayer.h) / 2;
-      const x = originLayer.x + index * layer.w * 2;
+      const x = lastX + (index != 0) * 50;
+      lastX = x + layer.w;
       layer.setCoordinates(x, y);
       layer.parent.updateBorders();
     });
@@ -180,6 +291,15 @@ class Schema extends Draggable {
     // pressed-released pressed-released handleDoubleClicked
     // iManager selected values: obj->null->obj->null -> obj
     // So we need to call handleRelease to free iManager
+  }
+
+  destroy() {
+    this.getLayers().forEach((l) => l.destroy());
+    this.setLayers([]);
+    if (editMLPOrganizer.getSelected() == this) {
+      editMLPOrganizer.disable();
+    }
+    mainOrganizer.removeMlpView(this);
   }
 
   showProps() {
@@ -215,5 +335,7 @@ class Schema extends Draggable {
     this.show();
     this.isPropsShown() && this.showProps();
     this.getLayers().forEach((layer) => layer.draw());
+    this.controlButtons.forEach((btn) => btn.draw());
+    this.initButton.draw();
   }
 }

@@ -5,6 +5,7 @@ class Neuron {
       () => new Value(Math.random() * 2 - 1),
     );
     this.b = new Value(Math.random() * 2 - 1);
+    this.output = new Value(0);
     this.act_func = ActivationFunction.TANH;
   }
 
@@ -24,5 +25,10 @@ class Neuron {
 
   change_act_func(act_func) {
     this.act_func = act_func;
+  }
+
+  destroy() {
+    this.b = null;
+    this.w = [];
   }
 }

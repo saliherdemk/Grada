@@ -35,7 +35,6 @@ function setElementProperties(elId, properties) {
 }
 
 function addEventToElement(elId, eventName, func) {
-  console.log(elId);
   getElementById(elId).addEventListener(eventName, func);
 }
 
@@ -45,7 +44,7 @@ function removeEvents(elId) {
 
 function addLayer() {
   const { x, y } = iManager.getAbsoluteCoordinates(300, 500);
-  mainOrganizer.addSchema(new Schema(x, y));
+  mainOrganizer.addMlpView(new MlpView(x, y));
 }
 
 function createInput() {
@@ -53,7 +52,8 @@ function createInput() {
 }
 
 function logMLPs() {
-  console.log(mainOrganizer.schemas);
+  console.log(mainOrganizer.mlpViews[0].layers);
+  console.log(mainOrganizer.mlpViews[0].origin);
 }
 
 function openCreateDataset() {

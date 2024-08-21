@@ -6,8 +6,9 @@ class Draggable {
     this.h = h;
   }
 
-  setCoordinates() {
-    throw new Error("You have to implement the method setCoordinates!");
+  setCoordinates(x, y) {
+    this.x = x;
+    this.y = y;
   }
 
   updateCoordinates(x, y) {

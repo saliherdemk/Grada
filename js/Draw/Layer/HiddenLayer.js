@@ -1,11 +1,8 @@
 class HiddenLayer extends LayerView {
   constructor(x, y, parent) {
     super(x, y, 50, 0, parent);
-    this.neurons = [];
     this.yGap = 40;
     this.infoBox = { h: 70, y: 0, val: 0 };
-    this.shrank = false;
-    this.shownNeurons = { num: 0, indexes: [] };
     this.initializeNeurons();
     !this.isCopy() && this.initializeButton();
   }
@@ -21,17 +18,10 @@ class HiddenLayer extends LayerView {
   initializeNeurons() {
     const numOfNeurons = parseInt(Math.random() * 7) + 1;
     for (let i = 0; i < numOfNeurons; i++) {
-      this.neurons.push(new DrawNeuron());
+      this.neurons.push(new NeuronView());
     }
 
     this.setShownNeuronsNum(this.getNeuronNum());
-  }
-
-  postUpdateCoordinates() {
-    this.updateButtonCoordinates();
-    this.updateNeuronsCoordinates();
-    this.updateDotsCoordinates();
-    this.parent?.updateBorders();
   }
 
   isShrank() {
@@ -40,51 +30,6 @@ class HiddenLayer extends LayerView {
 
   isCopy() {
     return !this.parent;
-  }
-
-  pushNeuron() {
-    this.neurons.push(new DrawNeuron());
-  }
-
-  popNeuron() {
-    this.neurons.pop();
-  }
-
-  getNeuronNum() {
-    return this.neurons.length;
-  }
-
-  getShownNeuronsNum() {
-    return this.shownNeurons.num;
-  }
-
-  setShownNeuronsNum(shownNeuronsNum) {
-    this.shownNeurons.num = this.isShrank()
-      ? shownNeuronsNum
-      : this.getNeuronNum();
-    this.setShownNeurons();
-    editLayerOrganizer.isEnabled && editLayerOrganizer.setInfoText();
-  }
-
-  // GIANT MESS -> LESS GIANT MESS -> Acceptable mess
-  setShownNeurons() {
-    this.shownNeurons.indexes = [];
-    const shownNeuronsNum = this.getShownNeuronsNum();
-    const neuronsNum = this.getNeuronNum();
-    this.infoBox.val = neuronsNum - shownNeuronsNum;
-    const mid =
-      (this.parent ? shownNeuronsNum : Math.min(shownNeuronsNum, 5)) / 2;
-
-    this.neurons.forEach((neuron, i) => {
-      if (i < mid || i >= neuronsNum - mid) {
-        neuron.visible();
-        this.shownNeurons.indexes.push(i);
-      } else {
-        neuron.hide();
-      }
-    });
-
-    this.updateNeuronsCoordinates();
   }
 
   updateNeuronsCoordinates() {
@@ -143,6 +88,7 @@ class HiddenLayer extends LayerView {
       this.getDots().forEach((dot) => dot?.draw());
       this.removeButton?.draw();
     }
+
     this.show();
     this.isShrank() && this.showInfoBox();
 

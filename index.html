@@ -40,9 +40,6 @@
       <button id="mlp-reset-btn" class="btn btn-yellow" type="button">
         Reset Coordinates
       </button>
-      <button id="toggle-layers-locks" class="btn btn-blue" type="button">
-        Lock Layers
-      </button>
 
       <button id="mlp-delete-btn" class="btn btn-rose" type="button">
         Delete
@@ -162,14 +159,13 @@
     <div class="control-container">
       <div id="toggle-dataset-container">
         <img
-          class="active"
           id="toggle-dataset-btn"
           src="media/arrow.svg"
           onclick="toggleDatasetsContainer()"
           alt=""
         />
       </div>
-      <div id="datasets-container">
+      <div id="datasets-container" class="active">
         <div>Datasets</div>
         <div id="dataset-scrollable"></div>
         <button onclick="openCreateDataset()" class="btn btn-sky">
@@ -192,6 +188,7 @@
 
     <script src="js/script.js"></script>
 
+    <script src="js/Managers/themeManager.js"></script>
     <script src="js/Managers/canvasManager.js"></script>
     <script src="js/Managers/interactionManager.js"></script>
     <script src="js/Managers/eventManager.js"></script>
@@ -212,12 +209,17 @@
 
     <script src="js/draggable.js"></script>
 
-    <script src="js/Draw/Minors/CanvasButton.js"></script>
+    <script src="js/Draw/Minors/Buttons/CanvasButton.js"></script>
+    <script src="js/Draw/Minors/Buttons/ImageButton.js"></script>
+    <script src="js/Draw/Minors/Buttons/TextButton.js"></script>
     <script src="js/Draw/Minors/Dot.js"></script>
     <script src="js/Draw/Minors/Line.js"></script>
 
-    <script src="js/Draw/Layer/LayerView.js"></script>
+    <script src="js/Draw/Layer/BaseLayers/LayerView.js"></script>
+    <script src="js/Draw/Layer/BaseLayers/IOLayer.js"></script>
     <script src="js/Draw/Layer/HiddenLayer.js"></script>
+    <script src="js/Draw/Layer/InputLayer.js"></script>
+    <script src="js/Draw/Layer/OutputLayer.js"></script>
 
     <script src="js/Draw/NeuronView.js"></script>
 
