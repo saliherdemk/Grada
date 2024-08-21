@@ -1,7 +1,8 @@
 class LayerView extends Draggable {
-  constructor(x, y, w, h, parent) {
+  constructor(_x, _y, w, h, isCopy) {
+    const { x, y } = iManager.getAbsoluteCoordinates(_x, _y);
     super(x, y, w, h);
-    this.parent = parent;
+    this.parent = isCopy ? null : new MlpView();
     this.origin = null;
     this.neurons = [];
     this.inputDot = null;
@@ -11,8 +12,19 @@ class LayerView extends Draggable {
     this.editMode = true;
     this.shrank = false;
     this.shownNeurons = { num: 0, indexes: [] };
+    this.infoBox = { h: 70, y: 0, val: 0 };
+    this.neuronAlignment = "middle";
 
     this.initializeDots();
+    this.initializeParent();
+  }
+
+  initializeParent() {
+    const parent = this.parent;
+    if (!parent) return;
+    parent.pushLayer(this);
+    mainOrganizer.addMlpView(this.parent);
+    this.postUpdateCoordinates();
   }
 
   initializeDots() {}
@@ -76,7 +88,16 @@ class LayerView extends Draggable {
   }
 
   setParent(parent) {
+    console.log(parent);
     this.parent = parent;
+  }
+
+  shrink() {
+    this.shrank = true;
+  }
+
+  expand() {
+    this.shrank = false;
   }
 
   isEditModeOpen() {
@@ -112,7 +133,7 @@ class LayerView extends Draggable {
       ? shownNeuronsNum
       : this.getNeuronNum();
     this.setShownNeurons();
-    editLayerOrganizer.isEnabled && editLayerOrganizer.setInfoText();
+    editLayerOrganizer.isEnabled() && editLayerOrganizer.setInfoText();
   }
 
   // GIANT MESS -> LESS GIANT MESS -> Acceptable mess
@@ -164,7 +185,7 @@ class LayerView extends Draggable {
     const [x, y] = [newLayers[0].x, newLayers[0].y];
 
     // FIXME: Don't destroy and recreate, just move -> Done but not satisfying
-    const newMlpView = new MlpView(x, y);
+    const newMlpView = new MlpView();
 
     newMlpView.setLayers(newLayers);
     newMlpView.updateBorders();

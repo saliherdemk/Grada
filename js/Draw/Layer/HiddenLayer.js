@@ -1,10 +1,10 @@
 class HiddenLayer extends LayerView {
-  constructor(x, y, parent) {
-    super(x, y, 50, 0, parent);
+  constructor(x, y, isCopy = false) {
+    super(x, y, 50, 0, isCopy);
     this.yGap = 40;
-    this.infoBox = { h: 70, y: 0, val: 0 };
     this.initializeNeurons();
     !this.isCopy() && this.initializeButton();
+    this.parent?.updateBorders();
   }
 
   initializeDots() {
@@ -32,12 +32,23 @@ class HiddenLayer extends LayerView {
     return !this.parent;
   }
 
+  getNeuronXBasedOnAlignment() {
+    switch (this.neuronAlignment) {
+      case "right":
+        return this.x + this.w - 25;
+      case "left":
+        return this.x + 50;
+      default:
+        return this.x + this.w / 2;
+    }
+  }
+
   updateNeuronsCoordinates() {
     const isShrank = this.isShrank();
     const neurons = this.shownNeurons.indexes.map((i) => this.neurons[i]);
 
     const neuronNum = neurons.length;
-    this.h = this.yGap * (neuronNum - 1) + this.w;
+    this.h = this.yGap * (neuronNum - 1) + 50;
     this.infoBox.y = this.y;
 
     const midPoint = neuronNum / 2;
@@ -46,7 +57,7 @@ class HiddenLayer extends LayerView {
       if (!afterMid) {
         this.infoBox.y += this.yGap;
       }
-      const x = this.x + this.w / 2;
+      const x = this.getNeuronXBasedOnAlignment();
       const y = this.y + this.h / 2 + this.yGap * (i - (neuronNum - 1) / 2);
 
       neuron.updateCoordinates(x, y + (afterMid ? this.infoBox.h : 0));
@@ -58,17 +69,18 @@ class HiddenLayer extends LayerView {
 
   showInfoBox() {
     const infoBoxY = this.infoBox.y;
+    const infoBoxX = this.getNeuronXBasedOnAlignment() - 25;
     const commands = [
       { func: "fill", args: [0] },
       { func: "textSize", args: [18] },
       { func: "textAlign", args: [CENTER, CENTER] },
       { func: "textLeading", args: [4] },
-      { func: "text", args: [`.\n.\n.\n`, this.x, infoBoxY, 50, 35] },
+      { func: "text", args: [`.\n.\n.\n`, infoBoxX, infoBoxY, 50, 35] },
       {
         func: "text",
-        args: [this.infoBox.val.toString(), this.x, infoBoxY + 25, 50, 35],
+        args: [this.infoBox.val.toString(), infoBoxX, infoBoxY + 25, 50, 35],
       },
-      { func: "text", args: [`.\n.\n.\n`, this.x, infoBoxY + 45, 50, 35] },
+      { func: "text", args: [`.\n.\n.\n`, infoBoxX, infoBoxY + 45, 50, 35] },
     ];
 
     executeDrawingCommands(commands);

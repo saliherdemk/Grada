@@ -9,16 +9,8 @@ class DatasetOrganizer {
     btn.innerText = name;
     btn.setAttribute("id", id);
     btn.onclick = () => {
-      const dataset = this.getDatasetById(id);
-      const trainX = structuredClone(dataset.trainX);
-      const trainY = structuredClone(dataset.trainY).reverse();
-      const inputLayer = new InputLayer(name, trainX);
-      const outputLayer = new OutputLayer(name, trainY);
-
-      const inputMlpView = new MlpView(0, 0, inputLayer);
-      mainOrganizer.addMlpView(inputMlpView);
-      const outputMlpView = new MlpView(0, 0, outputLayer);
-      mainOrganizer.addMlpView(outputMlpView);
+      new InputLayer(id);
+      new OutputLayer(id);
     };
     btn.classList.add("btn", "btn-gray");
   }

@@ -49,7 +49,7 @@ class EditLayerOrganizer extends EditOrganizer {
     const original = this.selected;
     const copy = this.selectedCopy;
     this.copyNeurons(copy, original);
-    original.shrank = this.shrank;
+    this.shrank ? original.shrink() : original.expand();
     original.setLabel(copy.label);
     original.setShownNeuronsNum(copy.getShownNeuronsNum());
     original.reconnectNeurons();
@@ -75,10 +75,10 @@ class EditLayerOrganizer extends EditOrganizer {
   enable(layer) {
     openEditLayer();
     this.selected = layer;
-    const copy = new HiddenLayer(0, 0, null);
+    const copy = new HiddenLayer(0, 0, true);
     this.copyNeurons(layer, copy);
     copy.setLabel(layer.label);
-    this.shrank = !layer.shrank; // will call toggleShrink. I wanted to use same function
+    this.shrank = !layer.isShrank(); // will call toggleShrink. I wanted to use same function
     this.selectedCopy = copy;
     this.eventManager.setShownNeuronsNum(layer.getShownNeuronsNum());
     this.enabled = true;
