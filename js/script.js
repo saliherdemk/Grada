@@ -42,9 +42,8 @@ function removeEvents(elId) {
   getElementById(elId).removeEventListeners();
 }
 
-function addLayer() {
-  const { x, y } = iManager.getAbsoluteCoordinates(300, 500);
-  mainOrganizer.addMlpView(new MlpView(x, y));
+function createLayer() {
+  new HiddenLayer(300, 500);
 }
 
 function createInput() {

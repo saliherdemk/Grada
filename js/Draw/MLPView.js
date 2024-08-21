@@ -1,6 +1,6 @@
 class MlpView extends Draggable {
-  constructor(x, y, initialLayer = null) {
-    super(x, y);
+  constructor() {
+    super(0, 0);
     this.layers = [];
     this.label = "MLP1";
     this.origin = null;
@@ -12,8 +12,6 @@ class MlpView extends Draggable {
     this.controlButtons = [];
     this.initButton;
     this.createToggleMlpButton();
-    this.initializeLayers(initialLayer);
-    this.updateBorders();
   }
 
   isInitialized() {
@@ -52,12 +50,6 @@ class MlpView extends Draggable {
     this.createGoOnceButton();
     this.createTogglePlayButton();
     this.updateButtonsCoordinates();
-  }
-
-  initializeLayers(initialLayer) {
-    const layer = initialLayer ?? new HiddenLayer(this.x, this.y, this);
-    layer.setParent(this);
-    this.layers.push(layer);
   }
 
   toggleMlp() {
