@@ -9,8 +9,35 @@ class Dataset {
     this.setData(data);
   }
 
+  getXLabels() {
+    return this.trainXLabels;
+  }
+
+  getYLabels() {
+    return this.trainYLabels;
+  }
+
+  getBatch(index, batchSize = 100) {
+    const trainX = this.getTrainX();
+    const trainY = this.getTrainY();
+    const batchX = [];
+    const batchY = [];
+
+    for (let i = 0; i < batchSize; i++) {
+      batchX.push(trainX[index]);
+      batchY.push(trainY[index]);
+      index = (index + 1) % trainX.length;
+    }
+
+    return { batchX, batchY, index };
+  }
+
   getTrainX() {
     return this.trainX;
+  }
+
+  getTrainY() {
+    return this.trainY;
   }
 
   setName(name) {
@@ -20,7 +47,8 @@ class Dataset {
   setData(data) {
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
-      const values = [];
+      const xValues = [];
+      const yValues = [];
 
       for (let j = 0; j < row.length; j++) {
         const value = row[j];
@@ -33,12 +61,13 @@ class Dataset {
           continue;
         }
         if (j == row.length - 1) {
-          this.trainY.push(value);
+          yValues.push(value);
           continue;
         }
-        values.push(value);
+        xValues.push(value);
       }
-      values.length && this.trainX.push(values);
+      xValues.length && this.trainX.push(xValues);
+      yValues.length && this.trainY.push(yValues);
     }
   }
 }

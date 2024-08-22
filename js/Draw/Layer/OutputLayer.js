@@ -1,40 +1,49 @@
 class OutputLayer extends IOLayer {
   constructor(datasetId) {
-    super(datasetId, 300, 500);
-    this.currentBatchX = [];
-    this.neuronAlignment = "left";
-    this.w = 400;
-    this.adjustNeuronNum();
+    super(datasetId, 800, 300, false);
+    this.batchY = [];
+    this.setLabels();
+    this.setValues();
   }
 
-  initializeDots() {
-    this.outputDot = new Dot(this, true);
+  setLabels() {
+    this.labels = this.getDataset().getYLabels();
   }
 
   adjustNeuronNum() {
-    const diff = this.getInputSize() - this.getNeuronNum();
-    for (let i = 0; i < Math.abs(diff); i++) {
-      diff > 0 ? this.pushNeuron() : this.popNeuron();
-    }
-    this.getNeuronNum() > 4 ? this.shrink() : this.expand();
-    this.setShownNeuronsNum(Math.min(this.getNeuronNum(), 4));
-    this.postUpdateCoordinates("right");
+    const diff = this.getTrainYSize() - this.getNeuronNum();
+    super.adjustNeuronNum(diff);
   }
 
-  getNextBatch(batchSize = 100) {
-    const dataset = datasetOrganizer.getDatasetById(this.datasetId);
-    const totalLength = dataset.getTrainX().length;
-    const batch = [];
-
-    for (let i = 0; i < batchSize; i++) {
-      batch.push(dataset.getTrainX()[this.currentIndex]);
-      this.currentIndex = (this.currentIndex + 1) % totalLength;
-    }
-    this.currentBatchX = batch;
+  setValues() {
+    this.updateBatch();
+    return [parseFloat(this.batchY[0])];
   }
 
-  getInputSize() {
-    const dataset = datasetOrganizer.getDatasetById(this.datasetId);
-    return dataset.trainX[0].length;
+  initializeDots() {
+    this.inputDot = new Dot(this, true);
+  }
+
+  showValues() {
+    let commands = [];
+
+    this.labels.forEach((label, i) => {
+      commands.push(this.createColCommand(label, this.w - 50, i * 50));
+    });
+
+    const lineX = this.x + this.w - 50;
+
+    commands.push({
+      func: "line",
+      args: [lineX, this.y + 10, lineX, this.y + this.h - 10],
+    });
+
+    this.batchY.forEach((row, i) => {
+      row.forEach((val, j) => {
+        const a = this.createColCommand(val, 50 + i * 50, j * 50);
+        commands.push(a);
+      });
+    });
+    executeDrawingCommands(commands);
   }
 }

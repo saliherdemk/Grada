@@ -26,9 +26,20 @@ class MlpView extends Draggable {
     this.initButton = btn;
   }
 
+  goOnce() {
+    const layers = this.getLayers();
+    const inputLayer = layers[0];
+    const inputValues = inputLayer.setValues();
+
+    const outputLayer = layers[layers.length - 1];
+    const outputValues = outputLayer.setValues();
+
+    this.origin.goOneCycle(inputValues, outputValues);
+  }
+
   createGoOnceButton() {
     const btn = new TextButton("Go Once", () => {
-      console.log("go once");
+      this.goOnce();
     });
     btn.setDimensions(75, 35).setTheme("green");
     this.controlButtons.push(btn);

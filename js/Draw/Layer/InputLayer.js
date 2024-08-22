@@ -1,40 +1,68 @@
 class InputLayer extends IOLayer {
   constructor(datasetId) {
-    super(datasetId, 300, 300);
-    this.currentBatchX = [];
-    this.neuronAlignment = "right";
-    this.w = 400;
-    this.adjustNeuronNum();
+    super(datasetId, 300, 300, true);
+    this.batchX = [];
+    this.setLabels();
+    this.setValues();
+  }
+
+  setLabels() {
+    this.labels = this.getDataset().getXLabels();
+  }
+
+  adjustNeuronNum() {
+    const diff = this.getTrainXSize() - this.getNeuronNum();
+    super.adjustNeuronNum(diff);
+  }
+
+  setValues() {
+    this.updateBatch();
+    const values = this.batchX[0].map((v) => parseFloat(v));
+    return values;
+  }
+
+  incrementIndex() {
+    this.currentIndex++;
   }
 
   initializeDots() {
     this.outputDot = new Dot(this, true);
   }
 
-  adjustNeuronNum() {
-    const diff = this.getInputSize() - this.getNeuronNum();
-    for (let i = 0; i < Math.abs(diff); i++) {
-      diff > 0 ? this.pushNeuron() : this.popNeuron();
+  getColorByIndex(i) {
+    const { defaultColor: sky } = themeManager.getTheme("cyan");
+    const { defaultColor: blue } = themeManager.getTheme("blue");
+    const { defaultColor: gray } = themeManager.getTheme("gray");
+    if (i == 0) {
+      return blue;
     }
-    this.getNeuronNum() > 4 ? this.shrink() : this.expand();
-    this.setShownNeuronsNum(Math.min(this.getNeuronNum(), 4));
-    this.postUpdateCoordinates("right");
+    if (i == 1) {
+      return sky;
+    }
+    return gray;
   }
 
-  getNextBatch(batchSize = 100) {
-    const dataset = datasetOrganizer.getDatasetById(this.datasetId);
-    const totalLength = dataset.getTrainX().length;
-    const batch = [];
+  showValues() {
+    let commands = [];
 
-    for (let i = 0; i < batchSize; i++) {
-      batch.push(dataset.getTrainX()[this.currentIndex]);
-      this.currentIndex = (this.currentIndex + 1) % totalLength;
-    }
-    this.currentBatchX = batch;
-  }
+    this.labels.forEach((label, i) => {
+      commands.push(this.createColCommand(label, 0, i * 50));
+    });
 
-  getInputSize() {
-    const dataset = datasetOrganizer.getDatasetById(this.datasetId);
-    return dataset.trainX[0].length;
+    commands.push({
+      func: "line",
+      args: [this.x + 50, this.y + 10, this.x + 50, this.y + this.h - 10],
+    });
+
+    this.batchX.forEach((row, i) => {
+      row.forEach((val, j) => {
+        commands.push({ func: "fill", args: this.getColorByIndex(i) });
+
+        const a = this.createColCommand(val, this.w + (i + 1) * -50, j * 50);
+        commands.push(a);
+      });
+    });
+
+    executeDrawingCommands(commands);
   }
 }

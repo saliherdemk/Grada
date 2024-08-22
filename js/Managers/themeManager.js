@@ -43,6 +43,10 @@ class ThemeManager {
         defaultColor = [107, 114, 128];
         activeColor = [74, 74, 74];
         break;
+      case "sky":
+        defaultColor = [74, 144, 226];
+        activeColor = [28, 100, 242];
+        break;
       default:
         defaultColor = [74, 144, 226];
         activeColor = [28, 100, 242];
