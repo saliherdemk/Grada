@@ -14,6 +14,11 @@ let cos;
 let sin;
 let textWidth;
 let cursor;
+let abs;
+let constrain;
+let lerpColor;
+let color;
+let floor;
 
 class CanvasManager {
   constructor(instance) {
@@ -41,5 +46,10 @@ class CanvasManager {
     sin = (angle) => p.sin(angle);
     textWidth = (text) => p.textWidth(text);
     cursor = (type) => p.cursor(type);
+    abs = (x1, x2) => p.abs(x1, x2);
+    constrain = (d, x1, x2) => p.constrain(d, x1, x2);
+    lerpColor = (c1, c2, t) => p.lerpColor(c1, c2, t);
+    color = (r, g, b) => p.color(r, g, b);
+    floor = (val) => p.floor(val);
   }
 }

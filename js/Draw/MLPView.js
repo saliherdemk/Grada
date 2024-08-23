@@ -11,7 +11,16 @@ class MlpView extends Draggable {
     this.initialized = false;
     this.controlButtons = [];
     this.initButton;
+    this.dataStatus = -1;
     this.createToggleMlpButton();
+  }
+
+  updateStatus(status) {
+    this.status = status;
+  }
+
+  getDataStatus() {
+    return this.dataStatus;
   }
 
   isInitialized() {
@@ -27,6 +36,19 @@ class MlpView extends Draggable {
   }
 
   goOnce() {
+    const btn = this.controlButtons[0];
+    if (this.getDataStatus() > 0) {
+      this.executeOnce();
+      btn.setTheme("yellow");
+      btn.setText("Fetch Next");
+      return;
+    }
+    this.fetchNext();
+    btn.setTheme("green");
+    btn.setText("Execute");
+  }
+
+  executeOnce() {
     const layers = this.getLayers();
     const inputLayer = layers[0];
     const inputValues = inputLayer.setValues();
@@ -35,15 +57,24 @@ class MlpView extends Draggable {
     const outputValues = outputLayer.setValues();
 
     this.origin.goOneCycle(inputValues, outputValues);
+    this.dataStatus = 0;
+  }
+
+  fetchNext() {
+    const layers = this.getLayers();
+    layers[0].fetchNext();
+    layers[layers.length - 1].fetchNext();
+    this.dataStatus = 1;
   }
 
   createGoOnceButton() {
-    const btn = new TextButton("Go Once", () => {
+    const btn = new TextButton("Fetch Next", () => {
       this.goOnce();
     });
-    btn.setDimensions(75, 35).setTheme("green");
+    btn.setDimensions(75, 35).setTheme("yellow");
     this.controlButtons.push(btn);
   }
+
   createTogglePlayButton() {
     const btn = new TextButton("Play", () => {
       console.log("play");

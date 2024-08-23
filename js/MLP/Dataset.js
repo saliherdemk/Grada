@@ -22,14 +22,15 @@ class Dataset {
     const trainY = this.getTrainY();
     const batchX = [];
     const batchY = [];
+    index = Math.max(-1, index);
 
-    for (let i = 0; i < batchSize; i++) {
+    for (let _ = 0; _ < batchSize; _++) {
+      index = (index + 1) % trainX.length;
       batchX.push(trainX[index]);
       batchY.push(trainY[index]);
-      index = (index + 1) % trainX.length;
     }
 
-    return { batchX, batchY, index };
+    return { batchX, batchY };
   }
 
   getTrainX() {

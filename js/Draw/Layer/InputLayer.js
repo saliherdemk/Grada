@@ -3,7 +3,12 @@ class InputLayer extends IOLayer {
     super(datasetId, 300, 300, true);
     this.batchX = [];
     this.setLabels();
-    this.setValues();
+    this.updateBatch();
+  }
+
+  updateBatch() {
+    const { batchX } = this.getDataset().getBatch(this.currentIndex, 6);
+    this.batchX = batchX;
   }
 
   setLabels() {
@@ -16,52 +21,32 @@ class InputLayer extends IOLayer {
   }
 
   setValues() {
-    this.updateBatch();
-    const values = this.batchX[0].map((v) => parseFloat(v));
-    return values;
-  }
-
-  incrementIndex() {
-    this.currentIndex++;
+    return this.batchX[0].map((v) => parseFloat(v));
   }
 
   initializeDots() {
     this.outputDot = new Dot(this, true);
   }
 
-  getColorByIndex(i) {
-    const { defaultColor: sky } = themeManager.getTheme("cyan");
-    const { defaultColor: blue } = themeManager.getTheme("blue");
-    const { defaultColor: gray } = themeManager.getTheme("gray");
-    if (i == 0) {
-      return blue;
-    }
-    if (i == 1) {
-      return sky;
-    }
-    return gray;
+  showLabels() {
+    const lineCommand = {
+      func: "line",
+      args: [this.x + 50, this.y + 10, this.x + 50, this.y + this.h - 10],
+    };
+
+    const labelCommands = this.labels.flatMap((label, i) =>
+      this.createColCommand(label, 0, i * 50),
+    );
+
+    executeDrawingCommands([lineCommand, ...labelCommands]);
   }
 
   showValues() {
-    let commands = [];
-
-    this.labels.forEach((label, i) => {
-      commands.push(this.createColCommand(label, 0, i * 50));
-    });
-
-    commands.push({
-      func: "line",
-      args: [this.x + 50, this.y + 10, this.x + 50, this.y + this.h - 10],
-    });
-
-    this.batchX.forEach((row, i) => {
-      row.forEach((val, j) => {
-        commands.push({ func: "fill", args: this.getColorByIndex(i) });
-
-        const a = this.createColCommand(val, this.w + (i + 1) * -50, j * 50);
-        commands.push(a);
-      });
-    });
+    const commands = this.batchX.flatMap((row, i) =>
+      row.flatMap((val, j) =>
+        this.createColCommand(val, this.w - (i + 1) * 50, j * 50, i),
+      ),
+    );
 
     executeDrawingCommands(commands);
   }

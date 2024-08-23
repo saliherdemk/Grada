@@ -3,7 +3,12 @@ class OutputLayer extends IOLayer {
     super(datasetId, 800, 300, false);
     this.batchY = [];
     this.setLabels();
-    this.setValues();
+    this.updateBatch();
+  }
+
+  updateBatch() {
+    const { batchY } = this.getDataset().getBatch(this.currentIndex, 5);
+    this.batchY = batchY;
   }
 
   setLabels() {
@@ -16,7 +21,6 @@ class OutputLayer extends IOLayer {
   }
 
   setValues() {
-    this.updateBatch();
     return [parseFloat(this.batchY[0])];
   }
 
@@ -24,26 +28,30 @@ class OutputLayer extends IOLayer {
     this.inputDot = new Dot(this, true);
   }
 
-  showValues() {
-    let commands = [];
+  getNeuronValue() {
+    return this.neurons[0].origin?.output.getFixedData(2) ?? 0;
+  }
 
-    this.labels.forEach((label, i) => {
-      commands.push(this.createColCommand(label, this.w - 50, i * 50));
-    });
-
+  showLabels() {
     const lineX = this.x + this.w - 50;
-
-    commands.push({
+    const lineCommand = {
       func: "line",
       args: [lineX, this.y + 10, lineX, this.y + this.h - 10],
-    });
+    };
 
-    this.batchY.forEach((row, i) => {
-      row.forEach((val, j) => {
-        const a = this.createColCommand(val, 50 + i * 50, j * 50);
-        commands.push(a);
-      });
-    });
+    const labelCommands = this.labels.flatMap((label, i) =>
+      this.createColCommand(label, this.w - 50, i * 50),
+    );
+
+    executeDrawingCommands([lineCommand, ...labelCommands]);
+  }
+
+  showValues() {
+    const commands = this.batchY.flatMap((row, i) =>
+      row.flatMap((val, j) =>
+        this.createColCommand(val, 50 + i * 50, j * 50, i),
+      ),
+    );
     executeDrawingCommands(commands);
   }
 }
