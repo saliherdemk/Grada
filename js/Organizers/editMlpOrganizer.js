@@ -28,6 +28,11 @@ class EditMLPOrganizer extends EditOrganizer {
         handler: this.updateBatchSize,
       },
       {
+        id: "mlp-play-speed",
+        event: "input",
+        handler: this.updatePlaySpeed,
+      },
+      {
         id: "toggle-mlp-props",
         event: "click",
         handler: this.togglePropVisibility,
@@ -66,6 +71,10 @@ class EditMLPOrganizer extends EditOrganizer {
       'input[name="mlp-batch-size"]:checked',
     );
     this.getSelected().setBatchSize(selectedRadio.value);
+  }
+
+  updatePlaySpeed(e) {
+    this.getSelected().setPlaySpeed(e.target.value);
   }
 
   togglePropVisibility() {

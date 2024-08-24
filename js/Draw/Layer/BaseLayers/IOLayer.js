@@ -4,15 +4,30 @@ class IOLayer extends HiddenLayer {
     this.neuronAlignment = isInput ? "right" : "left";
     this.w = 350;
     this.datasetId = datasetId;
-    this.currentIndex = -2; // explain why -2
+    this.currentIndex = -2;
     this.labels = [];
     this.adjustNeuronNum();
+  }
+
+  reset() {
+    this.currentIndex = -2;
+    this.updateBatch();
+  }
+
+  play() {
+    const { batchX, batchY } = this.getDataset().getBatch(
+      ++this.currentIndex,
+      5,
+    );
+    this.batchX = batchX;
+    this.batchY = batchY;
   }
 
   getColorByIndex(i) {
     const { defaultColor: yellow } = themeManager.getTheme("yellow");
     const { defaultColor: green } = themeManager.getTheme("green");
     const { defaultColor: gray } = themeManager.getTheme("gray");
+
     switch (i) {
       case 0:
         return this.getParentStatus() === "ready" ? yellow : green;
@@ -53,10 +68,7 @@ class IOLayer extends HiddenLayer {
   }
 
   createColCommand(text, x, y, i = -1) {
-    let commands = [];
-    this.getColorful(i).forEach((element) => {
-      commands.push(element);
-    });
+    const commands = [...this.getColorful(i)];
     commands.push({
       func: "text",
       args: [text, this.x + 21.5 + x, this.y + 32 + y, 25, 25],
@@ -72,7 +84,7 @@ class IOLayer extends HiddenLayer {
     return this.getDataset().getTrainY()[0].length;
   }
 
-  adjustNeuronNum(diff) {
+  adjustNeuronNum(diff = 0) {
     const absDiff = Math.abs(diff);
     for (let i = 0; i < absDiff; i++) {
       diff > 0 ? this.pushNeuron() : this.popNeuron();
@@ -82,7 +94,8 @@ class IOLayer extends HiddenLayer {
     this.postUpdateCoordinates();
   }
 
-  // Abstract methods
+  doubleClicked() {}
+
   showValues() {}
   showLabels() {}
   updateBatch() {}

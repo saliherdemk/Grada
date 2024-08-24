@@ -22,6 +22,10 @@ class Line {
     return this.w?.getFixedData(4) ?? "";
   }
 
+  getGrad() {
+    return this.w?.getFixedGrad(4) ?? "";
+  }
+
   destroy() {
     this.w = null;
     this.from = null;
@@ -32,60 +36,75 @@ class Line {
     return this.temp;
   }
 
-  showProps() {
-    const x1 = this.from.x;
-    const x2 = this.to.x;
-    const y1 = this.from.y;
-    const y2 = this.to.y;
-    let angle = atan2(y2 - y1, x2 - x1);
-    const text = this.getWeight();
+  showData() {
+    this.drawText(this.getWeight(), themeManager.getColor("blue"));
+  }
+
+  showGrad() {
+    this.drawText(this.getGrad(), themeManager.getColor("cyan"), 10);
+  }
+
+  drawText(text, colorArg, yOffset = 0) {
+    let { x, y, angle } = this.getTextCoordinates(text);
+    y += yOffset;
+
+    for (const char of text) {
+      const commands = [
+        { func: "stroke", args: colorArg },
+        { func: "fill", args: colorArg },
+        { func: "translate", args: [x, y] },
+        { func: "rotate", args: [angle] },
+        { func: "textSize", args: [6] },
+        { func: "text", args: [char, 0, 0] },
+      ];
+      executeDrawingCommands(commands);
+
+      const charWidth = textWidth(char);
+      x += cos(angle) * charWidth;
+      y += sin(angle) * charWidth;
+    }
+  }
+
+  getTextCoordinates(text) {
+    const { x: x1, y: y1 } = this.from;
+    const { x: x2, y: y2 } = this.to;
+
+    const angle = atan2(y2 - y1, x2 - x1);
     let totalTextWidth = 0;
     for (let i = 0; i < text.length; i++) {
       totalTextWidth += textWidth(text[i]);
     }
+    const lineLength = dist(x1, y1, x2, y2);
+    const offsetX = (lineLength - totalTextWidth) / 2;
 
-    let lineLength = dist(x1, y1, x2, y2);
-    let offsetX = (lineLength - totalTextWidth) / 2;
+    const x = x1 + cos(angle) * offsetX;
+    const y = y1 - 2 + sin(angle) * offsetX;
 
-    let x = x1 + cos(angle) * offsetX;
-    let y = y1 - 2 + sin(angle) * offsetX;
-
-    for (let i = 0; i < text.length; i++) {
-      const commands = [
-        {
-          func: "translate",
-          args: [x, y],
-        },
-        { func: "rotate", args: [angle] },
-        { func: "textSize", args: [8] },
-        { func: "text", args: [text[i], 0, 0] },
-      ];
-      executeDrawingCommands(commands);
-
-      x += cos(angle) * textWidth(text[i]);
-      y += sin(angle) * textWidth(text[i]);
-    }
+    return { x, y, angle };
   }
 
   show() {
     const { mouseX, mouseY } = getCurrentMouseCoordinates();
     const { x: targetX, y: targetY } = this.isTemp()
       ? iManager.getAbsoluteCoordinates(mouseX, mouseY)
-      : { x: this.to.x, y: this.to.y };
-    const sourceX = this.from.x;
-    const sourceY = this.from.y;
+      : this.to;
+
+    const { x: sourceX, y: sourceY } = this.from;
 
     const commands = [
       { func: "line", args: [sourceX, sourceY, targetX, targetY] },
     ];
-
     executeDrawingCommands(commands);
-    !this.isTemp() && this.showProps();
+
+    if (!this.isTemp()) {
+      this.showData();
+      this.showGrad();
+    }
   }
 
   draw() {
-    const willDrew =
+    const shouldDraw =
       this.isTemp() || !(this.from.isHidden() || this.to.isHidden());
-    willDrew && this.show();
+    if (shouldDraw) this.show();
   }
 }

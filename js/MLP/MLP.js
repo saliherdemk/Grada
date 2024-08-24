@@ -5,6 +5,10 @@ class MLP {
     this.batch_size = batch_size;
   }
 
+  setLr(lr) {
+    this.lr = lr;
+  }
+
   addLayer(layer) {
     this.layers.push(layer);
   }

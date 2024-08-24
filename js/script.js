@@ -109,3 +109,7 @@ function toggleDatasetsContainer() {
   getElementById("datasets-container").classList.toggle("active");
   getElementById("toggle-dataset-btn").classList.toggle("active");
 }
+
+function toggleWelcome() {
+  getElementById("welcome-container").classList.toggle("hidden");
+}

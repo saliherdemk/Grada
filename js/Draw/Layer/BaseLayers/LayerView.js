@@ -21,10 +21,11 @@ class LayerView extends Draggable {
 
   initializeParent() {
     const parent = this.parent;
-    if (!parent) return;
-    parent.pushLayer(this);
-    mainOrganizer.addMlpView(this.parent);
-    this.postUpdateCoordinates();
+    if (parent) {
+      parent.pushLayer(this);
+      mainOrganizer.addMlpView(parent);
+      this.postUpdateCoordinates();
+    }
   }
 
   initializeDots() {}
@@ -88,7 +89,6 @@ class LayerView extends Draggable {
   }
 
   setParent(parent) {
-    console.log(parent);
     this.parent = parent;
   }
 
@@ -143,7 +143,7 @@ class LayerView extends Draggable {
     const neuronsNum = this.getNeuronNum();
     this.infoBox.val = neuronsNum - shownNeuronsNum;
     const mid =
-      (this.parent ? shownNeuronsNum : Math.min(shownNeuronsNum, 5)) / 2;
+      (this.parent ? shownNeuronsNum : Math.min(shownNeuronsNum, 4)) / 2;
 
     this.neurons.forEach((neuron, i) => {
       if (i < mid || i >= neuronsNum - mid) {
@@ -181,8 +181,6 @@ class LayerView extends Draggable {
     prev.clearLines(targetLayer);
 
     const newLayers = parent.getLayers().splice(0, splitIndex);
-
-    const [x, y] = [newLayers[0].x, newLayers[0].y];
 
     // FIXME: Don't destroy and recreate, just move -> Done but not satisfying
     const newMlpView = new MlpView();
@@ -232,9 +230,7 @@ class LayerView extends Draggable {
   }
 
   pressed() {
-    if (iManager.checkRollout(this) && getMouseButton() == "right") {
-      this.toggleEditMode();
-    }
+    iManager.checkRollout(this);
     if (!this.isEditModeOpen()) return;
     this.getDots().forEach((dot) => dot?.handlePressed());
     this.removeButton?.handlePressed();
