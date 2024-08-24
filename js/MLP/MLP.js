@@ -5,6 +5,10 @@ class MLP {
     this.batch_size = batch_size;
   }
 
+  setLr(lr) {
+    this.lr = lr;
+  }
+
   addLayer(layer) {
     this.layers.push(layer);
   }
@@ -26,9 +30,12 @@ class MLP {
   }
 
   goOneCycle(trainXData, trainYData) {
-    const loss = loss.add(
-      this.mse(this.predict(trainXData), new Value(trainYData)),
-    );
+    let loss = new Value(0);
+    for (let i = 0; i < trainYData.length; i++) {
+      loss = loss.add(
+        this.mse(this.predict(trainXData), new Value(trainYData[i])),
+      );
+    }
     this.getParameters().forEach((p) => (p.grad = 0.0));
     loss.backprop();
     this.getParameters().forEach((p) => (p.data += -this.lr * p.grad));

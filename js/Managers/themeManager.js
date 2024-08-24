@@ -1,13 +1,8 @@
 class ThemeManager {
-  constructor() {
-    let CYAN;
-    let BLUE;
-    let ROSE;
-    let YELLOW;
-    let GREEN;
-    let WHITE;
-    let GRAY;
-    let SKY;
+  constructor() {}
+
+  getColor(themeColor) {
+    return this.getTheme(themeColor).defaultColor;
   }
 
   getTheme(themeColor) {
@@ -43,9 +38,13 @@ class ThemeManager {
         defaultColor = [107, 114, 128];
         activeColor = [74, 74, 74];
         break;
-      default:
+      case "sky":
         defaultColor = [74, 144, 226];
         activeColor = [28, 100, 242];
+        break;
+      default:
+        defaultColor = [0, 0, 0];
+        activeColor = [0, 0, 0];
         break;
     }
     return { defaultColor, activeColor };

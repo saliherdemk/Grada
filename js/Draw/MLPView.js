@@ -11,7 +11,51 @@ class MlpView extends Draggable {
     this.initialized = false;
     this.controlButtons = [];
     this.initButton;
+    this.playInterval = null;
+    this.playSpeed = 50;
+    this.dataStatus = -1;
     this.createToggleMlpButton();
+  }
+
+  setPlaySpeed(ms) {
+    this.playSpeed = ms;
+    if (this.isInitialized()) {
+      this.pause();
+      this.play();
+    }
+  }
+
+  play() {
+    this.playInterval = setInterval(() => {
+      this.fetchNext();
+      this.executeOnce();
+    }, this.playSpeed);
+
+    this.controlButtons[1].setText("Pause");
+    this.controlButtons[0].disable();
+  }
+
+  pause() {
+    clearInterval(this.playInterval);
+    this.playInterval = null;
+    this.controlButtons[1].setText("Play");
+    this.controlButtons[0].enable();
+  }
+
+  togglePlay() {
+    if (this.playInterval) {
+      this.pause();
+      return;
+    }
+    this.play();
+  }
+
+  updateStatus(status) {
+    this.status = status;
+  }
+
+  getDataStatus() {
+    return this.dataStatus;
   }
 
   isInitialized() {
@@ -26,16 +70,51 @@ class MlpView extends Draggable {
     this.initButton = btn;
   }
 
+  goOnce() {
+    const btn = this.controlButtons[0];
+    if (this.getDataStatus() > 0) {
+      this.executeOnce();
+      btn.setTheme("yellow");
+      btn.setText("Fetch Next");
+      return;
+    }
+    this.fetchNext();
+    btn.setTheme("green");
+    btn.setText("Execute");
+  }
+
+  executeOnce() {
+    const layers = this.getLayers();
+    const inputLayer = layers[0];
+    const inputValues = inputLayer.setValues();
+
+    const outputLayer = layers[layers.length - 1];
+    const outputValues = outputLayer.setValues();
+
+    this.origin.goOneCycle(inputValues, outputValues);
+    this.dataStatus = 0;
+    this.controlButtons[1].enable();
+  }
+
+  fetchNext() {
+    const layers = this.getLayers();
+    layers[0].fetchNext();
+    layers[layers.length - 1].fetchNext();
+    this.dataStatus = 1;
+    this.controlButtons[1].disable();
+  }
+
   createGoOnceButton() {
-    const btn = new TextButton("Go Once", () => {
-      console.log("go once");
+    const btn = new TextButton("Fetch Next", () => {
+      this.goOnce();
     });
-    btn.setDimensions(75, 35).setTheme("green");
+    btn.setDimensions(75, 35).setTheme("yellow");
     this.controlButtons.push(btn);
   }
+
   createTogglePlayButton() {
     const btn = new TextButton("Play", () => {
-      console.log("play");
+      this.togglePlay();
     });
     btn.setDimensions(75, 35).setTheme("cyan");
     this.controlButtons.push(btn);
@@ -59,6 +138,12 @@ class MlpView extends Draggable {
 
   updateToggleMlpButton(text, theme) {
     this.initButton.setText(text).setTheme(theme);
+  }
+
+  resetDataset() {
+    const layers = this.layers;
+    layers[0].reset();
+    layers[layers.length - 1].reset();
   }
 
   initializeMlp() {
@@ -85,6 +170,7 @@ class MlpView extends Draggable {
   }
 
   destroyMlp() {
+    this.pause();
     this.origin.destroy();
     this.clearOrigin();
     this.initialized = false;
@@ -127,6 +213,7 @@ class MlpView extends Draggable {
 
   setLr(lr) {
     this.lr = lr;
+    this.origin.setLr(lr);
   }
 
   setBatchSize(batchSize) {
@@ -299,12 +386,13 @@ class MlpView extends Draggable {
       {
         func: "text",
         args: [
-          `Learning Rate: ${this.lr} \n
+          `Play Speed: ${this.playSpeed} ms \n
+          Learning Rate: ${this.lr} \n
           Batch Size: ${this.batchSize}`,
           this.x + 5,
           this.y + this.h + 5,
           this.w + 50,
-          50,
+          75,
         ],
       },
     ];

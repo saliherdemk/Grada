@@ -1,7 +1,7 @@
 class HiddenLayer extends LayerView {
   constructor(x, y, isCopy = false) {
     super(x, y, 50, 0, isCopy);
-    this.yGap = 40;
+    this.yGap = 50;
     this.initializeNeurons();
     !this.isCopy() && this.initializeButton();
     this.parent?.updateBorders();
@@ -37,7 +37,7 @@ class HiddenLayer extends LayerView {
       case "right":
         return this.x + this.w - 25;
       case "left":
-        return this.x + 50;
+        return this.x + 25;
       default:
         return this.x + this.w / 2;
     }
@@ -48,7 +48,7 @@ class HiddenLayer extends LayerView {
     const neurons = this.shownNeurons.indexes.map((i) => this.neurons[i]);
 
     const neuronNum = neurons.length;
-    this.h = this.yGap * (neuronNum - 1) + 50;
+    this.h = this.yGap * (neuronNum - 1) + 75;
     this.infoBox.y = this.y;
 
     const midPoint = neuronNum / 2;

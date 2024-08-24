@@ -12,8 +12,8 @@ class Value {
     return this.data.toFixed(fixedNum);
   }
 
-  getFixedGrad() {
-    return this.grad.toFixed(4);
+  getFixedGrad(fixedNum) {
+    return this.grad.toFixed(fixedNum);
   }
 
   convert(val) {

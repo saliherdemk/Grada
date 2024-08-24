@@ -1,40 +1,57 @@
 class OutputLayer extends IOLayer {
   constructor(datasetId) {
-    super(datasetId, 300, 500);
-    this.currentBatchX = [];
-    this.neuronAlignment = "left";
-    this.w = 400;
-    this.adjustNeuronNum();
+    super(datasetId, 800, 300, false);
+    this.batchY = [];
+    this.setLabels();
+    this.updateBatch();
   }
 
-  initializeDots() {
-    this.outputDot = new Dot(this, true);
+  updateBatch() {
+    const { batchY } = this.getDataset().getBatch(this.currentIndex, 5);
+    this.batchY = batchY;
+  }
+
+  setLabels() {
+    this.labels = this.getDataset().getYLabels();
   }
 
   adjustNeuronNum() {
-    const diff = this.getInputSize() - this.getNeuronNum();
-    for (let i = 0; i < Math.abs(diff); i++) {
-      diff > 0 ? this.pushNeuron() : this.popNeuron();
-    }
-    this.getNeuronNum() > 4 ? this.shrink() : this.expand();
-    this.setShownNeuronsNum(Math.min(this.getNeuronNum(), 4));
-    this.postUpdateCoordinates("right");
+    const diff = this.getTrainYSize() - this.getNeuronNum();
+    super.adjustNeuronNum(diff);
   }
 
-  getNextBatch(batchSize = 100) {
-    const dataset = datasetOrganizer.getDatasetById(this.datasetId);
-    const totalLength = dataset.getTrainX().length;
-    const batch = [];
-
-    for (let i = 0; i < batchSize; i++) {
-      batch.push(dataset.getTrainX()[this.currentIndex]);
-      this.currentIndex = (this.currentIndex + 1) % totalLength;
-    }
-    this.currentBatchX = batch;
+  setValues() {
+    return [parseFloat(this.batchY[0])];
   }
 
-  getInputSize() {
-    const dataset = datasetOrganizer.getDatasetById(this.datasetId);
-    return dataset.trainX[0].length;
+  initializeDots() {
+    this.inputDot = new Dot(this, true);
+  }
+
+  getNeuronValue() {
+    return this.neurons[0].origin?.output.getFixedData(2) ?? 0;
+  }
+
+  showLabels() {
+    const lineX = this.x + this.w - 50;
+    const lineCommand = {
+      func: "line",
+      args: [lineX, this.y + 10, lineX, this.y + this.h - 10],
+    };
+
+    const labelCommands = this.labels.flatMap((label, i) =>
+      this.createColCommand(label, this.w - 50, i * 50),
+    );
+
+    executeDrawingCommands([lineCommand, ...labelCommands]);
+  }
+
+  showValues() {
+    const commands = this.batchY.flatMap((row, i) =>
+      row.flatMap((val, j) =>
+        this.createColCommand(val, 50 + i * 50, j * 50, i),
+      ),
+    );
+    executeDrawingCommands(commands);
   }
 }

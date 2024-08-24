@@ -1,40 +1,53 @@
 class InputLayer extends IOLayer {
   constructor(datasetId) {
-    super(datasetId, 300, 300);
-    this.currentBatchX = [];
-    this.neuronAlignment = "right";
-    this.w = 400;
-    this.adjustNeuronNum();
+    super(datasetId, 300, 300, true);
+    this.batchX = [];
+    this.setLabels();
+    this.updateBatch();
+  }
+
+  updateBatch() {
+    const { batchX } = this.getDataset().getBatch(this.currentIndex, 6);
+    this.batchX = batchX;
+  }
+
+  setLabels() {
+    this.labels = this.getDataset().getXLabels();
+  }
+
+  adjustNeuronNum() {
+    const diff = this.getTrainXSize() - this.getNeuronNum();
+    super.adjustNeuronNum(diff);
+  }
+
+  setValues() {
+    return this.batchX[0].map((v) => parseFloat(v));
   }
 
   initializeDots() {
     this.outputDot = new Dot(this, true);
   }
 
-  adjustNeuronNum() {
-    const diff = this.getInputSize() - this.getNeuronNum();
-    for (let i = 0; i < Math.abs(diff); i++) {
-      diff > 0 ? this.pushNeuron() : this.popNeuron();
-    }
-    this.getNeuronNum() > 4 ? this.shrink() : this.expand();
-    this.setShownNeuronsNum(Math.min(this.getNeuronNum(), 4));
-    this.postUpdateCoordinates("right");
+  showLabels() {
+    const lineCommand = {
+      func: "line",
+      args: [this.x + 50, this.y + 10, this.x + 50, this.y + this.h - 10],
+    };
+
+    const labelCommands = this.labels.flatMap((label, i) =>
+      this.createColCommand(label, 0, i * 50),
+    );
+
+    executeDrawingCommands([lineCommand, ...labelCommands]);
   }
 
-  getNextBatch(batchSize = 100) {
-    const dataset = datasetOrganizer.getDatasetById(this.datasetId);
-    const totalLength = dataset.getTrainX().length;
-    const batch = [];
+  showValues() {
+    const commands = this.batchX.flatMap((row, i) =>
+      row.flatMap((val, j) =>
+        this.createColCommand(val, this.w - (i + 1) * 50, j * 50, i),
+      ),
+    );
 
-    for (let i = 0; i < batchSize; i++) {
-      batch.push(dataset.getTrainX()[this.currentIndex]);
-      this.currentIndex = (this.currentIndex + 1) % totalLength;
-    }
-    this.currentBatchX = batch;
-  }
-
-  getInputSize() {
-    const dataset = datasetOrganizer.getDatasetById(this.datasetId);
-    return dataset.trainX[0].length;
+    executeDrawingCommands(commands);
   }
 }
