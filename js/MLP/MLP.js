@@ -33,7 +33,7 @@ class MLP {
     let loss = new Value(0);
     for (let i = 0; i < trainYData.length; i++) {
       loss = loss.add(
-        this.mse(this.predict(trainXData), new Value(trainYData[i])),
+        this.mse(this.predict(trainXData)[0], new Value(trainYData[i])),
       );
     }
     this.getParameters().forEach((p) => (p.grad = 0.0));

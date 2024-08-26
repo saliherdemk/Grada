@@ -6,7 +6,7 @@ class Layer {
 
   call(x) {
     let outs = this.neurons.map((neuron) => neuron.call(x));
-    return outs.length === 1 ? outs[0] : outs;
+    return outs;
   }
 
   parameters() {
