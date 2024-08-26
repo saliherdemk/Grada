@@ -1,6 +1,6 @@
-class MlpView extends Draggable {
+class MlpView extends Playable {
   constructor() {
-    super(0, 0);
+    super();
     this.layers = [];
     this.label = "MLP1";
     this.origin = null;
@@ -8,174 +8,6 @@ class MlpView extends Draggable {
     this.batchSize = 1;
     this.propsShown = true;
     this.selected = false;
-    this.initialized = false;
-    this.controlButtons = [];
-    this.initButton;
-    this.playInterval = null;
-    this.playSpeed = 50;
-    this.dataStatus = -1;
-    this.createToggleMlpButton();
-  }
-
-  setPlaySpeed(ms) {
-    this.playSpeed = ms;
-    if (this.isInitialized()) {
-      this.pause();
-      this.play();
-    }
-  }
-
-  play() {
-    this.playInterval = setInterval(() => {
-      this.fetchNext();
-      this.executeOnce();
-    }, this.playSpeed);
-
-    this.controlButtons[1].setText("Pause");
-    this.controlButtons[0].disable();
-  }
-
-  pause() {
-    clearInterval(this.playInterval);
-    this.playInterval = null;
-    this.controlButtons[1].setText("Play");
-    this.controlButtons[0].enable();
-  }
-
-  togglePlay() {
-    if (this.playInterval) {
-      this.pause();
-      return;
-    }
-    this.play();
-  }
-
-  updateStatus(status) {
-    this.status = status;
-  }
-
-  getDataStatus() {
-    return this.dataStatus;
-  }
-
-  isInitialized() {
-    return this.initialized;
-  }
-
-  createToggleMlpButton() {
-    const btn = new TextButton("Initialize MLP", () => {
-      this.toggleMlp();
-    });
-    btn.setDimensions(100, 35).disable();
-    this.initButton = btn;
-  }
-
-  goOnce() {
-    const btn = this.controlButtons[0];
-    if (this.getDataStatus() > 0) {
-      this.executeOnce();
-      btn.setTheme("yellow");
-      btn.setText("Fetch Next");
-      return;
-    }
-    this.fetchNext();
-    btn.setTheme("green");
-    btn.setText("Execute");
-  }
-
-  executeOnce() {
-    const layers = this.getLayers();
-    const inputLayer = layers[0];
-    const inputValues = inputLayer.setValues();
-
-    const outputLayer = layers[layers.length - 1];
-    const outputValues = outputLayer.setValues();
-
-    this.origin.goOneCycle(inputValues, outputValues);
-    this.dataStatus = 0;
-    this.controlButtons[1].enable();
-  }
-
-  fetchNext() {
-    const layers = this.getLayers();
-    layers[0].fetchNext();
-    layers[layers.length - 1].fetchNext();
-    this.dataStatus = 1;
-    this.controlButtons[1].disable();
-  }
-
-  createGoOnceButton() {
-    const btn = new TextButton("Fetch Next", () => {
-      this.goOnce();
-    });
-    btn.setDimensions(75, 35).setTheme("yellow");
-    this.controlButtons.push(btn);
-  }
-
-  createTogglePlayButton() {
-    const btn = new TextButton("Play", () => {
-      this.togglePlay();
-    });
-    btn.setDimensions(75, 35).setTheme("cyan");
-    this.controlButtons.push(btn);
-  }
-
-  destroyControlButtons() {
-    this.controlButtons.forEach((b) => b.destroy()); // probably no needed
-    this.controlButtons = [];
-  }
-
-  createControlButtons() {
-    this.createGoOnceButton();
-    this.createTogglePlayButton();
-    this.updateButtonsCoordinates();
-  }
-
-  toggleMlp() {
-    this.isInitialized() ? this.destroyMlp() : this.initializeMlp();
-    this.toggleLockLayers();
-  }
-
-  updateToggleMlpButton(text, theme) {
-    this.initButton.setText(text).setTheme(theme);
-  }
-
-  resetDataset() {
-    const layers = this.layers;
-    layers[0].reset();
-    layers[layers.length - 1].reset();
-  }
-
-  initializeMlp() {
-    const layers = this.layers;
-    const mlp = new MLP([], this.lr, this.batchSize);
-    for (let i = 1; i < layers.length; i++) {
-      const layer = layers[i];
-      const layerOrigin = new Layer(
-        layers[i - 1].neurons.length,
-        layer.neurons.length,
-      );
-      layer.setOrigin(layerOrigin);
-      mlp.addLayer(layerOrigin);
-    }
-    this.setOrigin(mlp);
-    this.initialized = true;
-    this.updateToggleMlpButton("Terminate MLP", "red");
-    this.createControlButtons();
-  }
-
-  clearOrigin() {
-    this.layers.forEach((l) => l.clearOrigin());
-    this.origin = null;
-  }
-
-  destroyMlp() {
-    this.pause();
-    this.origin.destroy();
-    this.clearOrigin();
-    this.initialized = false;
-    this.updateToggleMlpButton("Initialize MLP", "blue");
-    this.destroyControlButtons();
   }
 
   select() {
@@ -221,30 +53,18 @@ class MlpView extends Draggable {
   }
 
   setLayers(layers) {
-    this.layers.forEach((l) => l.destroy());
     this.layers = layers;
+    layers.forEach((l) => {
+      l.setParent(this);
+    });
   }
 
   isPropsShown() {
     return this.propsShown;
   }
 
-  isCompleted() {
-    const layers = this.layers;
-    return (
-      layers[0] instanceof InputLayer &&
-      layers[layers.length - 1] instanceof OutputLayer
-    );
-  }
-
   togglePropsShown() {
     this.propsShown = !this.propsShown;
-  }
-
-  toggleLockLayers() {
-    this.layers.forEach((layer) => {
-      this.initialized == layer.isEditModeOpen() && layer.toggleEditMode();
-    });
   }
 
   updateLayersCoordinates(newX, newY) {
@@ -263,18 +83,6 @@ class MlpView extends Draggable {
 
   getLayers() {
     return this.layers;
-  }
-
-  setLayers(layers) {
-    this.layers = layers;
-    layers.forEach((l) => {
-      l.setParent(this);
-    });
-  }
-
-  checkMlpCompleted() {
-    const initBtn = this.initButton;
-    this.isCompleted() ? initBtn.enable() : initBtn.disable();
   }
 
   setOrigin(obj) {

@@ -2,22 +2,23 @@ class EditLayerOrganizer extends EditOrganizer {
   constructor() {
     super();
     this.selectedCopy = null;
-    this.shrank = false;
     this.w = 500; // make this responsive to parent element
     this.h = 500;
     this.eventManager = new EventManager(this);
   }
 
   toggleShrink() {
-    const btn = getElementById("toggle-shrink-btn");
-    this.shrank = !this.shrank;
-    btn.innerText = this.shrank ? "Shrank" : "Expanded";
+    const copy = this.selectedCopy;
+    copy.isShrank() ? copy.expand() : copy.shrink();
     this.setInfoText();
   }
 
   setInfoText() {
     const layer = this.selectedCopy;
-    const text = this.shrank ? layer.getShownNeuronsNum() : "all";
+    const btn = getElementById("toggle-shrink-btn");
+    const text = layer.isShrank() ? layer.getShownNeuronsNum() : "all";
+
+    btn.innerText = layer.isShrank() ? "Shrank" : "Expanded";
     getElementById("info-message").innerText = text;
   }
 
@@ -36,7 +37,7 @@ class EditLayerOrganizer extends EditOrganizer {
   setup() {
     this.setLayout();
     // Adjusts inputs properties based on selectedLayer
-    this.toggleShrink();
+    this.setInfoText();
     setElementProperties("set-neuron-num", {
       value: this.selectedCopy.getNeuronNum(),
     });
@@ -49,17 +50,22 @@ class EditLayerOrganizer extends EditOrganizer {
     const original = this.selected;
     const copy = this.selectedCopy;
     this.copyNeurons(copy, original);
-    this.shrank ? original.shrink() : original.expand();
+    if (copy.isShrank()) {
+      original.shrink();
+      original.setShownNeuronsNum(copy.getShownNeuronsNum());
+    } else {
+      original.expand();
+      original.setShownNeuronsNum(copy.getNeuronNum());
+    }
     original.setLabel(copy.label);
-    original.setShownNeuronsNum(copy.getShownNeuronsNum());
     original.reconnectNeurons();
+    original.postUpdateCoordinates();
   }
 
   disable() {
     this.selected = null;
     this.selectedCopy.destroy();
     this.selectedCopy = null;
-    this.shrank = false;
     this.enabled = false;
     closeEditLayer();
   }
@@ -75,10 +81,10 @@ class EditLayerOrganizer extends EditOrganizer {
   enable(layer) {
     openEditLayer();
     this.selected = layer;
-    const copy = new HiddenLayer(0, 0, true);
+    const copy = new CopyLayer(0, 0);
     this.copyNeurons(layer, copy);
+    layer.isShrank() ? copy.shrink() : copy.expand();
     copy.setLabel(layer.label);
-    this.shrank = !layer.isShrank(); // will call toggleShrink. I wanted to use same function
     this.selectedCopy = copy;
     this.eventManager.setShownNeuronsNum(layer.getShownNeuronsNum());
     this.enabled = true;
