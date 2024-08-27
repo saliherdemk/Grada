@@ -6,6 +6,11 @@ class OutputLayer extends IOLayer {
     this.updateBatch();
   }
 
+  reInitializeDots() {
+    this.outputDot.destroy();
+    this.outputDot = null;
+  }
+
   updateBatch() {
     const { batchY } = this.getDataset().getBatch(this.currentIndex, 5);
     this.batchY = batchY;
@@ -22,10 +27,6 @@ class OutputLayer extends IOLayer {
 
   setValues() {
     return [parseFloat(this.batchY[0])];
-  }
-
-  initializeDots() {
-    this.inputDot = new Dot(this, true);
   }
 
   getNeuronValue() {

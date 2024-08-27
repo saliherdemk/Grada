@@ -63,7 +63,7 @@ class FunctionalLayerView extends LayerView {
   }
 
   updateDotsCoordinates() {
-    this.getDots().forEach((dot) => dot.updateCoordinates());
+    this.getDots().forEach((dot) => dot?.updateCoordinates());
   }
 
   updateButtonCoordinates() {

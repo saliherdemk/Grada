@@ -86,6 +86,7 @@ class Playable extends Draggable {
     this.initialized = true;
     this.updateToggleMlpButton("Terminate MLP", "red");
     this.createControlButtons();
+    mainOrganizer.setActiveLine(null);
   }
 
   destroyMlp() {

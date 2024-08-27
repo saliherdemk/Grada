@@ -6,6 +6,11 @@ class InputLayer extends IOLayer {
     this.updateBatch();
   }
 
+  reInitializeDots() {
+    this.inputDot.destroy();
+    this.inputDot = null;
+  }
+
   updateBatch() {
     const { batchX } = this.getDataset().getBatch(this.currentIndex, 6);
     this.batchX = batchX;
@@ -22,10 +27,6 @@ class InputLayer extends IOLayer {
 
   setValues() {
     return this.batchX[0].map((v) => parseFloat(v));
-  }
-
-  initializeDots() {
-    this.outputDot = new Dot(this, true);
   }
 
   showLabels() {
