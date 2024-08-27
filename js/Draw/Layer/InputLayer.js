@@ -2,6 +2,7 @@ class InputLayer extends IOLayer {
   constructor(datasetId) {
     super(datasetId, 300, 300, true);
     this.batchX = [];
+    this.actFunc = "";
     this.setLabels();
     this.updateBatch();
   }

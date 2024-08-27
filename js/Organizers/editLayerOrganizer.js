@@ -43,23 +43,33 @@ class EditLayerOrganizer extends EditOrganizer {
     });
 
     setElementProperties("label-input", { value: this.selectedCopy.label });
+    setElementProperties("act-function-select", {
+      value: this.selectedCopy.actFunc,
+    });
     this.eventManager.setMaxShownNeuronInput();
+    this.eventManager.setRestrictions();
+  }
+
+  enable(layer) {
+    openEditLayer();
+    this.selected = layer;
+    this.selectedCopy = this.createCopy(layer);
+    this.eventManager.setShownNeuronsNum(layer.getShownNeuronsNum());
+    this.enabled = true;
+    this.setup();
+  }
+
+  createCopy(layer) {
+    const copy = new CopyLayer(0, 0);
+    copy.copyNeurons(layer);
+    layer.isShrank() ? copy.shrink() : copy.expand();
+    copy.setLabel(layer.label);
+    copy.setActFunc(layer.actFunc);
+    return copy;
   }
 
   update() {
-    const original = this.selected;
-    const copy = this.selectedCopy;
-    this.copyNeurons(copy, original);
-    if (copy.isShrank()) {
-      original.shrink();
-      original.setShownNeuronsNum(copy.getShownNeuronsNum());
-    } else {
-      original.expand();
-      original.setShownNeuronsNum(copy.getNeuronNum());
-    }
-    original.setLabel(copy.label);
-    original.reconnectNeurons();
-    original.postUpdateCoordinates();
+    this.selected.replace(this.selectedCopy);
   }
 
   disable() {
@@ -68,27 +78,6 @@ class EditLayerOrganizer extends EditOrganizer {
     this.selectedCopy = null;
     this.enabled = false;
     closeEditLayer();
-  }
-
-  copyNeurons(from, to) {
-    const diff = from.getNeuronNum() - to.getNeuronNum();
-
-    for (let i = 0; i < Math.abs(diff); i++) {
-      diff > 0 ? to.pushNeuron() : to.popNeuron();
-    }
-  }
-
-  enable(layer) {
-    openEditLayer();
-    this.selected = layer;
-    const copy = new CopyLayer(0, 0);
-    this.copyNeurons(layer, copy);
-    layer.isShrank() ? copy.shrink() : copy.expand();
-    copy.setLabel(layer.label);
-    this.selectedCopy = copy;
-    this.eventManager.setShownNeuronsNum(layer.getShownNeuronsNum());
-    this.enabled = true;
-    this.setup();
   }
 
   draw() {

@@ -78,6 +78,7 @@ class Playable extends Draggable {
       const layerOrigin = new Layer(
         this.layers[i - 1].neurons.length,
         layer.neurons.length,
+        layer.actFunc,
       );
       layer.setOrigin(layerOrigin);
       mlp.addLayer(layerOrigin);

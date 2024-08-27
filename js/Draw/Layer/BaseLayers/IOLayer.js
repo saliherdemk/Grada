@@ -95,8 +95,6 @@ class IOLayer extends HiddenLayer {
     this.postUpdateCoordinates();
   }
 
-  doubleClicked() {}
-
   showValues() {}
   showLabels() {}
   updateBatch() {}

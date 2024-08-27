@@ -159,7 +159,6 @@ class FunctionalLayerView extends LayerView {
   }
 
   destroy() {
-    this.parent.destroy();
     this.parent = null;
 
     this.removeButton.destroy();

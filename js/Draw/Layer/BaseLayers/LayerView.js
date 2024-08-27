@@ -5,10 +5,41 @@ class LayerView extends Draggable {
     this.neurons = [];
     this.yGap = 50;
     this.label = "";
+    this.actFunc = "";
     this.shrank = false;
     this.shownNeurons = { num: 0, indexes: [] };
     this.infoBox = { h: 70, y: 0, val: 0 };
     this.neuronAlignment = "middle";
+  }
+
+  replace(layer) {
+    this.copyNeurons(layer);
+
+    const isShrank = layer.isShrank();
+    const neuronsNum = isShrank
+      ? layer.getShownNeuronsNum()
+      : layer.getNeuronNum();
+
+    this[isShrank ? "shrink" : "expand"]();
+    this.setShownNeuronsNum(neuronsNum);
+
+    this.setLabel(layer.label);
+    this.setActFunc(layer.actFunc);
+
+    this.reconnectNeurons();
+    this.postUpdateCoordinates();
+  }
+
+  copyNeurons(from) {
+    const diff = from.getNeuronNum() - this.getNeuronNum();
+
+    for (let i = 0; i < Math.abs(diff); i++) {
+      diff > 0 ? this.pushNeuron() : this.popNeuron();
+    }
+  }
+
+  setActFunc(actFunc) {
+    this.actFunc = actFunc;
   }
 
   setLabel(label) {
@@ -123,9 +154,18 @@ class LayerView extends Draggable {
   }
 
   show() {
+    const middleX = this.x + this.w / 2;
     const commands = [
       { func: "rect", args: [this.x, this.y, this.w, this.h] },
-      { func: "text", args: [this.label, this.x, this.y - 15, this.w, 25] },
+      { func: "textAlign", args: [CENTER, CENTER] },
+      {
+        func: "text",
+        args: [this.label, middleX, this.y - 10],
+      },
+      {
+        func: "text",
+        args: [this.actFunc, middleX, this.y + this.h - 10],
+      },
     ];
 
     executeDrawingCommands(commands);

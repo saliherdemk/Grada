@@ -129,11 +129,19 @@
     <div id="disable-background">
       <div id="canvas-parent">
         <div id="edit-panel">
-          <div id="edit-label-container">
-            <span>Layer name: </span>
-            <input id="label-input" class="inp" type="" name="" value="" />
+          <div id="layer-settings-container">
+            <div class="flex-center">
+              Layer name:
+              <input id="label-input" class="inp" type="" name="" value="" />
+            </div>
+            <div class="flex-center">
+              Act Func:
+              <select name="act-functions" id="act-function-select" class="inp">
+                <option value="" selected>None</option>
+              </select>
+            </div>
           </div>
-          <div class="grid-container">
+          <div class="layer-controls-grid">
             <div id="info-message-container">
               Layer will be display with
               <span id="info-message">hey</span> neurons
@@ -264,6 +272,7 @@
     <script src="js/Managers/canvasManager.js"></script>
     <script src="js/Managers/interactionManager.js"></script>
     <script src="js/Managers/eventManager.js"></script>
+    <script src="js/Managers/activationFunctionManager.js"></script>
 
     <script src="js/Organizers/tableOrganizer.js"></script>
     <script src="js/Organizers/datasetOrganizer.js"></script>
@@ -274,7 +283,6 @@
 
     <script src="js/MLP/Dataset.js"></script>
     <script src="js/MLP/Value.js"></script>
-    <script src="js/MLP/ActFunctions.js"></script>
     <script src="js/MLP/Neuron.js"></script>
     <script src="js/MLP/Layer.js"></script>
     <script src="js/MLP/MLP.js"></script>
@@ -297,8 +305,8 @@
 
     <script src="js/Draw/NeuronView.js"></script>
 
-    <script src="js/Draw/Playable.js"></script>
-    <script src="js/Draw/MLPView.js"></script>
+    <script src="js/Draw/MLP/Playable.js"></script>
+    <script src="js/Draw/MLP/MLPView.js"></script>
 
     <script src="js/canvas.js"></script>
   </body>
