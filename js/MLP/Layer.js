@@ -1,21 +1,29 @@
 class Layer {
-  constructor(nin, nout) {
+  constructor(nin, nout, actFunction) {
     this.nin = nin;
     this.neurons = Array.from({ length: nout }, () => new Neuron(nin));
+    this.actFunc = actFunction;
+    this.setActFunction(actFunction);
+  }
+
+  setActFunction(actFunc) {
+    this.actFunc = actFuncManager.getFunction(actFunc);
   }
 
   call(x) {
-    let outs = this.neurons.map((neuron) => neuron.call(x));
-    return outs.length === 1 ? outs[0] : outs;
+    let outs = this.neurons.map((neuron) => {
+      let output = neuron.call(x);
+      if (this.actFunc) {
+        output = this.actFunc(output);
+      }
+      neuron.setOutput(output);
+      return output;
+    });
+    return outs;
   }
 
   parameters() {
     return this.neurons.flatMap((neuron) => neuron.parameters());
-  }
-
-  change_act_func(act_func) {
-    this.act_func = act_func;
-    this.neurons.forEach((neuron) => neuron.change_act_func(this.act_func));
   }
 
   destroy() {

@@ -1,95 +1,49 @@
 class LayerView extends Draggable {
-  constructor(_x, _y, w, h, isCopy) {
+  constructor(_x, _y, w, h) {
     const { x, y } = iManager.getAbsoluteCoordinates(_x, _y);
     super(x, y, w, h);
-    this.parent = isCopy ? null : new MlpView();
-    this.origin = null;
     this.neurons = [];
-    this.inputDot = null;
-    this.outputDot = null;
+    this.yGap = 50;
     this.label = "";
-    this.removeButton;
-    this.editMode = true;
+    this.actFunc = "";
     this.shrank = false;
     this.shownNeurons = { num: 0, indexes: [] };
     this.infoBox = { h: 70, y: 0, val: 0 };
     this.neuronAlignment = "middle";
-
-    this.initializeDots();
-    this.initializeParent();
   }
 
-  initializeParent() {
-    const parent = this.parent;
-    if (parent) {
-      parent.pushLayer(this);
-      mainOrganizer.addMlpView(parent);
-      this.postUpdateCoordinates();
-    }
-  }
+  replace(layer) {
+    this.copyNeurons(layer);
 
-  initializeDots() {}
+    const isShrank = layer.isShrank();
+    const neuronsNum = isShrank
+      ? layer.getShownNeuronsNum()
+      : layer.getNeuronNum();
 
-  initializeButton() {
-    this.removeButton = new ImageButton("delete", () => this.handleRemove());
-    this.updateButtonCoordinates();
-  }
+    this[isShrank ? "shrink" : "expand"]();
+    this.setShownNeuronsNum(neuronsNum);
 
-  updateDotsCoordinates() {
-    this.getDots().forEach((dot) => dot?.updateCoordinates());
-  }
+    this.setLabel(layer.label);
+    this.setActFunc(layer.actFunc);
 
-  updateButtonCoordinates() {
-    const button = this.removeButton;
-    button?.setCoordinates(this.x + (this.w - button.w) / 2, this.y + this.h);
-  }
-
-  handleRemove() {
-    if (this.isIsolated()) {
-      this.parent.destroy();
-      return;
-    }
-    this.isolate();
-  }
-
-  getDots() {
-    return [this.inputDot, this.outputDot];
-  }
-
-  postUpdateCoordinates() {
-    this.updateButtonCoordinates();
-    this.updateNeuronsCoordinates();
-    this.parent?.updateBorders();
-  }
-
-  clearOrigin() {
-    this.neurons.forEach((n) => n.clearOrigin());
-    this.origin = null;
-  }
-
-  setOrigin(obj) {
-    // Thanks to MLP class, we can't get rid of this mess. There is no input layer in original MLP class and all weights belongs to target neurons. Too much work to change. Maybe later.
-    const { prev } = this.parent.getPrevAndNext(this);
-    for (let i = 0; i < this.neurons.length; i++) {
-      for (let j = 0; j < prev.neurons.length; j++) {
-        this.neurons[i].setOrigin(obj.neurons[i]);
-        prev.neurons[j].lines[i].setOrigin(obj.neurons[i].w[j]);
-      }
-    }
-    this.origin = obj;
-  }
-
-  setCoordinates(x, y) {
-    super.setCoordinates(x, y);
+    this.reconnectNeurons();
     this.postUpdateCoordinates();
+  }
+
+  copyNeurons(from) {
+    const diff = from.getNeuronNum() - this.getNeuronNum();
+
+    for (let i = 0; i < Math.abs(diff); i++) {
+      diff > 0 ? this.pushNeuron() : this.popNeuron();
+    }
+  }
+
+  setActFunc(actFunc) {
+    this.actFunc = actFunc;
   }
 
   setLabel(label) {
     this.label = label;
-  }
-
-  setParent(parent) {
-    this.parent = parent;
   }
 
   shrink() {
@@ -100,16 +54,8 @@ class LayerView extends Draggable {
     this.shrank = false;
   }
 
-  isEditModeOpen() {
-    return this.editMode;
-  }
-
   isShrank() {
     return this.shrank;
-  }
-
-  toggleEditMode() {
-    this.editMode = !this.editMode;
   }
 
   pushNeuron() {
@@ -128,22 +74,72 @@ class LayerView extends Draggable {
     return this.shownNeurons.num;
   }
 
-  setShownNeuronsNum(shownNeuronsNum) {
-    this.shownNeurons.num = this.isShrank()
-      ? shownNeuronsNum
-      : this.getNeuronNum();
-    this.setShownNeurons();
-    editLayerOrganizer.isEnabled() && editLayerOrganizer.setInfoText();
+  getNeuronXBasedOnAlignment() {
+    switch (this.neuronAlignment) {
+      case "right":
+        return this.x + this.w - 25;
+      case "left":
+        return this.x + 25;
+      default:
+        return this.x + this.w / 2;
+    }
+  }
+
+  updateNeuronsCoordinates(isShrank = this.isShrank()) {
+    const neurons = this.shownNeurons.indexes.map((i) => this.neurons[i]);
+
+    const neuronNum = neurons.length;
+    this.h = this.yGap * (neuronNum - 1) + 75;
+    this.infoBox.y = this.y;
+
+    const midPoint = neuronNum / 2;
+    neurons.forEach((neuron, i) => {
+      const afterMid = isShrank && i > midPoint;
+      if (!afterMid) {
+        this.infoBox.y += this.yGap;
+      }
+      const x = this.getNeuronXBasedOnAlignment();
+      const y = this.y + this.h / 2 + this.yGap * (i - (neuronNum - 1) / 2);
+
+      neuron.updateCoordinates(x, y + (afterMid ? this.infoBox.h : 0));
+    });
+
+    this.h += isShrank ? this.infoBox.h : 0;
+  }
+
+  showInfoBox() {
+    const infoBoxY = this.infoBox.y;
+    const infoBoxX = this.getNeuronXBasedOnAlignment() - 25;
+    const commands = [
+      { func: "fill", args: [0] },
+      { func: "textSize", args: [18] },
+      { func: "textAlign", args: [CENTER, CENTER] },
+      { func: "textLeading", args: [4] },
+      { func: "text", args: [`.\n.\n.\n`, infoBoxX, infoBoxY, 50, 35] },
+      {
+        func: "text",
+        args: [this.infoBox.val.toString(), infoBoxX, infoBoxY + 25, 50, 35],
+      },
+      { func: "text", args: [`.\n.\n.\n`, infoBoxX, infoBoxY + 45, 50, 35] },
+    ];
+
+    executeDrawingCommands(commands);
+  }
+
+  setShownNeuronsNum(shownNeuronsNum, max = -1) {
+    this.shownNeurons.num = shownNeuronsNum;
+
+    this.setShownNeurons(max);
   }
 
   // GIANT MESS -> LESS GIANT MESS -> Acceptable mess
-  setShownNeurons() {
+  setShownNeurons(max) {
     this.shownNeurons.indexes = [];
     const shownNeuronsNum = this.getShownNeuronsNum();
     const neuronsNum = this.getNeuronNum();
     this.infoBox.val = neuronsNum - shownNeuronsNum;
     const mid =
-      (this.parent ? shownNeuronsNum : Math.min(shownNeuronsNum, 4)) / 2;
+      (max > 0 ? Math.min(shownNeuronsNum, max) : shownNeuronsNum) / 2;
 
     this.neurons.forEach((neuron, i) => {
       if (i < mid || i >= neuronsNum - mid) {
@@ -157,102 +153,26 @@ class LayerView extends Draggable {
     this.updateNeuronsCoordinates();
   }
 
-  isIsolated() {
-    return this.parent.layers.length == 1;
-  }
+  show() {
+    const middleX = this.x + this.w / 2;
+    const commands = [
+      { func: "rect", args: [this.x, this.y, this.w, this.h] },
+      { func: "textAlign", args: [CENTER, CENTER] },
+      {
+        func: "text",
+        args: [this.label, middleX, this.y - 10],
+      },
+      {
+        func: "text",
+        args: [this.actFunc, middleX, this.y + this.h - 10],
+      },
+    ];
 
-  isolate() {
-    const { prev: prevLayer, next: targetLayer } =
-      this.parent.getPrevAndNext(this);
-
-    targetLayer && this.splitMlp(targetLayer);
-    prevLayer && prevLayer.splitMlp(this);
-  }
-
-  clearLines(targetLayer) {
-    this.neurons.forEach((neuron) => neuron.removeLines());
-    this.outputDot.free();
-    targetLayer.inputDot.free();
-  }
-
-  splitMlp(targetLayer) {
-    const parent = targetLayer.parent;
-    const { prev, index: splitIndex } = parent.getPrevAndNext(targetLayer);
-    prev.clearLines(targetLayer);
-
-    const newLayers = parent.getLayers().splice(0, splitIndex);
-
-    // FIXME: Don't destroy and recreate, just move -> Done but not satisfying
-    const newMlpView = new MlpView();
-
-    newMlpView.setLayers(newLayers);
-    newMlpView.updateBorders();
-    parent.updateBorders();
-    parent.checkMlpCompleted();
-    mainOrganizer.addMlpView(newMlpView);
-  }
-
-  reconnectNeurons() {
-    const parent = this.parent;
-    const { prev, next } = parent.getPrevAndNext(this);
-
-    prev && prev.connectNeurons(this);
-    next && this.connectNeurons(next);
-
-    this.updateButtonCoordinates();
-    this.parent.updateBorders();
-  }
-
-  connectNeurons(targetLayer) {
-    this.neurons.forEach((n1) => {
-      n1.removeLines();
-      targetLayer.neurons.forEach((n2) => {
-        n1.addLine(new Line(n1, n2));
-      });
-    });
-    this.outputDot.occupy();
-    targetLayer.inputDot.occupy();
-  }
-
-  connectLayer(targetLayer) {
-    if (this.parent === targetLayer.parent) return;
-    if (this.outputDot.isOccupied()) {
-      const { next } = this.parent.getPrevAndNext(this);
-      this.splitMlp(next);
-    }
-
-    if (targetLayer.inputDot.isOccupied()) {
-      this.splitMlp(targetLayer);
-    }
-
-    this.connectNeurons(targetLayer);
-    targetLayer.parent.moveLayers(this.parent);
-  }
-
-  pressed() {
-    iManager.checkRollout(this);
-    if (!this.isEditModeOpen()) return;
-    this.getDots().forEach((dot) => dot?.handlePressed());
-    this.removeButton?.handlePressed();
-  }
-
-  doubleClicked() {
-    const allowed =
-      iManager.checkRollout(this) &&
-      this.isEditModeOpen() &&
-      !editLayerOrganizer.getSelected();
-
-    allowed && editLayerOrganizer.enable(this);
+    executeDrawingCommands(commands);
   }
 
   destroy() {
-    this.neurons.forEach((neuron) => neuron.destroy());
+    this.neurons.forEach((n) => n.destroy());
     this.neurons = [];
-    this.getDots().forEach((dot) => dot?.destroy());
-    this.inputDot = null;
-    this.outputDot = null;
-    this.instance = null;
-    this.button?.destroy();
-    this.button = null;
   }
 }

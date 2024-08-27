@@ -7,6 +7,7 @@ class IOLayer extends HiddenLayer {
     this.currentIndex = -2;
     this.labels = [];
     this.adjustNeuronNum();
+    this.reInitializeDots();
   }
 
   reset() {
@@ -93,8 +94,6 @@ class IOLayer extends HiddenLayer {
     this.setShownNeuronsNum(Math.min(this.getNeuronNum(), 4));
     this.postUpdateCoordinates();
   }
-
-  doubleClicked() {}
 
   showValues() {}
   showLabels() {}

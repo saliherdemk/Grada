@@ -112,13 +112,15 @@ body {
     display: none;
 }
 
-#edit-label-container {
-    position: absolute;
-    top: 5px;
-    left: 10px;
+#layer-settings-container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding-right: 10%;
 }
 
-#label-input {
+#label-input,
+#act-function-select {
     width: 100px;
 }
 
@@ -128,7 +130,8 @@ body {
     display: flex;
     height: 500px;
     width: 500px;
-    align-items: end;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 #info-message-container {
@@ -278,7 +281,7 @@ body {
     border-radius: 10px;
 }
 
-.grid-container {
+.layer-controls-grid {
     padding: 5px;
 }
 
@@ -297,7 +300,7 @@ body {
     border-bottom: 1px lightgray solid;
     border-radius: 5px;
     text-align: center;
-    font-size: 18px;
+    font-size: 1rem;
     transition: background-color 0.3s;
     cursor: pointer;
     padding: 0;

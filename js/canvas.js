@@ -5,6 +5,7 @@ let iManager;
 let tableOrganizer;
 let datasetOrganizer;
 let themeManager;
+let actFuncManager;
 
 let canvasManager;
 
@@ -19,6 +20,7 @@ let mainSketch = function (p) {
     iManager = new InteractionManager();
     tableOrganizer = new TableOrganizer();
     datasetOrganizer = new DatasetOrganizer();
+    actFuncManager = new ActivationFunctionManager();
   };
 
   p.draw = function () {
