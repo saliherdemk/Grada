@@ -21,24 +21,34 @@ class ActivationFunctionManager {
   }
 
   tanh(x) {
-    let e = x.mul(2).exp();
-    let output = e.sub(new Value(1)).div(e.add(new Value(1)));
+    const output = x.map((_x) => {
+      const e = _x.mul(2).exp();
+      return e.sub(new Value(1)).div(e.add(new Value(1)));
+    });
     return output;
   }
 
   relu(x) {
-    let data = x.data;
-    let output = new Value(Math.max(0, data), x);
-    output.backward = function () {
-      x.grad += data > 0 ? 1 : 0;
-    };
+    const output = x.map((_x) => {
+      let data = _x.data;
+      let out = new Value(Math.max(0, data), [_x]);
+      out.backward = function () {
+        _x.grad += data > 0 ? 1 : 0;
+      };
+      return out;
+    });
     return output;
   }
 
   sigmoid(x) {
-    let output = new Value(1).div(new Value(1).add(x.neg().exp()));
-    return output;
+    return x.map((_x) => new Value(1).div(new Value(1).add(_x.neg().exp())));
   }
 
-  softmax(x) {}
+  softmax(x) {
+    let denominator = new Value(0);
+    x.forEach((_x) => {
+      denominator = denominator.add(_x.exp());
+    });
+    return x.map((_x) => _x.exp().div(denominator));
+  }
 }

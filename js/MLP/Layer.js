@@ -11,14 +11,11 @@ class Layer {
   }
 
   call(x) {
-    let outs = this.neurons.map((neuron) => {
-      let output = neuron.call(x);
-      if (this.actFunc) {
-        output = this.actFunc(output);
-      }
-      neuron.setOutput(output);
-      return output;
-    });
+    let outs = this.neurons.map((neuron) => neuron.call(x));
+    if (this.actFunc) {
+      outs = this.actFunc(outs);
+    }
+    outs.forEach((o, i) => this.neurons[i].setOutput(o));
     return outs;
   }
 
