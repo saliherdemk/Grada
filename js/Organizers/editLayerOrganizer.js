@@ -51,12 +51,13 @@ class EditLayerOrganizer extends EditOrganizer {
   }
 
   enable(layer) {
-    openEditLayer();
+    getElementById("canvas-parent").style.display = "initial";
     this.selected = layer;
     this.selectedCopy = this.createCopy(layer);
     this.eventManager.setShownNeuronsNum(layer.getShownNeuronsNum());
     this.enabled = true;
     this.setup();
+    mainOrganizer.disable();
   }
 
   createCopy(layer) {
@@ -73,11 +74,13 @@ class EditLayerOrganizer extends EditOrganizer {
   }
 
   disable() {
+    if (!this.enabled) return;
     this.selected = null;
     this.selectedCopy.destroy();
     this.selectedCopy = null;
     this.enabled = false;
-    closeEditLayer();
+    getElementById("canvas-parent").style.display = "none";
+    mainOrganizer.enable();
   }
 
   draw() {

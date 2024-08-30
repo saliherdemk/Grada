@@ -64,6 +64,8 @@ let mainSketch = function (p) {
 
     if (k == "escape") {
       editMLPOrganizer.disable();
+      editLayerOrganizer.disable();
+      tableOrganizer.disable();
       mainOrganizer.enable();
     }
   };

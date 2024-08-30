@@ -31,10 +31,10 @@ class MLP {
 
   goOneCycle(trainXData, trainYData) {
     let loss = new Value(0);
+    const predict = this.predict(trainXData);
+
     for (let i = 0; i < trainYData.length; i++) {
-      loss = loss.add(
-        this.mse(this.predict(trainXData)[0], new Value(trainYData[i])),
-      );
+      loss = loss.add(this.mse(predict[i], new Value(trainYData[i])));
     }
     this.getParameters().forEach((p) => (p.grad = 0.0));
     loss.backprop();

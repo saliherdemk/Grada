@@ -10,8 +10,6 @@ class MainOrganizer {
 
   enable() {
     getElementById("disable-background").style.display = "none";
-    getElementById("create-dataset-container").style.display = "none";
-    getElementById("canvas-parent").style.display = "none";
     this.mainDisabled = false;
   }
 

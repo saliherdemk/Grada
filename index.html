@@ -126,8 +126,8 @@
         height="20"
       />
     </div>
-    <div id="disable-background">
-      <div id="canvas-parent">
+    <div id="disable-background" onclick="closeEdit()">
+      <div id="canvas-parent" onclick="event.stopPropagation()">
         <div id="edit-panel">
           <div id="layer-settings-container">
             <div class="flex-center">
@@ -192,12 +192,8 @@
         </div>
       </div>
 
-      <div id="create-dataset-container">
+      <div id="create-dataset-container" onclick="event.stopPropagation()">
         <div id="dataset-control-container">
-          <div class="flex-center">
-            <label for="">Name: </label>
-            <input id="dataset-name-inp" class="inp" type="" name="" value="" />
-          </div>
           <img
             id="create-dataset-close"
             class="cancel-icon"
@@ -208,25 +204,7 @@
             onclick="closeCreateDataset()"
           />
         </div>
-        <div id="scrollable-container">
-          <table id="dynamicTable">
-            <tr>
-              <th class="left-0 top-0 z-4"></th>
-              <th class="left-1 top-0 z-3"></th>
-              <th class="right-0 top-0 z-3"></th>
-            </tr>
-            <tr>
-              <td class="left-0 z-3"></td>
-              <td class="left-1 z-2"></td>
-              <td class="right-0"></td>
-            </tr>
-            <tr>
-              <td class="left-0 bottom-0 z-3"></td>
-              <td class="left-1 bottom-0 z-2"></td>
-              <td class="right-0 bottom-0"></td>
-            </tr>
-          </table>
-        </div>
+        <div id="scrollable-container"></div>
 
         <div class="flex-end">
           <button class="btn btn-blue" type="" onclick="handleCreateDataset()">

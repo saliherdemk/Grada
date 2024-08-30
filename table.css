@@ -15,6 +15,10 @@ td {
     background: transparent;
 }
 
+td {
+    min-width: 70px;
+}
+
 #dataset-control-container {
     display: flex;
     justify-content: space-between;
@@ -32,7 +36,7 @@ td {
 
 #scrollable-container {
     box-sizing: border-box;
-    max-width: 870px;
+    max-width: 916px;
     max-height: 500px;
     overflow: auto;
 }
@@ -72,21 +76,14 @@ td {
 
 }
 
-.remove-row-btn,
-.remove-col-btn {
+.control-btn {
     font-size: 24px;
     color: #f43f5e;
     cursor: pointer;
-
-}
-
-.remove-row-btn {
     display: block;
+
 }
 
-.remove-col-btn {
-    top: 60px;
-}
 
 .table-add-btn {
     background: rgba(74, 222, 128, 0.5);
@@ -117,6 +114,7 @@ td {
 .left-1,
 .right-0,
 .top-0,
+.top-1,
 .bottom-0 {
     position: sticky;
     background-color: white;
@@ -128,21 +126,23 @@ td {
 }
 
 .left-1 {
-    left: 51px;
+    left: 86px;
 }
 
 .right-0 {
     right: 0;
-    padding-right: 20px
 }
 
 .top-0 {
     top: 0;
 }
 
+.top-1 {
+    top: 58px;
+}
+
 .bottom-0 {
     bottom: 0;
-    padding-bottom: 20px;
 }
 
 .z-1 {
@@ -161,6 +161,7 @@ td {
     z-index: 4;
 }
 
+
 #create-dataset-container input {
     display: block;
     padding: 0.625rem;
@@ -173,5 +174,5 @@ td {
     color: #111827;
     background-color: #F9FAFB;
     box-sizing: border-box;
-    min-width: 120px;
+    min-width: 150px;
 }
