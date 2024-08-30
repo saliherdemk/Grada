@@ -217,8 +217,8 @@ class TableOrganizer {
       const cell = cells[i];
       cell.querySelector("img").src =
         cell.getAttribute("selected") === "true"
-          ? (cell.querySelector("img").src = "./../../media/label-selected.png")
-          : (cell.querySelector("img").src = "./../../media/label.png");
+          ? (cell.querySelector("img").src = "/media/label-selected.png")
+          : (cell.querySelector("img").src = "/media/label.png");
     }
   }
 
