@@ -26,7 +26,7 @@ class OutputLayer extends IOLayer {
   }
 
   setValues() {
-    return [parseFloat(this.batchY[0])];
+    return this.batchY[0];
   }
 
   getNeuronValue() {

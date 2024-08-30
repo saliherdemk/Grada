@@ -46,6 +46,7 @@ class Dataset {
   }
 
   setData(data) {
+    const labelIndexes = data.pop();
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
       const xValues = [];
@@ -54,14 +55,15 @@ class Dataset {
       for (let j = 0; j < row.length; j++) {
         const value = row[j];
         if (i == 0) {
-          if (j == row.length - 1) {
+          if (labelIndexes.includes(j)) {
             this.trainYLabels.push(value);
             continue;
           }
           this.trainXLabels.push(value);
           continue;
         }
-        if (j == row.length - 1) {
+
+        if (labelIndexes.includes(j)) {
           yValues.push(value);
           continue;
         }

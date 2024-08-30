@@ -56,21 +56,11 @@ function logMLPs() {
 }
 
 function openCreateDataset() {
-  mainOrganizer.disable();
-  getElementById("create-dataset-container").style.display = "initial";
+  tableOrganizer.enable();
 }
 
 function closeCreateDataset() {
-  mainOrganizer.enable();
-}
-
-function openEditLayer() {
-  mainOrganizer.disable();
-  getElementById("canvas-parent").style.display = "initial";
-}
-
-function closeEditLayer() {
-  mainOrganizer.enable();
+  tableOrganizer.disable();
 }
 
 function scaleCanvas(event) {
@@ -112,4 +102,17 @@ function toggleDatasetsContainer() {
 
 function toggleWelcome() {
   getElementById("welcome-container").classList.toggle("hidden");
+}
+
+function closeEdit() {
+  editLayerOrganizer.disable();
+  closeCreateDataset();
+}
+
+function addClass(el, classList) {
+  el.classList.add(classList);
+}
+
+function removeClass(el, classList) {
+  el.classList.remove(classList);
 }
