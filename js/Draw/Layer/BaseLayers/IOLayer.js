@@ -72,7 +72,7 @@ class IOLayer extends HiddenLayer {
     const commands = [...this.getColorful(i)];
     commands.push({
       func: "text",
-      args: [text, this.x + 21.5 + x, this.y + 32 + y, 25, 25],
+      args: [text, this.x + 21.5 + x, y - 5, 25, 25],
     });
     return commands;
   }
@@ -95,13 +95,36 @@ class IOLayer extends HiddenLayer {
     this.postUpdateCoordinates();
   }
 
-  showValues() {}
+  showValues(batch, lineX, valX, labelX) {
+    const commands = [
+      {
+        func: "line",
+        args: [lineX, this.y + 10, lineX, this.y + this.h - 10],
+      },
+    ];
+    const { indexes: shownNeuronsIndexes } = this.shownNeurons;
+
+    batch.forEach((row, i) => {
+      shownNeuronsIndexes.forEach((j, ji) => {
+        const yOffset =
+          this.isShrank() && ji > shownNeuronsIndexes.length / 2
+            ? this.infoBox.h
+            : 0;
+        const y = this.y + 38 + ji * this.yGap + yOffset;
+        const _x = (i + 1) * 50;
+        const x = valX === 0 ? _x : valX - _x;
+
+        commands.push(this.createColCommand(row[j], x, y, i));
+        commands.push(this.createColCommand(this.labels[j], labelX, y));
+      });
+    });
+    executeDrawingCommands(commands.flat());
+  }
   showLabels() {}
   updateBatch() {}
 
   draw() {
     super.draw();
     this.showValues();
-    this.showLabels();
   }
 }

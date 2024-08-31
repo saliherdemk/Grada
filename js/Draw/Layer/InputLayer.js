@@ -30,26 +30,7 @@ class InputLayer extends IOLayer {
     return this.batchX[0].map((v) => parseFloat(v));
   }
 
-  showLabels() {
-    const lineCommand = {
-      func: "line",
-      args: [this.x + 50, this.y + 10, this.x + 50, this.y + this.h - 10],
-    };
-
-    const labelCommands = this.labels.flatMap((label, i) =>
-      this.createColCommand(label, 0, i * 50),
-    );
-
-    executeDrawingCommands([lineCommand, ...labelCommands]);
-  }
-
   showValues() {
-    const commands = this.batchX.flatMap((row, i) =>
-      row.flatMap((val, j) =>
-        this.createColCommand(val, this.w - (i + 1) * 50, j * 50, i),
-      ),
-    );
-
-    executeDrawingCommands(commands);
+    super.showValues(this.batchX, this.x + 50, this.w, 0);
   }
 }

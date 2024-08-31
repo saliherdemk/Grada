@@ -122,7 +122,7 @@ class TableOrganizer {
     }
   }
 
-  createInput(value = "") {
+  createInput(value = "0") {
     let input = document.createElement("input");
     input.type = "text";
     input.value = value;
