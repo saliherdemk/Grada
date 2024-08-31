@@ -6,6 +6,7 @@ class LayerView extends Draggable {
     this.yGap = 50;
     this.label = "";
     this.actFunc = "";
+    this.errFunc = "";
     this.shrank = false;
     this.shownNeurons = { num: 0, indexes: [] };
     this.infoBox = { h: 70, y: 0, val: 0 };
@@ -25,7 +26,7 @@ class LayerView extends Draggable {
 
     this.setLabel(layer.label);
     this.setActFunc(layer.actFunc);
-
+    this.setErrFunc(layer.errFunc);
     this.reconnectNeurons();
     this.postUpdateCoordinates();
   }
@@ -36,6 +37,10 @@ class LayerView extends Draggable {
     for (let i = 0; i < Math.abs(diff); i++) {
       diff > 0 ? this.pushNeuron() : this.popNeuron();
     }
+  }
+
+  setErrFunc(errFunc) {
+    this.errFunc = errFunc;
   }
 
   setActFunc(actFunc) {
@@ -165,6 +170,10 @@ class LayerView extends Draggable {
       {
         func: "text",
         args: [this.actFunc, middleX, this.y + this.h - 10],
+      },
+      {
+        func: "text",
+        args: [this.errFunc, this.x + this.w - 25, this.y + this.h + 10],
       },
     ];
 

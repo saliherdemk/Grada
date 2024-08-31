@@ -120,7 +120,8 @@ body {
 }
 
 #label-input,
-#act-function-select {
+#act-function-select,
+#err-function-select {
     width: 100px;
 }
 

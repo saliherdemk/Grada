@@ -136,7 +136,7 @@
             </div>
             <div class="flex-center">
               Act Func:
-              <select name="act-functions" id="act-function-select" class="inp">
+              <select id="act-function-select" class="inp">
                 <option value="" selected>None</option>
               </select>
             </div>
@@ -145,6 +145,14 @@
             <div id="info-message-container">
               Layer will be display with
               <span id="info-message">hey</span> neurons
+            </div>
+            <div class="grid-item">
+              <div class="flex-center">
+                Error Func:
+                <select id="err-function-select" class="inp">
+                  <option value="" selected disabled>-</option>
+                </select>
+              </div>
             </div>
             <div class="grid-item">
               <span>Number of shown neurons: </span>
@@ -251,6 +259,7 @@
     <script src="js/Managers/interactionManager.js"></script>
     <script src="js/Managers/eventManager.js"></script>
     <script src="js/Managers/activationFunctionManager.js"></script>
+    <script src="js/Managers/errorFunctionManager.js"></script>
 
     <script src="js/Organizers/tableOrganizer.js"></script>
     <script src="js/Organizers/datasetOrganizer.js"></script>

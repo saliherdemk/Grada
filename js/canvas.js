@@ -6,6 +6,7 @@ let tableOrganizer;
 let datasetOrganizer;
 let themeManager;
 let actFuncManager;
+let errFuncManager;
 
 let canvasManager;
 
@@ -21,6 +22,7 @@ let mainSketch = function (p) {
     tableOrganizer = new TableOrganizer();
     datasetOrganizer = new DatasetOrganizer();
     actFuncManager = new ActivationFunctionManager();
+    errFuncManager = new ErrorFunctionManager();
   };
 
   p.draw = function () {

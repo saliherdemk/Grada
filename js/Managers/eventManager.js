@@ -48,6 +48,11 @@ class EventManager {
         event: "change",
         handler: this.onActFuncChange.bind(this),
       },
+      {
+        id: "err-function-select",
+        event: "change",
+        handler: this.onErrFuncChange.bind(this),
+      },
     ];
 
     events.forEach(({ id, event, handler }) => {
@@ -61,7 +66,9 @@ class EventManager {
   }
 
   onNeuronNumChange(e) {
-    const layer = this.context.selectedCopy;
+    const context = this.context;
+    if (context.selected instanceof IOLayer) return;
+    const layer = context.selectedCopy;
     const val = this.makeInputValid(e.target.value);
     const diff = val - layer.getNeuronNum();
 
@@ -113,7 +120,13 @@ class EventManager {
   }
 
   onActFuncChange(e) {
+    if (this.context.selected instanceof InputLayer) return;
     this.context.selectedCopy.setActFunc(e.target.value);
+  }
+
+  onErrFuncChange(e) {
+    if (!(this.context.selected instanceof OutputLayer)) return;
+    this.context.selectedCopy.setErrFunc(e.target.value);
   }
 
   makeInputValid(val) {
@@ -141,6 +154,10 @@ class EventManager {
 
     setElementProperties("act-function-select", {
       disabled: selected instanceof InputLayer,
+    });
+
+    setElementProperties("err-function-select", {
+      disabled: !(selected instanceof OutputLayer),
     });
   }
 }

@@ -83,6 +83,7 @@ class Playable extends Draggable {
       layer.setOrigin(layerOrigin);
       mlp.addLayer(layerOrigin);
     }
+    mlp.setErrFunc(this.getOutputLayer().errFunc);
     this.setOrigin(mlp);
     this.initialized = true;
     this.updateToggleMlpButton("Terminate MLP", "red");

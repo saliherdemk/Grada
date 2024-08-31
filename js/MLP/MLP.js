@@ -3,6 +3,11 @@ class MLP {
     this.layers = layers;
     this.lr = lr;
     this.batch_size = batch_size;
+    this.errFunc = errFuncManager.getFunction("mse");
+  }
+
+  setErrFunc(errFunc) {
+    this.errFunc = errFuncManager.getFunction(errFunc);
   }
 
   setLr(lr) {
@@ -21,21 +26,15 @@ class MLP {
     return output;
   }
 
-  mse(y1, y2) {
-    return y1.sub(y2).pow(new Value(2));
-  }
-
   getParameters() {
     return this.layers.flatMap((layer) => layer.parameters());
   }
 
   goOneCycle(trainXData, trainYData) {
-    let loss = new Value(0);
     const predict = this.predict(trainXData);
 
-    for (let i = 0; i < trainYData.length; i++) {
-      loss = loss.add(this.mse(predict[i], new Value(trainYData[i])));
-    }
+    const loss = this.errFunc(predict, trainYData);
+
     this.getParameters().forEach((p) => (p.grad = 0.0));
     loss.backprop();
     this.getParameters().forEach((p) => (p.data += -this.lr * p.grad));

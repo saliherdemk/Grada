@@ -65,7 +65,7 @@ class Value {
   }
 
   sub(other) {
-    this.convert(other);
+    other = this.convert(other);
     return this.add(other.neg());
   }
 
@@ -75,6 +75,16 @@ class Value {
 
     output.backward = () => {
       this.grad += output.data * output.grad;
+    };
+
+    return output;
+  }
+
+  abs() {
+    let output = new Value(Math.abs(this.data), [this], "abs");
+
+    output.backward = () => {
+      this.grad += (this.data >= 0 ? 1 : -1) * output.grad;
     };
 
     return output;

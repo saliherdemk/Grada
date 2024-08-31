@@ -30,21 +30,19 @@ class EditLayerOrganizer extends EditOrganizer {
     layer.updateNeuronsCoordinates();
   }
 
-  setLayout() {
-    this.placeSelected();
-  }
-
   setup() {
-    this.setLayout();
+    this.placeSelected();
     // Adjusts inputs properties based on selectedLayer
     this.setInfoText();
     setElementProperties("set-neuron-num", {
       value: this.selectedCopy.getNeuronNum(),
     });
-
     setElementProperties("label-input", { value: this.selectedCopy.label });
     setElementProperties("act-function-select", {
       value: this.selectedCopy.actFunc,
+    });
+    setElementProperties("err-function-select", {
+      value: this.selectedCopy.errFunc,
     });
     this.eventManager.setMaxShownNeuronInput();
     this.eventManager.setRestrictions();
@@ -66,6 +64,7 @@ class EditLayerOrganizer extends EditOrganizer {
     layer.isShrank() ? copy.shrink() : copy.expand();
     copy.setLabel(layer.label);
     copy.setActFunc(layer.actFunc);
+    copy.setErrFunc(layer.errFunc);
     return copy;
   }
 
