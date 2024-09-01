@@ -44,6 +44,7 @@ function removeEvents(elId) {
 
 function createLayer() {
   new HiddenLayer(300, 500);
+  new DigitInputGrid(100, 100);
 }
 
 function createInput() {

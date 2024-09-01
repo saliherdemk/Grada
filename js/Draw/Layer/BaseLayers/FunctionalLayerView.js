@@ -6,7 +6,6 @@ class FunctionalLayerView extends LayerView {
     this.inputDot = null;
     this.outputDot = null;
     this.editMode = true;
-    this.initialize();
   }
 
   initialize() {

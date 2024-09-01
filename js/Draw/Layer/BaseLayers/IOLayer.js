@@ -120,7 +120,6 @@ class IOLayer extends HiddenLayer {
     });
     executeDrawingCommands(commands.flat());
   }
-  showLabels() {}
   updateBatch() {}
 
   draw() {
