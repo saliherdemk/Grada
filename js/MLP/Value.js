@@ -90,6 +90,15 @@ class Value {
     return output;
   }
 
+  log() {
+    const clampValue = Math.max(this.data, 1e-15);
+    let output = new Value(Math.log(clampValue), [this], "log"); // log(x) = ln(x)
+    output.backward = () => {
+      this.grad += (1 / clampValue) * output.grad;
+    };
+    return output;
+  }
+
   setLabel(label) {
     this.label = label;
   }
