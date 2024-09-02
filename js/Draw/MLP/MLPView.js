@@ -1,5 +1,5 @@
 class MlpView extends Playable {
-  constructor() {
+  constructor(inactive = false) {
     super();
     this.layers = [];
     this.label = "MLP1";
@@ -8,6 +8,10 @@ class MlpView extends Playable {
     this.batchSize = 1;
     this.propsShown = true;
     this.selected = false;
+  }
+
+  isInactive() {
+    return this.layers[0] instanceof Component && this.layers.length === 1;
   }
 
   select() {
@@ -110,8 +114,10 @@ class MlpView extends Playable {
       firstY = Infinity,
       lastY = -Infinity;
 
-    for (let i = 0; i < this.getLayers().length; i++) {
-      const layer = this.getLayers()[i];
+    const layers = this.getLayers();
+    for (let i = 0; i < layers.length; i++) {
+      const layer = layers[i];
+      if (layer instanceof Component) continue;
 
       lastX = Math.max(layer.x + layer.w, lastX);
       firstX = Math.min(layer.x, firstX);
@@ -133,7 +139,7 @@ class MlpView extends Playable {
 
   handlePressed() {
     this.getLayers().forEach((layer) => layer.pressed());
-    if (iManager.isBusy()) return;
+    if (this.isInactive() || iManager.isBusy()) return;
 
     this.controlButtons.forEach((btn) => btn.handlePressed());
     this.initButton.handlePressed();
@@ -168,7 +174,7 @@ class MlpView extends Playable {
 
   handleDoubleClicked() {
     this.getLayers().forEach((layer) => layer.doubleClicked());
-    if (iManager.isBusy()) {
+    if (this.isInactive() || iManager.isBusy()) {
       iManager.handleRelease();
       return;
     }
@@ -220,10 +226,12 @@ class MlpView extends Playable {
   }
 
   draw() {
-    this.show();
-    this.isPropsShown() && this.showProps();
+    if (!this.isInactive()) {
+      this.show();
+      this.isPropsShown() && this.showProps();
+      this.controlButtons.forEach((btn) => btn.draw());
+      this.initButton.draw();
+    }
     this.getLayers().forEach((layer) => layer.draw());
-    this.controlButtons.forEach((btn) => btn.draw());
-    this.initButton.draw();
   }
 }

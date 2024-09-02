@@ -19,7 +19,8 @@ class FunctionalLayerView extends LayerView {
   }
 
   initializeParent() {
-    this.parent = new MlpView();
+    const inactive = this instanceof IOLayer || this instanceof DigitInputGrid;
+    this.parent = new MlpView(inactive);
     const parent = this.parent;
     parent.pushLayer(this);
     mainOrganizer.addMlpView(parent);
@@ -32,6 +33,11 @@ class FunctionalLayerView extends LayerView {
     }
 
     this.setShownNeuronsNum(this.getNeuronNum());
+  }
+
+  setCoordinates(x, y) {
+    super.setCoordinates(x, y);
+    this.postUpdateCoordinates();
   }
 
   pressed() {
@@ -71,6 +77,10 @@ class FunctionalLayerView extends LayerView {
   }
 
   connectLayer(targetLayer) {
+    if (targetLayer instanceof Component) {
+      targetLayer.connectLayer(this);
+      return;
+    }
     if (this.parent === targetLayer.parent) return;
     if (this.outputDot.isOccupied()) {
       const { next } = this.parent.getPrevAndNext(this);
@@ -174,5 +184,9 @@ class FunctionalLayerView extends LayerView {
       this.getDots().forEach((dot) => dot?.draw());
       this.removeButton.draw();
     }
+    this.show();
+    this.isShrank() && this.showInfoBox();
+
+    this.neurons.forEach((neuron) => neuron.draw());
   }
 }

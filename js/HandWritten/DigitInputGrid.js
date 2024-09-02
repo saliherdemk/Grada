@@ -1,4 +1,4 @@
-class DigitInputGrid extends FunctionalLayerView {
+class DigitInputGrid extends Component {
   constructor(x, y) {
     super(x, y, 400);
     this.shrank = true;

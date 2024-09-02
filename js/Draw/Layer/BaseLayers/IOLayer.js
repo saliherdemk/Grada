@@ -1,11 +1,14 @@
-class IOLayer extends HiddenLayer {
+class IOLayer extends Component {
   constructor(datasetId, _x, _y, isInput = true) {
-    super(_x, _y);
+    super(_x, _y, 350);
     this.neuronAlignment = isInput ? "right" : "left";
-    this.w = 350;
     this.datasetId = datasetId;
     this.currentIndex = -2;
     this.labels = [];
+    this.initialize();
+  }
+  initialize() {
+    super.initialize();
     this.adjustNeuronNum();
     this.reInitializeDots();
   }
@@ -120,10 +123,12 @@ class IOLayer extends HiddenLayer {
     });
     executeDrawingCommands(commands.flat());
   }
-  updateBatch() {}
 
-  draw() {
-    super.draw();
+  show() {
+    const commands = [{ func: "rect", args: [this.x, this.y, this.w, this.h] }];
+    executeDrawingCommands(commands);
     this.showValues();
   }
+
+  updateBatch() {}
 }

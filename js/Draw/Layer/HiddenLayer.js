@@ -6,11 +6,6 @@ class HiddenLayer extends FunctionalLayerView {
     this.initialize();
   }
 
-  setCoordinates(x, y) {
-    super.setCoordinates(x, y);
-    this.postUpdateCoordinates();
-  }
-
   clearOrigin() {
     this.neurons.forEach((n) => n.clearOrigin());
     this.origin = null;
@@ -26,14 +21,6 @@ class HiddenLayer extends FunctionalLayerView {
       }
     }
     this.origin = obj;
-  }
-
-  draw() {
-    super.draw();
-    this.show();
-    this.isShrank() && this.showInfoBox();
-
-    this.neurons.forEach((neuron) => neuron.draw());
   }
 
   destroy() {

@@ -52,8 +52,7 @@ function createInput() {
 }
 
 function logMLPs() {
-  console.log(mainOrganizer.mlpViews[0].layers);
-  console.log(mainOrganizer.mlpViews[0].origin);
+  console.log(mainOrganizer.mlpViews);
 }
 
 function openCreateDataset() {
