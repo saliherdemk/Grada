@@ -77,11 +77,11 @@ class FunctionalLayerView extends LayerView {
   }
 
   connectLayer(targetLayer) {
-    if (targetLayer instanceof Component) {
-      targetLayer.connectLayer(this);
+    if (
+      (this instanceof Component || targetLayer instanceof Component) &&
+      targetLayer.getNeuronNum() !== this.getNeuronNum()
+    )
       return;
-    }
-    if (this.parent === targetLayer.parent) return;
     if (this.outputDot.isOccupied()) {
       const { next } = this.parent.getPrevAndNext(this);
       this.splitMlp(next);
@@ -96,22 +96,30 @@ class FunctionalLayerView extends LayerView {
   }
 
   connectNeurons(targetLayer) {
-    this.neurons.forEach((n1) => {
-      n1.removeLines();
-      targetLayer.neurons.forEach((n2) => {
-        n1.addLine(new Line(n1, n2));
+    if (targetLayer instanceof Component || this instanceof Component) {
+      this.neurons.forEach((n1, i) => {
+        n1.removeLines();
+        n1.addLine(new Line(n1, targetLayer.neurons[i]));
       });
-    });
+    } else {
+      this.neurons.forEach((n1) => {
+        n1.removeLines();
+        targetLayer.neurons.forEach((n2) => {
+          n1.addLine(new Line(n1, n2));
+        });
+      });
+    }
     this.outputDot.occupy();
     targetLayer.inputDot.occupy();
   }
 
-  reconnectNeurons() {
+  reconnectLayer() {
     const parent = this.parent;
     const { prev, next } = parent.getPrevAndNext(this);
+    this.isolate();
 
-    prev && prev.connectNeurons(this);
-    next && this.connectNeurons(next);
+    prev && prev.connectLayer(this);
+    next && this.connectLayer(next);
   }
 
   clearLines(targetLayer) {

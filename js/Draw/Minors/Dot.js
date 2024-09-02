@@ -46,9 +46,13 @@ class Dot {
     const activeLine = mainOrganizer.getActiveLine();
     if (!activeLine) return;
 
+    const isInput = this.isInput();
+
     const layer1 = activeLine.from.parent;
     const layer2 = this.parent;
-    const [majorLayer, minorLayer] = this.isInput()
+    if (layer1 instanceof InputLayer && !isInput) return;
+    if (layer1 instanceof OutputLayer && isInput) return;
+    const [majorLayer, minorLayer] = isInput
       ? [layer1, layer2]
       : [layer2, layer1];
 

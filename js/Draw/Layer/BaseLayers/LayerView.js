@@ -27,7 +27,7 @@ class LayerView extends Draggable {
     this.setLabel(layer.label);
     this.setActFunc(layer.actFunc);
     this.setErrFunc(layer.errFunc);
-    this.reconnectNeurons();
+    this.reconnectLayer();
     this.postUpdateCoordinates();
   }
 

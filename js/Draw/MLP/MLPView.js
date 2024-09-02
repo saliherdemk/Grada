@@ -146,6 +146,7 @@ class MlpView extends Playable {
     this.pressed();
   }
 
+  // FIXME potantiel refire
   resetCoordinates() {
     const layers = this.getLayers();
     const originLayer = layers[0];
