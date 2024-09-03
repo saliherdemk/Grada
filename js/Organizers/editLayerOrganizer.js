@@ -41,9 +41,6 @@ class EditLayerOrganizer extends EditOrganizer {
     setElementProperties("act-function-select", {
       value: this.selectedCopy.actFunc,
     });
-    setElementProperties("err-function-select", {
-      value: this.selectedCopy.errFunc,
-    });
     this.eventManager.setMaxShownNeuronInput();
     this.eventManager.setRestrictions();
   }
@@ -64,7 +61,6 @@ class EditLayerOrganizer extends EditOrganizer {
     layer.isShrank() ? copy.shrink() : copy.expand();
     copy.setLabel(layer.label);
     copy.setActFunc(layer.actFunc);
-    copy.setErrFunc(layer.errFunc);
     return copy;
   }
 

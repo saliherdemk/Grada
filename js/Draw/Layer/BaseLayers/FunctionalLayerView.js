@@ -29,7 +29,7 @@ class FunctionalLayerView extends LayerView {
   initializeNeurons() {
     const numOfNeurons = parseInt(Math.random() * 7) + 1;
     for (let i = 0; i < numOfNeurons; i++) {
-      this.neurons.push(new NeuronView());
+      this.pushNeuron();
     }
 
     this.setShownNeuronsNum(this.getNeuronNum());
@@ -78,8 +78,9 @@ class FunctionalLayerView extends LayerView {
 
   connectLayer(targetLayer) {
     if (
-      (this instanceof Component || targetLayer instanceof Component) &&
-      targetLayer.getNeuronNum() !== this.getNeuronNum()
+      this.parent == targetLayer.parent ||
+      ((this instanceof Component || targetLayer instanceof Component) &&
+        targetLayer.getNeuronNum() !== this.getNeuronNum())
     )
       return;
     if (this.outputDot.isOccupied()) {
@@ -99,7 +100,7 @@ class FunctionalLayerView extends LayerView {
     if (targetLayer instanceof Component || this instanceof Component) {
       this.neurons.forEach((n1, i) => {
         n1.removeLines();
-        n1.addLine(new Line(n1, targetLayer.neurons[i]));
+        n1.addLine(new WeightlessLine(n1, targetLayer.neurons[i]));
       });
     } else {
       this.neurons.forEach((n1) => {

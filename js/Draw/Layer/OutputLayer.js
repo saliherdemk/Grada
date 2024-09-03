@@ -2,7 +2,6 @@ class OutputLayer extends IOLayer {
   constructor(datasetId) {
     super(datasetId, 800, 300, false);
     this.batchY = [];
-    this.errFunc = "mse";
     this.setLabels();
     this.updateBatch();
   }
@@ -13,7 +12,7 @@ class OutputLayer extends IOLayer {
   }
 
   updateBatch() {
-    const { batchY } = this.getDataset().getBatch(this.currentIndex, 5);
+    const { batchY } = this.getDataset().getBatch(this.currentIndex, 6);
     this.batchY = batchY;
   }
 

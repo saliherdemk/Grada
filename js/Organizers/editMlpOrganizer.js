@@ -33,6 +33,11 @@ class EditMLPOrganizer extends EditOrganizer {
         handler: this.updatePlaySpeed,
       },
       {
+        id: "err-function-select",
+        event: "change",
+        handler: this.handleErrFuncChange,
+      },
+      {
         id: "toggle-mlp-props",
         event: "click",
         handler: this.togglePropVisibility,
@@ -77,6 +82,10 @@ class EditMLPOrganizer extends EditOrganizer {
     this.getSelected().setPlaySpeed(e.target.value);
   }
 
+  handleErrFuncChange(e) {
+    this.getSelected().setErrFunc(e.target.value);
+  }
+
   togglePropVisibility() {
     this.selected.togglePropsShown();
     this.setPropsBtnText();
@@ -101,6 +110,7 @@ class EditMLPOrganizer extends EditOrganizer {
     setElementProperties("mlp-label", { value: selected.label });
     setElementProperties("mlp-lr", { value: selected.lr });
     setElementProperties(`batch${selected.batchSize}`, { checked: true });
+    setElementProperties("err-function-select", { value: selected.errFunc });
     this.setPropsBtnText();
   }
 

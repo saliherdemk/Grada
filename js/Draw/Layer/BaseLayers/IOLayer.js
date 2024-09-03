@@ -114,7 +114,7 @@ class IOLayer extends Component {
             ? this.infoBox.h
             : 0;
         const y = this.y + 38 + ji * this.yGap + yOffset;
-        const _x = (i + 1) * 50;
+        const _x = i * 50;
         const x = valX === 0 ? _x : valX - _x;
 
         commands.push(this.createColCommand(row[j], x, y, i));
@@ -127,8 +127,11 @@ class IOLayer extends Component {
   show() {
     const commands = [{ func: "rect", args: [this.x, this.y, this.w, this.h] }];
     executeDrawingCommands(commands);
-    this.showValues();
   }
 
   updateBatch() {}
+  draw() {
+    super.draw();
+    this.showValues();
+  }
 }

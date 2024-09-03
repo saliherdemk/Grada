@@ -1,13 +1,7 @@
-class Line {
-  constructor(from, to, temp = false) {
+class Line extends WeightlessLine {
+  constructor(from, to) {
+    super(from, to);
     this.w = null;
-    this.from = from;
-    this.to = to;
-    this.temp = temp;
-  }
-
-  getSourceNeuron() {
-    return this.from;
   }
 
   clearOrigin() {
@@ -28,12 +22,7 @@ class Line {
 
   destroy() {
     this.w = null;
-    this.from = null;
-    this.to = null;
-  }
-
-  isTemp() {
-    return this.temp;
+    super.destroy();
   }
 
   showData() {
@@ -84,27 +73,8 @@ class Line {
   }
 
   show() {
-    const { mouseX, mouseY } = getCurrentMouseCoordinates();
-    const { x: targetX, y: targetY } = this.isTemp()
-      ? iManager.getAbsoluteCoordinates(mouseX, mouseY)
-      : this.to;
-
-    const { x: sourceX, y: sourceY } = this.from;
-
-    const commands = [
-      { func: "line", args: [sourceX, sourceY, targetX, targetY] },
-    ];
-    executeDrawingCommands(commands);
-
-    if (!this.isTemp()) {
-      this.showData();
-      this.showGrad();
-    }
-  }
-
-  draw() {
-    const shouldDraw =
-      this.isTemp() || !(this.from.isHidden() || this.to.isHidden());
-    if (shouldDraw) this.show();
+    super.show();
+    this.showData();
+    this.showGrad();
   }
 }

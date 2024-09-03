@@ -2,7 +2,7 @@ class HiddenLayer extends FunctionalLayerView {
   constructor(x, y) {
     super(x, y, 55, 0);
     this.origin = null;
-    this.actFunc = "tanh";
+    this.actFunc = "";
     this.initialize();
   }
 

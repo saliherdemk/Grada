@@ -73,8 +73,9 @@ class Playable extends Draggable {
 
   initializeMlp() {
     const mlp = new MLP([], this.lr, this.batchSize);
-    for (let i = 1; i < this.layers.length; i++) {
+    for (let i = 2; i < this.layers.length - 1; i++) {
       const layer = this.layers[i];
+
       const layerOrigin = new Layer(
         this.layers[i - 1].neurons.length,
         layer.neurons.length,
@@ -83,7 +84,7 @@ class Playable extends Draggable {
       layer.setOrigin(layerOrigin);
       mlp.addLayer(layerOrigin);
     }
-    mlp.setErrFunc(this.getOutputLayer().errFunc);
+    mlp.setErrFunc(this.errFunc);
     this.setOrigin(mlp);
     this.initialized = true;
     this.updateToggleMlpButton("Terminate MLP", "red");
@@ -167,7 +168,7 @@ class Playable extends Draggable {
   }
 
   clearOrigin() {
-    this.layers.forEach((layer) => layer.clearOrigin());
+    this.layers.forEach((layer) => layer.origin && layer.clearOrigin());
     this.origin = null;
   }
 }

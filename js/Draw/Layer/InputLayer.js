@@ -7,6 +7,16 @@ class InputLayer extends IOLayer {
     this.updateBatch();
   }
 
+  fetchNext() {
+    super.fetchNext();
+    const { next } = this.parent.getPrevAndNext(this);
+
+    this.batchX[0].forEach((value, i) => {
+      const n = next.neurons[i];
+      n.setOutput(value);
+    });
+  }
+
   reInitializeDots() {
     this.inputDot.destroy();
     this.inputDot = null;
@@ -31,6 +41,6 @@ class InputLayer extends IOLayer {
   }
 
   showValues() {
-    super.showValues(this.batchX, this.x + 50, this.w, 0);
+    super.showValues(this.batchX, this.x + 50, this.w - 50, 0);
   }
 }

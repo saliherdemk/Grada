@@ -1,13 +1,22 @@
 class MlpView extends Playable {
-  constructor(inactive = false) {
+  constructor() {
     super();
     this.layers = [];
     this.label = "MLP1";
     this.origin = null;
     this.lr = 0.1;
     this.batchSize = 1;
+    this.errFunc = "mse";
     this.propsShown = true;
     this.selected = false;
+  }
+
+  setErrFunc(errFunc) {
+    this.errFunc = errFunc;
+  }
+
+  getErrFunc() {
+    return this.errFunc;
   }
 
   isInactive() {
@@ -221,6 +230,10 @@ class MlpView extends Playable {
       { func: "rect", args: [this.x, this.y, this.w, this.h, 10, 10] },
       { func: "noStroke", args: [] },
       { func: "text", args: [this.label, this.x + 5, this.y + 5, this.w, 25] },
+      {
+        func: "text",
+        args: [this.errFunc, this.x + this.w - 50, this.y + this.h - 10],
+      },
     ];
 
     executeDrawingCommands(commands);

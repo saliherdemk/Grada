@@ -48,11 +48,6 @@ class EventManager {
         event: "change",
         handler: this.onActFuncChange.bind(this),
       },
-      {
-        id: "err-function-select",
-        event: "change",
-        handler: this.onErrFuncChange.bind(this),
-      },
     ];
 
     events.forEach(({ id, event, handler }) => {
@@ -124,11 +119,6 @@ class EventManager {
     this.context.selectedCopy.setActFunc(e.target.value);
   }
 
-  onErrFuncChange(e) {
-    if (!(this.context.selected instanceof OutputLayer)) return;
-    this.context.selectedCopy.setErrFunc(e.target.value);
-  }
-
   makeInputValid(val) {
     return isNaN(val) || val === "" || val < 1 ? 1 : val;
   }
@@ -147,17 +137,14 @@ class EventManager {
 
   setRestrictions() {
     const selected = this.context.getSelected();
+    const isIOLayer = selected instanceof IOLayer;
 
     setElementProperties("set-neuron-num", {
-      disabled: selected instanceof IOLayer,
+      disabled: isIOLayer,
     });
 
     setElementProperties("act-function-select", {
-      disabled: selected instanceof InputLayer,
-    });
-
-    setElementProperties("err-function-select", {
-      disabled: !(selected instanceof OutputLayer),
+      disabled: isIOLayer,
     });
   }
 }

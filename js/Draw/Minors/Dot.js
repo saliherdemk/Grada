@@ -65,7 +65,7 @@ class Dot {
     const activeLine = mainOrganizer.getActiveLine();
 
     if (!activeLine) {
-      mainOrganizer.setActiveLine(new Line(this, null, true));
+      mainOrganizer.setActiveLine(new WeightlessLine(this, null, true));
       return;
     }
 
