@@ -87,6 +87,7 @@ class Playable extends Draggable {
     mlp.setErrFunc(this.errFunc);
     this.setOrigin(mlp);
     this.initialized = true;
+    !this.isPropsShown() && this.togglePropsShown();
     this.updateToggleMlpButton("Terminate MLP", "red");
     this.createControlButtons();
     mainOrganizer.setActiveLine(null);
@@ -94,10 +95,11 @@ class Playable extends Draggable {
 
   destroyMlp() {
     this.pause();
-    this.origin.destroy();
-    this.clearOrigin();
+    // this.origin.destroy();
+    // this.clearOrigin();
     this.initialized = false;
     this.updateToggleMlpButton("Initialize MLP", "blue");
+    this.isPropsShown() && this.togglePropsShown();
     this.destroyControlButtons();
   }
 
@@ -158,6 +160,7 @@ class Playable extends Draggable {
     this.origin.goOneCycle(inputValues, outputValues);
     this.dataStatus = 0;
     this.controlButtons[1].enable();
+    this.initButton.enable();
   }
 
   fetchNext() {
@@ -165,6 +168,7 @@ class Playable extends Draggable {
     this.getOutputLayer().fetchNext();
     this.dataStatus = 1;
     this.controlButtons[1].disable();
+    this.initButton.disable();
   }
 
   clearOrigin() {

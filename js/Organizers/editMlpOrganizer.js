@@ -48,6 +48,11 @@ class EditMLPOrganizer extends EditOrganizer {
         handler: this.handleResetCoordinates,
       },
       {
+        id: "mlp-export-btn",
+        event: "click",
+        handler: this.handleExport,
+      },
+      {
         id: "mlp-delete-btn",
         event: "click",
         handler: this.handleDelete,
@@ -99,6 +104,10 @@ class EditMLPOrganizer extends EditOrganizer {
 
   handleResetCoordinates() {
     this.getSelected().resetCoordinates();
+  }
+
+  handleExport() {
+    this.getSelected().export();
   }
 
   handleDelete() {

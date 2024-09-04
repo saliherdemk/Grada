@@ -117,6 +117,9 @@
       <button id="mlp-reset-btn" class="btn btn-yellow" type="button">
         Reset Coordinates
       </button>
+      <button id="mlp-export-btn" class="btn btn-yellow" type="button">
+        Export
+      </button>
 
       <button id="mlp-delete-btn" class="btn btn-rose" type="button">
         Delete
@@ -149,7 +152,10 @@
           <div class="layer-controls-grid">
             <div id="info-message-container">
               Layer will be display with
-              <span id="info-message">hey</span> neurons
+              <span id="info-message"></span> neurons <br />
+
+              <span id="err-message">Connected weights will be deleted</span>
+              <br />
             </div>
 
             <div class="grid-item">
@@ -243,6 +249,7 @@
         >
           Add Layer
         </button>
+        <input type="file" oninput="readMLPFile(event)" accept=".json" />
       </div>
     </div>
 

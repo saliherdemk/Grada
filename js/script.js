@@ -43,8 +43,32 @@ function removeEvents(elId) {
 }
 
 function createLayer() {
-  new HiddenLayer(300, 500);
-  // new DigitInputGrid(100, 100);
+  new DigitInputGrid(100, 100);
+  return new HiddenLayer(300, 500);
+}
+
+function importMLP(jsonData) {
+  console.log(jsonData);
+}
+
+function readMLPFile(event) {
+  const fileInput = event.target;
+  const files = fileInput.files;
+  if (!files.length) return;
+
+  const file = files[0];
+  if (!(file.type === "application/json")) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const jsonData = JSON.parse(e.target.result);
+      importMLP(jsonData);
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+    }
+  };
+  reader.readAsText(file);
 }
 
 function createInput() {
@@ -115,4 +139,44 @@ function addClass(el, classList) {
 
 function removeClass(el, classList) {
   el.classList.remove(classList);
+}
+
+function convertSetsToArrays(obj) {
+  if (obj instanceof Set) {
+    return Array.from(obj);
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(convertSetsToArrays);
+  }
+
+  if (typeof obj === "object" && obj !== null) {
+    if (obj.children && typeof obj.children === "object") {
+      obj.children = convertSetsToArrays(obj.children);
+    }
+
+    return Object.keys(obj).reduce((acc, key) => {
+      acc[key] = convertSetsToArrays(obj[key]);
+      return acc;
+    }, {});
+  }
+
+  return obj;
+}
+
+function downloadJSON(obj, filename) {
+  const convertedObject = convertSetsToArrays(obj);
+  const jsonStr = JSON.stringify(convertedObject, null, 2);
+  const blob = new Blob([jsonStr], { type: "application/json" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+
+  link.href = url;
+  link.download = `${filename}.json`;
+
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }

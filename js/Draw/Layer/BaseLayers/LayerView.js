@@ -29,6 +29,16 @@ class LayerView extends Draggable {
     this.postUpdateCoordinates();
   }
 
+  // FIXME don't destroy and recreate. Keep exsistance lines.
+  reconnectLayer() {
+    const parent = this.parent;
+    const { prev, next } = parent.getPrevAndNext(this);
+    this.isolate();
+
+    prev && prev.connectLayer(this);
+    next && this.connectLayer(next);
+  }
+
   copyNeurons(from) {
     const diff = from.getNeuronNum() - this.getNeuronNum();
 

@@ -137,7 +137,7 @@ body {
 
 #info-message-container {
     position: absolute;
-    top: 55px;
+    top: 50px;
     left: 0;
     width: 100%;
     text-align: center;
@@ -148,6 +148,15 @@ body {
 
 #info-message {
     color: var(--blue-active);
+}
+
+#err-message {
+    color: var(--rose-active);
+    display: none
+}
+
+#err-message.active {
+    display: block;
 }
 
 #mlp-edit-container {

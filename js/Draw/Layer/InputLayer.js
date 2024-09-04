@@ -32,8 +32,7 @@ class InputLayer extends IOLayer {
   }
 
   adjustNeuronNum() {
-    const diff = this.getTrainXSize() - this.getNeuronNum();
-    super.adjustNeuronNum(diff);
+    super.adjustNeuronNum(this.getTrainXSize());
   }
 
   setValues() {

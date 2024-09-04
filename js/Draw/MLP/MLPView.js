@@ -7,16 +7,8 @@ class MlpView extends Playable {
     this.lr = 0.1;
     this.batchSize = 1;
     this.errFunc = "mse";
-    this.propsShown = true;
+    this.propsShown = false;
     this.selected = false;
-  }
-
-  setErrFunc(errFunc) {
-    this.errFunc = errFunc;
-  }
-
-  getErrFunc() {
-    return this.errFunc;
   }
 
   isInactive() {
@@ -48,7 +40,7 @@ class MlpView extends Playable {
 
     this.controlButtons.forEach((b, i) => {
       const x = this.x + (this.w - b.w) / 2 + (i % 2 ? 1 : -1) * 40;
-      b.setCoordinates(x, y);
+      b.setCoordinates(x, this.y - 40);
     });
   }
 
@@ -58,7 +50,12 @@ class MlpView extends Playable {
 
   setLr(lr) {
     this.lr = lr;
-    this.origin.setLr(lr);
+    this.origin?.setLr(lr);
+  }
+
+  setErrFunc(errFunc) {
+    this.errFunc = errFunc;
+    this.origin?.setErrFunc(errFunc);
   }
 
   setBatchSize(batchSize) {
@@ -134,9 +131,9 @@ class MlpView extends Playable {
       firstY = Math.min(layer.y, firstY);
       lastY = Math.max(lastY, layer.y + layer.h);
     }
-    this.w = lastX - firstX + 50;
+    this.w = lastX - firstX + 70;
     // FIXME: find a way to call setCoordinates without adding base case
-    this.x = firstX - 25;
+    this.x = firstX - 35;
     this.y = firstY - 35;
     this.h = lastY - firstY + 75;
     this.updateButtonsCoordinates();
@@ -232,7 +229,7 @@ class MlpView extends Playable {
       { func: "text", args: [this.label, this.x + 5, this.y + 5, this.w, 25] },
       {
         func: "text",
-        args: [this.errFunc, this.x + this.w - 50, this.y + this.h - 10],
+        args: [this.errFunc, this.x + this.w - 35, this.y + this.h - 10],
       },
     ];
 
@@ -247,5 +244,13 @@ class MlpView extends Playable {
       this.initButton.draw();
     }
     this.getLayers().forEach((layer) => layer.draw());
+  }
+
+  sanitazed() {
+    return this.origin.sanitazed();
+  }
+
+  export() {
+    downloadJSON(this.sanitazed(), this.label);
   }
 }

@@ -41,6 +41,11 @@ class EditLayerOrganizer extends EditOrganizer {
     setElementProperties("act-function-select", {
       value: this.selectedCopy.actFunc,
     });
+    const errMessage = getElementById("err-message");
+    this.selected.origin !== null
+      ? addClass(errMessage, "active")
+      : removeClass(errMessage, "active");
+
     this.eventManager.setMaxShownNeuronInput();
     this.eventManager.setRestrictions();
   }

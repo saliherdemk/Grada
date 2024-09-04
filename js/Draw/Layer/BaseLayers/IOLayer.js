@@ -88,11 +88,8 @@ class IOLayer extends Component {
     return this.getDataset().getTrainY()[0].length;
   }
 
-  adjustNeuronNum(diff = 0) {
-    const absDiff = Math.abs(diff);
-    for (let i = 0; i < absDiff; i++) {
-      diff > 0 ? this.pushNeuron() : this.popNeuron();
-    }
+  adjustNeuronNum(neuronNum) {
+    super.adjustNeuronNum(neuronNum);
     this.getNeuronNum() > 4 ? this.shrink() : this.expand();
     this.setShownNeuronsNum(Math.min(this.getNeuronNum(), 4));
     this.postUpdateCoordinates();

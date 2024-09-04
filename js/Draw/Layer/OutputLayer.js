@@ -21,8 +21,7 @@ class OutputLayer extends IOLayer {
   }
 
   adjustNeuronNum() {
-    const diff = this.getTrainYSize() - this.getNeuronNum();
-    super.adjustNeuronNum(diff);
+    super.adjustNeuronNum(this.getTrainYSize());
   }
 
   setValues() {

@@ -2,8 +2,12 @@ class Layer {
   constructor(nin, nout, actFunction) {
     this.nin = nin;
     this.neurons = Array.from({ length: nout }, () => new Neuron(nin));
-    this.actFunc = actFunction;
     this.setActFunction(actFunction);
+  }
+
+  sanitazed() {
+    const neurons = this.neurons.map((n) => n.sanitazed());
+    return { neurons, nin: this.nin, actFunc: this.actFunc };
   }
 
   setActFunction(actFunc) {

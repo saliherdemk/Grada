@@ -1,9 +1,19 @@
 class MLP {
-  constructor(layers = [], lr = 0.1, batch_size = 1) {
+  constructor(layers = [], lr = 0.1, batchSize = 1) {
     this.layers = layers;
     this.lr = lr;
-    this.batch_size = batch_size;
+    this.batchSize = batchSize;
     this.errFunc = errFuncManager.getFunction("mse");
+  }
+
+  sanitazed() {
+    const layers = this.layers.map((l) => l.sanitazed());
+    return {
+      layers,
+      lr: this.lr,
+      batchSize: this.batchSize,
+      errFunc: this.errFunc,
+    };
   }
 
   setErrFunc(errFunc) {

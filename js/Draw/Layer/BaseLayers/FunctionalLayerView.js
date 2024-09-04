@@ -35,6 +35,13 @@ class FunctionalLayerView extends LayerView {
     this.setShownNeuronsNum(this.getNeuronNum());
   }
 
+  adjustNeuronNum(neuronNum) {
+    const diff = neuronNum - this.getNeuronNum();
+    for (let i = 0; i < Math.abs(diff); i++) {
+      diff > 0 ? this.pushNeuron() : this.popNeuron();
+    }
+  }
+
   setCoordinates(x, y) {
     super.setCoordinates(x, y);
     this.postUpdateCoordinates();
@@ -77,6 +84,7 @@ class FunctionalLayerView extends LayerView {
   }
 
   connectLayer(targetLayer) {
+    // FIXME remove equal condition & create middle layer automatically
     if (
       this.parent == targetLayer.parent ||
       ((this instanceof Component || targetLayer instanceof Component) &&
@@ -112,15 +120,6 @@ class FunctionalLayerView extends LayerView {
     }
     this.outputDot.occupy();
     targetLayer.inputDot.occupy();
-  }
-
-  reconnectLayer() {
-    const parent = this.parent;
-    const { prev, next } = parent.getPrevAndNext(this);
-    this.isolate();
-
-    prev && prev.connectLayer(this);
-    next && this.connectLayer(next);
   }
 
   clearLines(targetLayer) {

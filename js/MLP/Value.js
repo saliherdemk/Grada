@@ -2,10 +2,16 @@ class Value {
   constructor(value, children = [], op = "") {
     this.data = value;
     this.children = new Set(children);
-    this.label = "";
     this.op = op;
     this.grad = 0.0;
     this.backward = () => {};
+  }
+
+  sanitazed() {
+    const children = Array.from(this.children).map((child) =>
+      child.sanitazed(),
+    );
+    return { children, data: this.data, grad: this.grad };
   }
 
   getFixedData(fixedNum) {
@@ -97,10 +103,6 @@ class Value {
       this.grad += (1 / clampValue) * output.grad;
     };
     return output;
-  }
-
-  setLabel(label) {
-    this.label = label;
   }
 
   setGrad(grad) {
