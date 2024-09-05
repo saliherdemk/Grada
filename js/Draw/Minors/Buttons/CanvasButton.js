@@ -6,6 +6,21 @@ class CanvasButton {
     this.h = 25;
     this.onClick = onClick;
     this.disabled = false;
+    this.hidden = false;
+  }
+
+  isHidden() {
+    return this.hidden;
+  }
+
+  hide() {
+    this.hidden = true;
+    this.disable();
+  }
+
+  visible() {
+    this.hidden = false;
+    this.enable();
   }
 
   disable() {
@@ -41,5 +56,9 @@ class CanvasButton {
 
   handlePressed() {
     this.isRollout() && !this.isDisabled() && this.onClick();
+  }
+
+  draw() {
+    !this.isHidden() && this.show();
   }
 }

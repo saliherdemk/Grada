@@ -5,11 +5,6 @@ class Layer {
     this.setActFunction(actFunction);
   }
 
-  sanitazed() {
-    const neurons = this.neurons.map((n) => n.sanitazed());
-    return { neurons, nin: this.nin, actFunc: this.actFunc };
-  }
-
   setActFunction(actFunc) {
     this.actFunc = actFuncManager.getFunction(actFunc);
   }

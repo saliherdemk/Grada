@@ -4,7 +4,20 @@ class Dot {
     this.rollover = false;
     this.occupied = false;
     this.r = 20;
+    this.hidden = false;
     this.updateCoordinates();
+  }
+
+  isHidden() {
+    return this.hidden;
+  }
+
+  hide() {
+    this.hidden = true;
+  }
+
+  visible() {
+    this.hidden = false;
   }
 
   isInput() {
@@ -61,7 +74,7 @@ class Dot {
   }
 
   handlePressed() {
-    if (!this.rollover) return;
+    if (this.isHidden() || !this.rollover) return;
     const activeLine = mainOrganizer.getActiveLine();
 
     if (!activeLine) {
@@ -89,7 +102,9 @@ class Dot {
 
     executeDrawingCommands(commands);
   }
+
   draw() {
+    if (this.isHidden()) return;
     this.show();
     this.over();
   }

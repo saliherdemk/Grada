@@ -7,13 +7,6 @@ class Value {
     this.backward = () => {};
   }
 
-  sanitazed() {
-    const children = Array.from(this.children).map((child) =>
-      child.sanitazed(),
-    );
-    return { children, data: this.data, grad: this.grad };
-  }
-
   getFixedData(fixedNum) {
     return this.data.toFixed(fixedNum);
   }
@@ -107,6 +100,10 @@ class Value {
 
   setGrad(grad) {
     this.grad = grad;
+  }
+
+  setData(data) {
+    this.data = data;
   }
 
   backprop() {

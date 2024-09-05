@@ -40,6 +40,9 @@ class FunctionalLayerView extends LayerView {
     for (let i = 0; i < Math.abs(diff); i++) {
       diff > 0 ? this.pushNeuron() : this.popNeuron();
     }
+    this.getNeuronNum() > 4 ? this.shrink() : this.expand();
+    this.setShownNeuronsNum(Math.min(this.getNeuronNum(), 4));
+    this.postUpdateCoordinates();
   }
 
   setCoordinates(x, y) {
@@ -49,9 +52,8 @@ class FunctionalLayerView extends LayerView {
 
   pressed() {
     iManager.checkRollout(this);
-    if (!this.isEditModeOpen()) return;
     this.getDots().forEach((dot) => dot?.handlePressed());
-    this.removeButton?.handlePressed();
+    this.removeButton.handlePressed();
   }
 
   doubleClicked() {
@@ -63,8 +65,23 @@ class FunctionalLayerView extends LayerView {
     allowed && editLayerOrganizer.enable(this);
   }
 
+  getLayerPosition() {
+    const { prev, next } = this.parent.getPrevAndNext(this);
+    return {
+      isFirst: prev instanceof Component || prev == null,
+      isLast: next instanceof Component || next == null,
+    };
+  }
+
   toggleEditMode() {
     this.editMode = !this.editMode;
+    const { isFirst, isLast } = this.getLayerPosition();
+    const func = this.editMode ? "visible" : "hide";
+    this.getDots().forEach((d) => d?.[func]());
+    this.removeButton[func]();
+
+    if (isFirst) this.inputDot.visible();
+    if (isLast) this.outputDot.visible();
   }
 
   postUpdateCoordinates() {
@@ -129,6 +146,7 @@ class FunctionalLayerView extends LayerView {
   }
 
   splitMlp(targetLayer) {
+    console.log(this, targetLayer);
     const parent = targetLayer.parent;
     const { prev, index: splitIndex } = parent.getPrevAndNext(targetLayer);
     prev.clearLines(targetLayer);
@@ -140,6 +158,7 @@ class FunctionalLayerView extends LayerView {
     newMlpView.updateBorders();
     parent.updateBorders();
     parent.checkMlpCompleted();
+    newMlpView.checkMlpCompleted();
     mainOrganizer.addMlpView(newMlpView);
   }
 
@@ -175,6 +194,8 @@ class FunctionalLayerView extends LayerView {
     return this.editMode;
   }
 
+  clearOrigin() {}
+
   destroy() {
     this.parent = null;
 
@@ -188,10 +209,8 @@ class FunctionalLayerView extends LayerView {
   }
 
   draw() {
-    if (this.isEditModeOpen()) {
-      this.getDots().forEach((dot) => dot?.draw());
-      this.removeButton.draw();
-    }
+    this.getDots().forEach((dot) => dot?.draw());
+    this.removeButton.draw();
     this.show();
     this.isShrank() && this.showInfoBox();
 

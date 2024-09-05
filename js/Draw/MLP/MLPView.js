@@ -104,7 +104,6 @@ class MlpView extends Playable {
       targetMlpView.pushLayer(layer);
     });
     targetMlpView.updateBorders();
-    targetMlpView.checkMlpCompleted();
     this.setLayers([]);
     this.destroy();
   }
@@ -246,11 +245,18 @@ class MlpView extends Playable {
     this.getLayers().forEach((layer) => layer.draw());
   }
 
-  sanitazed() {
-    return this.origin.sanitazed();
+  export() {
+    downloadJSON({ ...this.origin.export(), label: this.label }, this.label);
   }
 
-  export() {
-    downloadJSON(this.sanitazed(), this.label);
+  import(mlpData) {
+    this.setLabel(mlpData.label);
+    this.setLr(mlpData.lr);
+    this.setBatchSize(mlpData.batchSize);
+    this.setErrFunc(mlpData.errFunc);
+    this.resetCoordinates();
+    this.initializeMlp();
+    this.origin.import(mlpData.parameters);
+    // this.destroyMlp();
   }
 }

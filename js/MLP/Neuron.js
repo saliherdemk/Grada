@@ -8,11 +8,6 @@ class Neuron {
     this.output = new Value(0);
   }
 
-  sanitazed() {
-    const w = this.w.map((_w) => _w.sanitazed());
-    return { w, b: this.b.sanitazed(), output: this.output.sanitazed() };
-  }
-
   call(x) {
     let act = this.b;
     for (let i = 0; i < this.w.length; i++) {

@@ -19,8 +19,4 @@ class ImageButton extends CanvasButton {
 
     executeDrawingCommands(commands);
   }
-
-  draw() {
-    this.show();
-  }
 }

@@ -49,8 +49,4 @@ class TextButton extends CanvasButton {
 
     executeDrawingCommands(commands);
   }
-
-  draw() {
-    this.show();
-  }
 }

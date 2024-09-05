@@ -13,7 +13,7 @@ class Playable extends Draggable {
 
   createToggleMlpButton() {
     const initButton = new TextButton("Initialize MLP", () => this.toggleMlp());
-    initButton.setDimensions(100, 35).disable();
+    initButton.setDimensions(100, 35);
     this.initButton = initButton;
   }
 
@@ -63,7 +63,7 @@ class Playable extends Draggable {
       this.getInputLayer() instanceof InputLayer &&
       this.getOutputLayer() instanceof OutputLayer;
 
-    this.initButton[isComplete ? "enable" : "disable"]();
+    this.controlButtons.forEach((b) => b[isComplete ? "enable" : "disable"]());
   }
 
   toggleMlp() {
@@ -73,8 +73,10 @@ class Playable extends Draggable {
 
   initializeMlp() {
     const mlp = new MLP([], this.lr, this.batchSize);
-    for (let i = 2; i < this.layers.length - 1; i++) {
+    for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
+      const { isFirst } = layer.getLayerPosition();
+      if (isFirst || layer instanceof Component) continue;
 
       const layerOrigin = new Layer(
         this.layers[i - 1].neurons.length,
@@ -90,13 +92,14 @@ class Playable extends Draggable {
     !this.isPropsShown() && this.togglePropsShown();
     this.updateToggleMlpButton("Terminate MLP", "red");
     this.createControlButtons();
+    this.checkMlpCompleted();
     mainOrganizer.setActiveLine(null);
   }
 
   destroyMlp() {
     this.pause();
-    // this.origin.destroy();
-    // this.clearOrigin();
+    this.origin.destroy();
+    this.clearOrigin();
     this.initialized = false;
     this.updateToggleMlpButton("Initialize MLP", "blue");
     this.isPropsShown() && this.togglePropsShown();
@@ -106,7 +109,7 @@ class Playable extends Draggable {
   toggleLockLayers() {
     this.layers.forEach((layer) => {
       if (this.initialized === layer.isEditModeOpen()) {
-        layer.toggleEditMode();
+        !(layer instanceof Component) && layer.toggleEditMode();
       }
     });
   }
@@ -172,7 +175,7 @@ class Playable extends Draggable {
   }
 
   clearOrigin() {
-    this.layers.forEach((layer) => layer.origin && layer.clearOrigin());
+    this.layers.forEach((layer) => layer.clearOrigin());
     this.origin = null;
   }
 }

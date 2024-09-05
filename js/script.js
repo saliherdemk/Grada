@@ -43,12 +43,19 @@ function removeEvents(elId) {
 }
 
 function createLayer() {
-  new DigitInputGrid(100, 100);
+  // new DigitInputGrid(100, 100);
   return new HiddenLayer(300, 500);
 }
 
 function importMLP(jsonData) {
-  console.log(jsonData);
+  let prevLayer = null;
+  jsonData.layerSizes.forEach((layerSize, i) => {
+    const newLayer = new HiddenLayer((i + 1) * 100, 300);
+    newLayer.adjustNeuronNum(layerSize);
+    prevLayer?.connectLayer(newLayer);
+    prevLayer = newLayer;
+  });
+  prevLayer.parent.import(jsonData);
 }
 
 function readMLPFile(event) {

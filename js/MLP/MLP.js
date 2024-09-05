@@ -6,14 +6,29 @@ class MLP {
     this.errFunc = errFuncManager.getFunction("mse");
   }
 
-  sanitazed() {
-    const layers = this.layers.map((l) => l.sanitazed());
+  export() {
+    const layerSizes = [
+      this.layers[0].nin,
+      ...this.layers.map((l) => l.neurons.length),
+    ];
+
     return {
-      layers,
+      layerSizes: layerSizes,
+      parameters: this.getParameters(),
       lr: this.lr,
       batchSize: this.batchSize,
-      errFunc: this.errFunc,
+      errFunc: this.errFunc.name,
     };
+  }
+
+  import(parameters) {
+    const currentParams = this.getParameters();
+    for (let i = 0; i < currentParams.length; i++) {
+      const current = currentParams[i];
+      const saved = parameters[i];
+      current.setData(saved.data);
+      current.setGrad(saved.grad);
+    }
   }
 
   setErrFunc(errFunc) {
