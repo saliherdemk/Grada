@@ -33,17 +33,6 @@ class MlpView extends Playable {
     this.updateButtonsCoordinates();
   }
 
-  updateButtonsCoordinates() {
-    const initBtn = this.initButton;
-    const y = this.y + this.h + 5;
-    initBtn.setCoordinates(this.x + this.w - initBtn.w, y);
-
-    this.controlButtons.forEach((b, i) => {
-      const x = this.x + (this.w - b.w) / 2 + (i % 2 ? 1 : -1) * 40;
-      b.setCoordinates(x, this.y - 40);
-    });
-  }
-
   setLabel(label) {
     this.label = label;
   }
@@ -103,7 +92,21 @@ class MlpView extends Playable {
     this.getLayers().forEach((layer) => {
       targetMlpView.pushLayer(layer);
     });
+    const properties = [
+      { method: "setLabel", value: this.label },
+      { method: "setOrigin", value: this.origin },
+      { method: "setLr", value: this.lr },
+      { method: "setBatchSize", value: this.batchSize },
+      { method: "setErrFunc", value: this.errFunc },
+      { method: "setPlaySpeed", value: this.playSpeed },
+      { method: "setInitialized", value: this.isInitialized() },
+    ];
+
+    properties.forEach((prop) => targetMlpView[prop.method](prop.value));
+
+    targetMlpView.updateButtons();
     targetMlpView.updateBorders();
+
     this.setLayers([]);
     this.destroy();
   }
@@ -118,7 +121,7 @@ class MlpView extends Playable {
       firstX = Infinity,
       firstY = Infinity,
       lastY = -Infinity;
-
+    //
     const layers = this.getLayers();
     for (let i = 0; i < layers.length; i++) {
       const layer = layers[i];
@@ -147,7 +150,6 @@ class MlpView extends Playable {
     if (this.isInactive() || iManager.isBusy()) return;
 
     this.controlButtons.forEach((btn) => btn.handlePressed());
-    this.initButton.handlePressed();
     this.pressed();
   }
 
@@ -240,7 +242,6 @@ class MlpView extends Playable {
       this.show();
       this.isPropsShown() && this.showProps();
       this.controlButtons.forEach((btn) => btn.draw());
-      this.initButton.draw();
     }
     this.getLayers().forEach((layer) => layer.draw());
   }

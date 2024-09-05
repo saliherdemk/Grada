@@ -2,40 +2,94 @@ class Playable extends Draggable {
   constructor() {
     super(0, 0);
     this.initialized = false;
-    this.initButton = null;
     this.controlButtons = [];
     this.playInterval = null;
     this.playSpeed = 50;
     this.dataStatus = -1;
 
-    this.createToggleMlpButton();
+    this.initializeButtons();
   }
 
-  createToggleMlpButton() {
-    const initButton = new TextButton("Initialize MLP", () => this.toggleMlp());
-    initButton.setDimensions(100, 35);
-    this.initButton = initButton;
+  getInitBtn() {
+    return this.controlButtons[0];
   }
 
-  createControlButtons() {
-    this.createButton("Fetch Next", "yellow", this.goOnce.bind(this));
-    this.createButton("Play", "cyan", this.togglePlay.bind(this));
+  getPlayBtn() {
+    return this.controlButtons[1];
+  }
+
+  getFetchBtn() {
+    return this.controlButtons[2];
+  }
+
+  initializeButtons() {
+    const playBtn = this.createButton(
+      "Play",
+      this.togglePlay.bind(this),
+      75,
+      35,
+      "cyan",
+    );
+    playBtn.hide();
+
+    const fetchBtn = this.createButton(
+      "Fetch Next",
+      this.goOnce.bind(this),
+      75,
+      35,
+      "yellow",
+    );
+    fetchBtn.hide();
+
+    this.controlButtons = [
+      this.createButton("Initialize MLP", () => this.toggleMlp(), 100, 35),
+      playBtn,
+      fetchBtn,
+    ];
+    this.updateStatus(-1);
     this.updateButtonsCoordinates();
   }
 
-  createButton(text, theme, action) {
+  createButton(text, action, w, h, theme = "blue") {
     const button = new TextButton(text, action);
-    button.setDimensions(75, 35).setTheme(theme);
-    this.controlButtons.push(button);
+    button.setDimensions(w, h).setTheme(theme);
+    return button;
   }
 
-  updateToggleMlpButton(text, theme) {
-    this.initButton.setText(text).setTheme(theme);
+  updateButtons() {
+    const initBtn = this.getInitBtn();
+    const fetchBtn = this.getFetchBtn();
+    const playBtn = this.getPlayBtn();
+
+    if (this.isInitialized()) {
+      const isComplete =
+        this.getInputLayer() instanceof InputLayer &&
+        this.getOutputLayer() instanceof OutputLayer;
+
+      initBtn.setText("Terminate MLP").setTheme("red");
+      fetchBtn.visible();
+      playBtn.visible();
+
+      if (!isComplete) {
+        fetchBtn.disable();
+        playBtn.disable();
+      }
+      return;
+    }
+    initBtn.setText("Initialize MLP").setTheme("blue");
+    fetchBtn.hide();
+    playBtn.hide();
   }
 
-  destroyControlButtons() {
-    this.controlButtons.forEach((button) => button.destroy());
-    this.controlButtons = [];
+  updateButtonsCoordinates() {
+    this.controlButtons.forEach((b, i) => {
+      if (i == 0) {
+        b.setCoordinates(this.x + this.w - b.w, this.y + this.h + 5);
+      } else {
+        const x = this.x + (this.w - b.w) / 2 + (i % 2 ? 1 : -1) * 40;
+        b.setCoordinates(x, this.y - 40);
+      }
+    });
   }
 
   getInputLayer() {
@@ -54,8 +108,33 @@ class Playable extends Draggable {
     return this.initialized;
   }
 
+  setInitialized(value) {
+    this.initialized = value;
+  }
+
   updateStatus(status) {
-    this.status = status;
+    this.dataStatus = status;
+    const fetchBtn = this.getFetchBtn();
+    const playBtn = this.getPlayBtn();
+    const initBtn = this.getInitBtn();
+    const isDataAvailable = this.getDataStatus() > 0;
+    const isPlaying = !!this.playInterval;
+
+    fetchBtn
+      .setTheme(isDataAvailable ? "green" : "yellow")
+      .setText(isDataAvailable ? "Execute" : "Fetch Next");
+
+    playBtn.setText(isPlaying ? "Pause" : "Play");
+
+    if (isDataAvailable) {
+      fetchBtn.enable();
+      playBtn.disable();
+      initBtn.disable();
+    } else {
+      playBtn.enable();
+      isPlaying ? fetchBtn.disable() : fetchBtn.enable();
+      isPlaying ? initBtn.disable() : initBtn.enable();
+    }
   }
 
   checkMlpCompleted() {
@@ -64,6 +143,7 @@ class Playable extends Draggable {
       this.getOutputLayer() instanceof OutputLayer;
 
     this.controlButtons.forEach((b) => b[isComplete ? "enable" : "disable"]());
+    this.getInitBtn().enable();
   }
 
   toggleMlp() {
@@ -90,9 +170,7 @@ class Playable extends Draggable {
     this.setOrigin(mlp);
     this.initialized = true;
     !this.isPropsShown() && this.togglePropsShown();
-    this.updateToggleMlpButton("Terminate MLP", "red");
-    this.createControlButtons();
-    this.checkMlpCompleted();
+    this.updateButtons();
     mainOrganizer.setActiveLine(null);
   }
 
@@ -101,9 +179,8 @@ class Playable extends Draggable {
     this.origin.destroy();
     this.clearOrigin();
     this.initialized = false;
-    this.updateToggleMlpButton("Initialize MLP", "blue");
     this.isPropsShown() && this.togglePropsShown();
-    this.destroyControlButtons();
+    this.updateButtons();
   }
 
   toggleLockLayers() {
@@ -116,7 +193,7 @@ class Playable extends Draggable {
 
   setPlaySpeed(ms) {
     this.playSpeed = ms;
-    if (this.isInitialized()) {
+    if (this.playInterval) {
       this.pause();
       this.play();
     }
@@ -127,33 +204,20 @@ class Playable extends Draggable {
       this.fetchNext();
       this.executeOnce();
     }, this.playSpeed);
-
-    this.controlButtons[1].setText("Pause");
-    this.controlButtons[0].disable();
   }
 
   pause() {
     clearInterval(this.playInterval);
     this.playInterval = null;
-    this.controlButtons[1].setText("Play");
-    this.controlButtons[0].enable();
   }
 
   togglePlay() {
     this.playInterval ? this.pause() : this.play();
+    this.updateStatus(0);
   }
 
   goOnce() {
-    const btn = this.controlButtons[0];
-    if (this.getDataStatus() > 0) {
-      this.executeOnce();
-      btn.setTheme("yellow");
-      btn.setText("Fetch Next");
-    } else {
-      this.fetchNext();
-      btn.setTheme("green");
-      btn.setText("Execute");
-    }
+    this.getDataStatus() > 0 ? this.executeOnce() : this.fetchNext();
   }
 
   executeOnce() {
@@ -161,17 +225,13 @@ class Playable extends Draggable {
     const outputValues = this.getOutputLayer().setValues();
 
     this.origin.goOneCycle(inputValues, outputValues);
-    this.dataStatus = 0;
-    this.controlButtons[1].enable();
-    this.initButton.enable();
+    this.updateStatus(0);
   }
 
   fetchNext() {
     this.getInputLayer().fetchNext();
     this.getOutputLayer().fetchNext();
-    this.dataStatus = 1;
-    this.controlButtons[1].disable();
-    this.initButton.disable();
+    this.updateStatus(1);
   }
 
   clearOrigin() {

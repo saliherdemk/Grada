@@ -103,6 +103,7 @@ class FunctionalLayerView extends LayerView {
   connectLayer(targetLayer) {
     // FIXME remove equal condition & create middle layer automatically
     if (
+      (targetLayer.parent.isInitialized() && !(this instanceof Component)) ||
       this.parent == targetLayer.parent ||
       ((this instanceof Component || targetLayer instanceof Component) &&
         targetLayer.getNeuronNum() !== this.getNeuronNum())
@@ -146,7 +147,6 @@ class FunctionalLayerView extends LayerView {
   }
 
   splitMlp(targetLayer) {
-    console.log(this, targetLayer);
     const parent = targetLayer.parent;
     const { prev, index: splitIndex } = parent.getPrevAndNext(targetLayer);
     prev.clearLines(targetLayer);
@@ -157,8 +157,8 @@ class FunctionalLayerView extends LayerView {
     newMlpView.setLayers(newLayers);
     newMlpView.updateBorders();
     parent.updateBorders();
-    parent.checkMlpCompleted();
-    newMlpView.checkMlpCompleted();
+    parent.updateButtons();
+    newMlpView.updateButtons();
     mainOrganizer.addMlpView(newMlpView);
   }
 

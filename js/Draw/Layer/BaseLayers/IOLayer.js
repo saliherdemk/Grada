@@ -27,21 +27,6 @@ class IOLayer extends Component {
     this.batchY = batchY;
   }
 
-  getColorByIndex(i) {
-    const { defaultColor: yellow } = themeManager.getTheme("yellow");
-    const { defaultColor: green } = themeManager.getTheme("green");
-    const { defaultColor: gray } = themeManager.getTheme("gray");
-
-    switch (i) {
-      case 0:
-        return this.getParentStatus() === "ready" ? yellow : green;
-      case 1:
-        return gray;
-      default:
-        return gray;
-    }
-  }
-
   isDataReady() {
     return this.parent.isDataFetched();
   }
