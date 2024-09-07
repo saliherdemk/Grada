@@ -7,6 +7,7 @@ class IOLayer extends Component {
     this.labels = [];
     this.initialize();
   }
+
   initialize() {
     super.initialize();
     this.adjustNeuronNum();

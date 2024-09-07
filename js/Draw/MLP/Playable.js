@@ -148,15 +148,14 @@ class Playable extends Draggable {
 
   toggleMlp() {
     this.isInitialized() ? this.destroyMlp() : this.initializeMlp();
-    this.toggleLockLayers();
+    this.layers.forEach((layer) => layer.updateButtons());
   }
 
-  initializeMlp() {
+  initializeMlp(params = null) {
     const mlp = new MLP([], this.lr, this.batchSize);
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
-      const { isFirst } = layer.getLayerPosition();
-      if (isFirst || layer instanceof Component) continue;
+      if (layer.getLayerPosition().isFirst) continue;
 
       const layerOrigin = new Layer(
         this.layers[i - 1].neurons.length,
@@ -169,6 +168,8 @@ class Playable extends Draggable {
     mlp.setErrFunc(this.errFunc);
     this.setOrigin(mlp);
     this.initialized = true;
+    params && this.origin.import(params);
+
     !this.isPropsShown() && this.togglePropsShown();
     this.updateButtons();
     mainOrganizer.setActiveLine(null);
@@ -176,19 +177,16 @@ class Playable extends Draggable {
 
   destroyMlp() {
     this.pause();
-    this.origin.destroy();
     this.clearOrigin();
     this.initialized = false;
     this.isPropsShown() && this.togglePropsShown();
     this.updateButtons();
   }
 
-  toggleLockLayers() {
-    this.layers.forEach((layer) => {
-      if (this.initialized === layer.isEditModeOpen()) {
-        !(layer instanceof Component) && layer.toggleEditMode();
-      }
-    });
+  clearOrigin() {
+    this.origin.destroy();
+    this.layers.forEach((layer) => layer.clearOrigin());
+    this.origin = null;
   }
 
   setPlaySpeed(ms) {
@@ -232,10 +230,5 @@ class Playable extends Draggable {
     this.getInputLayer().fetchNext();
     this.getOutputLayer().fetchNext();
     this.updateStatus(1);
-  }
-
-  clearOrigin() {
-    this.layers.forEach((layer) => layer.clearOrigin());
-    this.origin = null;
   }
 }

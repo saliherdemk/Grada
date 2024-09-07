@@ -12,39 +12,14 @@ class LayerView extends Draggable {
     this.neuronAlignment = "middle";
   }
 
-  replace(layer) {
-    this.copyNeurons(layer);
-
-    const isShrank = layer.isShrank();
-    const neuronsNum = isShrank
-      ? layer.getShownNeuronsNum()
-      : layer.getNeuronNum();
-
-    this[isShrank ? "shrink" : "expand"]();
-    this.setShownNeuronsNum(neuronsNum);
-
-    this.setLabel(layer.label);
-    this.setActFunc(layer.actFunc);
-    this.reconnectLayer();
-    this.postUpdateCoordinates();
-  }
-
-  // FIXME don't destroy and recreate. Keep exsistance lines.
-  reconnectLayer() {
-    const parent = this.parent;
-    const { prev, next } = parent.getPrevAndNext(this);
-    this.isolate();
-
-    prev && prev.connectLayer(this);
-    next && this.connectLayer(next);
-  }
-
   copyNeurons(from) {
     const diff = from.getNeuronNum() - this.getNeuronNum();
 
     for (let i = 0; i < Math.abs(diff); i++) {
       diff > 0 ? this.pushNeuron() : this.popNeuron();
     }
+
+    return diff;
   }
 
   setActFunc(actFunc) {

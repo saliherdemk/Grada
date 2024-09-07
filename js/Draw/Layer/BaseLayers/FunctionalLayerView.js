@@ -5,7 +5,6 @@ class FunctionalLayerView extends LayerView {
     this.removeButton;
     this.inputDot = null;
     this.outputDot = null;
-    this.editMode = true;
   }
 
   initialize() {
@@ -58,9 +57,7 @@ class FunctionalLayerView extends LayerView {
 
   doubleClicked() {
     const allowed =
-      iManager.checkRollout(this) &&
-      this.isEditModeOpen() &&
-      !editLayerOrganizer.getSelected();
+      iManager.checkRollout(this) && !editLayerOrganizer.getSelected();
 
     allowed && editLayerOrganizer.enable(this);
   }
@@ -73,15 +70,8 @@ class FunctionalLayerView extends LayerView {
     };
   }
 
-  toggleEditMode() {
-    this.editMode = !this.editMode;
-    const { isFirst, isLast } = this.getLayerPosition();
-    const func = this.editMode ? "visible" : "hide";
-    this.getDots().forEach((d) => d?.[func]());
-    this.removeButton[func]();
-
-    if (isFirst) this.inputDot.visible();
-    if (isLast) this.outputDot.visible();
+  parentInitialized() {
+    return this.parent.isInitialized();
   }
 
   postUpdateCoordinates() {
@@ -100,23 +90,50 @@ class FunctionalLayerView extends LayerView {
     button.setCoordinates(this.x + (this.w - button.w) / 2, this.y + this.h);
   }
 
+  updateButtons() {
+    const button = this.removeButton;
+    this.parentInitialized() ? button.hide() : button.visible();
+  }
+
+  replace(layer) {
+    this.copyNeurons(layer);
+
+    const isShrank = layer.isShrank();
+    const neuronsNum = isShrank
+      ? layer.getShownNeuronsNum()
+      : layer.getNeuronNum();
+
+    this[isShrank ? "shrink" : "expand"]();
+    this.setShownNeuronsNum(neuronsNum);
+
+    this.setLabel(layer.label);
+    this.setActFunc(layer.actFunc);
+    this.postUpdateCoordinates();
+  }
+
+  copyNeurons(from) {
+    super.copyNeurons(from) && this.reconnectLayer();
+  }
+
+  // FIXME don't destroy and recreate. Keep exsistance lines.
+  reconnectLayer() {
+    const parent = this.parent;
+    const { prev, next } = parent.getPrevAndNext(this);
+    this.isolate();
+
+    prev && prev.connectLayer(this);
+    next && this.connectLayer(next);
+  }
+
   connectLayer(targetLayer) {
     // FIXME remove equal condition & create middle layer automatically
     if (
-      (targetLayer.parent.isInitialized() && !(this instanceof Component)) ||
+      (targetLayer.parentInitialized() && !(this instanceof Component)) ||
       this.parent == targetLayer.parent ||
       ((this instanceof Component || targetLayer instanceof Component) &&
         targetLayer.getNeuronNum() !== this.getNeuronNum())
     )
       return;
-    if (this.outputDot.isOccupied()) {
-      const { next } = this.parent.getPrevAndNext(this);
-      this.splitMlp(next);
-    }
-
-    if (targetLayer.inputDot.isOccupied()) {
-      this.splitMlp(targetLayer);
-    }
 
     this.connectNeurons(targetLayer);
     targetLayer.parent.moveLayers(this.parent);
@@ -140,30 +157,11 @@ class FunctionalLayerView extends LayerView {
     targetLayer.inputDot.occupy();
   }
 
-  clearLines(targetLayer) {
-    this.neurons.forEach((neuron) => neuron.removeLines());
-    this.outputDot.free();
-    targetLayer.inputDot.free();
-  }
-
-  splitMlp(targetLayer) {
-    const parent = targetLayer.parent;
-    const { prev, index: splitIndex } = parent.getPrevAndNext(targetLayer);
-    prev.clearLines(targetLayer);
-
-    const newLayers = parent.getLayers().splice(0, splitIndex);
-
-    const newMlpView = new MlpView();
-    newMlpView.setLayers(newLayers);
-    newMlpView.updateBorders();
-    parent.updateBorders();
-    parent.updateButtons();
-    newMlpView.updateButtons();
-    mainOrganizer.addMlpView(newMlpView);
-  }
-
   getDots() {
-    return [this.inputDot, this.outputDot];
+    let dots = [];
+    this.inputDot && dots.push(this.inputDot);
+    this.outputDot && dots.push(this.outputDot);
+    return dots;
   }
 
   setParent(parent) {
@@ -171,11 +169,7 @@ class FunctionalLayerView extends LayerView {
   }
 
   handleRemove() {
-    if (this.isIsolated()) {
-      this.parent.destroy();
-      return;
-    }
-    this.isolate();
+    this.isIsolated() ? this.parent.destroy() : this.isolate();
   }
 
   isIsolated() {
@@ -183,15 +177,40 @@ class FunctionalLayerView extends LayerView {
   }
 
   isolate() {
-    const { prev: prevLayer, next: targetLayer } =
-      this.parent.getPrevAndNext(this);
-
-    targetLayer && this.splitMlp(targetLayer);
-    prevLayer && prevLayer.splitMlp(this);
+    const parent = this.parent;
+    const { prev, next, index } = parent.getPrevAndNext(this);
+    prev && prev.clearLines(this);
+    next && this.clearLines(next);
+    this.splitLayers(index).forEach((l) => this.createNewMlp(l));
   }
 
-  isEditModeOpen() {
-    return this.editMode;
+  clearLines(targetLayer) {
+    this.neurons.forEach((neuron) => neuron.removeLines());
+    this.outputDot.free();
+    targetLayer.inputDot.free();
+  }
+
+  createNewMlp(layers) {
+    if (!layers.length) return;
+
+    const newMlp = new MlpView();
+    newMlp.setLayers(layers);
+    mainOrganizer.addMlpView(newMlp);
+  }
+
+  // FIXME layer "at" dissapears
+  splitLayers(index) {
+    const parent = this.parent;
+    const layers = parent.getLayers();
+
+    const before = layers.slice(0, index);
+    const at = layers.slice(index, index + 1);
+    const after = layers.slice(index + 1);
+
+    parent.setLayers([]);
+    parent.destroy();
+
+    return [before, at, after];
   }
 
   clearOrigin() {}
@@ -202,14 +221,14 @@ class FunctionalLayerView extends LayerView {
     this.removeButton.destroy();
     this.removeButton = null;
 
-    this.getDots().forEach((dot) => dot?.destroy());
+    this.getDots().forEach((dot) => dot.destroy());
     this.inputDot = null;
     this.outputDot = null;
     super.destroy();
   }
 
   draw() {
-    this.getDots().forEach((dot) => dot?.draw());
+    this.getDots().forEach((dot) => dot.draw());
     this.removeButton.draw();
     this.show();
     this.isShrank() && this.showInfoBox();

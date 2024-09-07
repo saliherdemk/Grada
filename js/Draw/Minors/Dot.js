@@ -9,7 +9,7 @@ class Dot {
   }
 
   isHidden() {
-    return this.hidden;
+    return this.hidden || this.isOccupied();
   }
 
   hide() {
@@ -55,39 +55,23 @@ class Dot {
     this.rollover = iManager.isHovered(this);
   }
 
-  combineMlpViews() {
-    const activeLine = mainOrganizer.getActiveLine();
-    if (!activeLine) return;
-
-    const isInput = this.isInput();
-
-    const layer1 = activeLine.from.parent;
-    const layer2 = this.parent;
-    if (layer1 instanceof InputLayer && !isInput) return;
-    if (layer1 instanceof OutputLayer && isInput) return;
-    const [majorLayer, minorLayer] = isInput
-      ? [layer1, layer2]
-      : [layer2, layer1];
-
-    majorLayer.connectLayer(minorLayer);
-    mainOrganizer.setActiveLine(null);
-  }
-
   handlePressed() {
     if (this.isHidden() || !this.rollover) return;
+
     const activeLine = mainOrganizer.getActiveLine();
 
     if (!activeLine) {
-      mainOrganizer.setActiveLine(new WeightlessLine(this, null, true));
+      !this.isInput() &&
+        mainOrganizer.setActiveLine(new WeightlessLine(this, null));
       return;
     }
 
-    if (activeLine.from === this) {
-      mainOrganizer.setActiveLine(null);
-      return;
+    if (this.isInput()) {
+      const layer1 = activeLine.from.parent;
+      const layer2 = this.parent;
+      layer1 !== layer2 && layer1.connectLayer(layer2);
     }
-
-    this.combineMlpViews();
+    mainOrganizer.setActiveLine(null);
   }
 
   show() {

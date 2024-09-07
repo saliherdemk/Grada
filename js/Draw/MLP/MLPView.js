@@ -53,9 +53,9 @@ class MlpView extends Playable {
 
   setLayers(layers) {
     this.layers = layers;
-    layers.forEach((l) => {
-      l.setParent(this);
-    });
+    layers.forEach((l) => l.setParent(this));
+    this.updateBorders();
+    this.updateButtons();
   }
 
   isPropsShown() {
@@ -121,7 +121,6 @@ class MlpView extends Playable {
       firstX = Infinity,
       firstY = Infinity,
       lastY = -Infinity;
-    //
     const layers = this.getLayers();
     for (let i = 0; i < layers.length; i++) {
       const layer = layers[i];

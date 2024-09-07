@@ -1,8 +1,7 @@
 class WeightlessLine {
-  constructor(from, to, temp = false) {
+  constructor(from, to) {
     this.from = from;
     this.to = to;
-    this.temp = temp;
   }
 
   clearOrigin() {}
@@ -17,7 +16,7 @@ class WeightlessLine {
   }
 
   isTemp() {
-    return this.temp;
+    return this.to == null;
   }
 
   show() {
