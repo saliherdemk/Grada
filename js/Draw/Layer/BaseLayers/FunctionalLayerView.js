@@ -62,12 +62,8 @@ class FunctionalLayerView extends LayerView {
     allowed && editLayerOrganizer.enable(this);
   }
 
-  getLayerPosition() {
-    const { prev, next } = this.parent.getPrevAndNext(this);
-    return {
-      isFirst: prev instanceof Component || prev == null,
-      isLast: next instanceof Component || next == null,
-    };
+  isComponent() {
+    return this instanceof Component;
   }
 
   parentInitialized() {
@@ -128,9 +124,9 @@ class FunctionalLayerView extends LayerView {
   connectLayer(targetLayer) {
     // FIXME remove equal condition & create middle layer automatically
     if (
-      (targetLayer.parentInitialized() && !(this instanceof Component)) ||
+      (targetLayer.parentInitialized() && !this.isComponent()) ||
       this.parent == targetLayer.parent ||
-      ((this instanceof Component || targetLayer instanceof Component) &&
+      ((this.isComponent() || targetLayer.isComponent()) &&
         targetLayer.getNeuronNum() !== this.getNeuronNum())
     )
       return;
@@ -140,7 +136,7 @@ class FunctionalLayerView extends LayerView {
   }
 
   connectNeurons(targetLayer) {
-    if (targetLayer instanceof Component || this instanceof Component) {
+    if (targetLayer.isComponent() || this.isComponent()) {
       this.neurons.forEach((n1, i) => {
         n1.removeLines();
         n1.addLine(new WeightlessLine(n1, targetLayer.neurons[i]));
@@ -198,7 +194,6 @@ class FunctionalLayerView extends LayerView {
     mainOrganizer.addMlpView(newMlp);
   }
 
-  // FIXME layer "at" dissapears
   splitLayers(index) {
     const parent = this.parent;
     const layers = parent.getLayers();

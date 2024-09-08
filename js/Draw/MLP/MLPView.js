@@ -12,7 +12,7 @@ class MlpView extends Playable {
   }
 
   isInactive() {
-    return this.layers[0] instanceof Component && this.layers.length === 1;
+    return this.layers[0].isComponent() && this.layers.length === 1;
   }
 
   select() {
@@ -124,7 +124,7 @@ class MlpView extends Playable {
     const layers = this.getLayers();
     for (let i = 0; i < layers.length; i++) {
       const layer = layers[i];
-      if (layer instanceof Component) continue;
+      if (layer.isComponent()) continue;
 
       lastX = Math.max(layer.x + layer.w, lastX);
       firstX = Math.min(layer.x, firstX);
@@ -148,7 +148,6 @@ class MlpView extends Playable {
     ];
   }
 
-  // FIXME potantiel refire
   resetCoordinates() {
     const layers = this.getLayers();
     const originLayer = layers[0];
