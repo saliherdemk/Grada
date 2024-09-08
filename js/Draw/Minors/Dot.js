@@ -1,11 +1,13 @@
-class Dot {
+class Dot extends Pressable {
   constructor(parent) {
+    super();
     this.parent = parent;
     this.rollover = false;
     this.occupied = false;
     this.r = 20;
     this.hidden = false;
     this.updateCoordinates();
+    this.setOnClick(this.pressed);
   }
 
   isHidden() {
@@ -43,6 +45,7 @@ class Dot {
 
   destroy() {
     this.parent = null;
+    super.destroy();
   }
 
   updateCoordinates() {
@@ -55,7 +58,7 @@ class Dot {
     this.rollover = iManager.isHovered(this);
   }
 
-  handlePressed() {
+  pressed() {
     if (this.isHidden() || !this.rollover) return;
 
     const activeLine = mainOrganizer.getActiveLine();

@@ -49,10 +49,10 @@ class FunctionalLayerView extends LayerView {
     this.postUpdateCoordinates();
   }
 
-  pressed() {
-    iManager.checkRollout(this);
-    this.getDots().forEach((dot) => dot?.handlePressed());
-    this.removeButton.handlePressed();
+  getPressables() {
+    return [this.inputDot, this.outputDot, this.removeButton, this].filter(
+      Boolean,
+    );
   }
 
   doubleClicked() {

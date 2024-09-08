@@ -1,12 +1,13 @@
-class CanvasButton {
+class CanvasButton extends Pressable {
   constructor(onClick) {
+    super();
     this.x = 0;
     this.y = 0;
     this.w = 25;
     this.h = 25;
-    this.onClick = onClick;
     this.disabled = false;
     this.hidden = false;
+    this.setOnClick(() => !this.isDisabled() && onClick());
   }
 
   isHidden() {
@@ -45,17 +46,9 @@ class CanvasButton {
     return this;
   }
 
-  destroy() {
-    this.onClick = null;
-  }
-
   setCoordinates(x, y) {
     this.x = x;
     this.y = y;
-  }
-
-  handlePressed() {
-    this.isRollout() && !this.isDisabled() && this.onClick();
   }
 
   draw() {

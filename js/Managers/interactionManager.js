@@ -72,19 +72,17 @@ class InteractionManager {
   handlePress() {
     if (mainOrganizer.isDisabled()) return;
 
-    mainOrganizer.inputViews.forEach((dsView) => dsView.handlePressed());
-    mainOrganizer.outputViews.forEach((dsView) => dsView.handlePressed());
-    if (iManager.isBusy()) return;
-    mainOrganizer.mlpViews.forEach((mlpView) => mlpView.handlePressed());
-    if (iManager.isBusy()) return;
+    mainOrganizer.mlpViews.forEach((mlpView) => {
+      mlpView.getPressables().forEach((p) => p.handlePressed());
+    });
 
-    iManager.enableCanvasDragging();
-    iManager.setLastMouseCoordinates();
+    this.enableCanvasDragging();
+    this.setLastMouseCoordinates();
   }
 
   handleDrag() {
     if (mainOrganizer.isDisabled()) return;
-    if (this.getSelected()) {
+    if (this.getSelected() instanceof Draggable) {
       this.updateSelectedCoordinates();
       return;
     }
@@ -115,9 +113,9 @@ class InteractionManager {
   }
 
   checkRollout(object) {
-    if (this.isHovered(object)) {
-      iManager.setSelected(object);
-      iManager.setOffsets();
+    if (!this.isBusy() && this.isHovered(object)) {
+      this.setSelected(object);
+      this.setOffsets();
       return true;
     }
     return false;

@@ -140,16 +140,12 @@ class MlpView extends Playable {
     this.updateButtonsCoordinates();
   }
 
-  pressed() {
-    iManager.checkRollout(this);
-  }
-
-  handlePressed() {
-    this.getLayers().forEach((layer) => layer.pressed());
-    if (this.isInactive() || iManager.isBusy()) return;
-
-    this.controlButtons.forEach((btn) => btn.handlePressed());
-    this.pressed();
+  getPressables() {
+    return [
+      ...this.getLayers().flatMap((l) => l.getPressables()),
+      ...this.controlButtons,
+      this,
+    ];
   }
 
   // FIXME potantiel refire

@@ -155,6 +155,7 @@ class Playable extends Draggable {
     const mlp = new MLP([], this.lr, this.batchSize);
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
+      // FIXME
       if (layer.getLayerPosition().isFirst) continue;
 
       const layerOrigin = new Layer(
@@ -162,6 +163,7 @@ class Playable extends Draggable {
         layer.neurons.length,
         layer.actFunc,
       );
+      console.log(layer);
       layer.setOrigin(layerOrigin);
       mlp.addLayer(layerOrigin);
     }

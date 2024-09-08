@@ -1,9 +1,7 @@
 class MainOrganizer {
   constructor() {
     this.activeLine = null;
-    this.inputViews = [];
     this.mlpViews = [];
-    this.outputViews = [];
     this.mainDisabled = false;
     this.setImages();
   }
@@ -46,15 +44,6 @@ class MainOrganizer {
     let indexToRemove = this.mlpViews.findIndex((s) => s === mlpView);
     this.mlpViews.splice(indexToRemove, 1);
   }
-
-  addInputView(inputView) {
-    this.inputViews.push(inputView);
-  }
-
-  addOutputView(outputView) {
-    this.outputViews.push(outputView);
-  }
-
   getActiveLine() {
     return this.activeLine;
   }
@@ -65,8 +54,6 @@ class MainOrganizer {
 
   draw() {
     this.mlpViews.forEach((mlpView) => mlpView.draw());
-    this.inputViews.forEach((inputView) => inputView.draw());
-    this.outputViews.forEach((outputView) => outputView.draw());
     this.getActiveLine()?.draw();
   }
 }
