@@ -1,6 +1,7 @@
 class MlpView extends Playable {
   constructor() {
     super();
+    this.inputComponent = null;
     this.layers = [];
     this.label = "MLP1";
     this.origin = null;
@@ -9,6 +10,18 @@ class MlpView extends Playable {
     this.errFunc = "mse";
     this.propsShown = false;
     this.selected = false;
+  }
+
+  setInputComponent(component) {
+    this.inputComponent = component;
+  }
+
+  getInput() {
+    return this.inputComponent;
+  }
+
+  clearInput() {
+    this.inputComponent = null;
   }
 
   isInactive() {

@@ -9,17 +9,11 @@ class CopyLayer extends LayerView {
 
   setShownNeuronsNum(shownNeuronsNum) {
     super.setShownNeuronsNum(shownNeuronsNum, 4);
-    editLayerOrganizer.setInfoText();
   }
 
   draw() {
     this.show();
     this.showInfoBox();
-
     this.neurons.forEach((neuron) => neuron.draw());
-  }
-
-  destroy() {
-    super.destroy();
   }
 }

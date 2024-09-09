@@ -62,7 +62,7 @@ class EditLayerOrganizer extends EditOrganizer {
 
   createCopy(layer) {
     const copy = new CopyLayer(0, 0);
-    copy.copyNeurons(layer);
+    copy.adjustNeuronNum(layer.getNeuronNum());
     layer.isShrank() ? copy.shrink() : copy.expand();
     copy.setLabel(layer.label);
     copy.setActFunc(layer.actFunc);

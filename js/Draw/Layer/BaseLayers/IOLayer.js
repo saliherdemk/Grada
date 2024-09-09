@@ -5,7 +5,7 @@ class IOLayer extends Component {
     this.datasetId = datasetId;
     this.currentIndex = -2;
     this.labels = [];
-    this.initialize();
+    // this.initialize();
   }
 
   initialize() {
@@ -30,10 +30,6 @@ class IOLayer extends Component {
 
   isDataReady() {
     return this.parent.isDataFetched();
-  }
-
-  getDataset() {
-    return datasetOrganizer.getDatasetById(this.datasetId);
   }
 
   fetchNext() {

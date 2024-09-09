@@ -72,8 +72,8 @@ class InteractionManager {
   handlePress() {
     if (mainOrganizer.isDisabled()) return;
 
-    mainOrganizer.mlpViews.forEach((mlpView) => {
-      mlpView.getPressables().forEach((p) => p.handlePressed());
+    mainOrganizer.getAll().forEach((el) => {
+      el.getPressables().forEach((p) => p.handlePressed());
     });
 
     this.enableCanvasDragging();

@@ -9,8 +9,8 @@ class DatasetOrganizer {
     btn.innerText = name;
     btn.setAttribute("id", id);
     btn.onclick = () => {
-      new InputLayer(id);
-      new OutputLayer(id);
+      mainOrganizer.addComponent(new InputLayer(id));
+      // new OutputLayer(id);
     };
     btn.classList.add("btn", "btn-gray");
   }

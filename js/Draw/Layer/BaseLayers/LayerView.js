@@ -10,10 +10,20 @@ class LayerView extends Draggable {
     this.shownNeurons = { num: 0, indexes: [] };
     this.infoBox = { h: 70, y: 0, val: 0 };
     this.neuronAlignment = "middle";
+    this.initializeNeurons();
   }
 
-  copyNeurons(from) {
-    const diff = from.getNeuronNum() - this.getNeuronNum();
+  initializeNeurons() {
+    const numOfNeurons = parseInt(Math.random() * 7) + 1;
+    for (let i = 0; i < numOfNeurons; i++) {
+      this.pushNeuron();
+    }
+
+    this.setShownNeuronsNum(this.getNeuronNum());
+  }
+
+  adjustNeuronNum(neuronNum) {
+    const diff = neuronNum - this.getNeuronNum();
 
     for (let i = 0; i < Math.abs(diff); i++) {
       diff > 0 ? this.pushNeuron() : this.popNeuron();
@@ -21,6 +31,16 @@ class LayerView extends Draggable {
 
     return diff;
   }
+
+  // cpyNeuron(neuronNum) {
+  //   const diff = neuronNum - this.getNeuronNum();
+  //   for (let i = 0; i < Math.abs(diff); i++) {
+  //     diff > 0 ? this.pushNeuron() : this.popNeuron();
+  //   }
+  //   this.getNeuronNum() > 4 ? this.shrink() : this.expand();
+  //   // this.setShownNeuronsNum(Math.min(this.getNeuronNum(), 4));
+  //   this.postUpdateCoordinates();
+  // }
 
   setActFunc(actFunc) {
     this.actFunc = actFunc;
@@ -153,6 +173,12 @@ class LayerView extends Draggable {
     ];
 
     executeDrawingCommands(commands);
+  }
+
+  draw() {
+    this.show();
+    this.isShrank() && this.showInfoBox();
+    this.neurons.forEach((neuron) => neuron.draw());
   }
 
   destroy() {

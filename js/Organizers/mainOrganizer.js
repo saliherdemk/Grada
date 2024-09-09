@@ -1,6 +1,7 @@
 class MainOrganizer {
   constructor() {
     this.activeLine = null;
+    this.components = [];
     this.mlpViews = [];
     this.mainDisabled = false;
     this.setImages();
@@ -32,6 +33,7 @@ class MainOrganizer {
       pause: p.loadImage("media/pause.png"),
     };
   }
+
   getImageByKey(key) {
     return this.images[key];
   }
@@ -44,8 +46,22 @@ class MainOrganizer {
     let indexToRemove = this.mlpViews.findIndex((s) => s === mlpView);
     this.mlpViews.splice(indexToRemove, 1);
   }
+
+  addComponent(component) {
+    this.components.push(component);
+  }
+
+  removeComponent(component) {
+    let indexToRemove = this.components.findIndex((c) => c === component);
+    this.components.splice(indexToRemove, 1);
+  }
+
   getActiveLine() {
     return this.activeLine;
+  }
+
+  getAll() {
+    return [...this.mlpViews, ...this.components];
   }
 
   setActiveLine(line) {
@@ -53,7 +69,7 @@ class MainOrganizer {
   }
 
   draw() {
-    this.mlpViews.forEach((mlpView) => mlpView.draw());
+    this.getAll().forEach((el) => el.draw());
     this.getActiveLine()?.draw();
   }
 }
