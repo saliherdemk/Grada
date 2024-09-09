@@ -111,10 +111,8 @@ class FunctionalLayerView extends LayerView {
     super.copyNeurons(from) && this.reconnectLayer();
   }
 
-  // FIXME don't destroy and recreate. Keep exsistance lines.
   reconnectLayer() {
-    const parent = this.parent;
-    const { prev, next } = parent.getPrevAndNext(this);
+    const { prev, next } = this.parent.getPrevAndNext(this);
     this.isolate();
 
     prev && prev.connectLayer(this);
@@ -122,12 +120,19 @@ class FunctionalLayerView extends LayerView {
   }
 
   connectLayer(targetLayer) {
-    // FIXME remove equal condition & create middle layer automatically
+    // FIXME get rid of repeated code blocks
+    const isEqual = this.getNeuronNum() === targetLayer.getNeuronNum();
+    if (targetLayer.isComponent() && !isEqual) {
+      const newLayer = new HiddenLayer(0, 0);
+      newLayer.adjustNeuronNum(targetLayer.getNeuronNum());
+      this.connectLayer(newLayer);
+      newLayer.connectLayer(targetLayer);
+      this.parent.resetCoordinates();
+      return;
+    }
     if (
       (targetLayer.parentInitialized() && !this.isComponent()) ||
-      this.parent == targetLayer.parent ||
-      ((this.isComponent() || targetLayer.isComponent()) &&
-        targetLayer.getNeuronNum() !== this.getNeuronNum())
+      this.parent == targetLayer.parent
     )
       return;
 
