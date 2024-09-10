@@ -56,6 +56,7 @@ class Playable extends Draggable {
     return button;
   }
 
+  //FIXME called from so many unnecessary places
   updateButtons() {
     const initBtn = this.getInitBtn();
     const fetchBtn = this.getFetchBtn();
@@ -63,8 +64,8 @@ class Playable extends Draggable {
 
     if (this.isInitialized()) {
       const isComplete =
-        this.getInputLayer() instanceof InputLayer &&
-        this.getOutputLayer() instanceof OutputLayer;
+        this.getInput() instanceof InputLayer &&
+        this.getOutput() instanceof OutputLayer;
 
       initBtn.setText("Terminate MLP").setTheme("red");
       fetchBtn.visible();
@@ -181,6 +182,8 @@ class Playable extends Draggable {
     this.clearOrigin();
     this.initialized = false;
     this.isPropsShown() && this.togglePropsShown();
+    this.getInput()?.clearLines();
+    this.getOutput()?.clearLines();
     this.updateButtons();
   }
 
@@ -220,16 +223,16 @@ class Playable extends Draggable {
   }
 
   executeOnce() {
-    const inputValues = this.getInputLayer().setValues();
-    const outputValues = this.getOutputLayer().setValues();
+    const inputValues = this.getInput().setValues();
+    const outputValues = this.getOutput().setValues();
 
     this.origin.goOneCycle(inputValues, outputValues);
     this.updateStatus(0);
   }
 
   fetchNext() {
-    this.getInputLayer().fetchNext();
-    this.getOutputLayer().fetchNext();
+    this.getInput().fetchNext();
+    this.getOutput().fetchNext();
     this.updateStatus(1);
   }
 }

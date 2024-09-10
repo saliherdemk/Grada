@@ -32,7 +32,7 @@ class IOLayer extends Component {
   }
 
   getColorful(i) {
-    const dataStatus = this.parent?.getDataStatus() ?? -1;
+    const dataStatus = this.connected?.parent.getDataStatus() ?? -1;
     if (i !== 0 || dataStatus === -1) {
       return [
         { func: "noStroke", args: [] },

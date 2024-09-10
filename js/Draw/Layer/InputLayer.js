@@ -20,10 +20,9 @@ class InputLayer extends IOLayer {
 
   fetchNext() {
     super.fetchNext();
-    const { next } = this.parent.getPrevAndNext(this);
 
     this.batch[0].forEach((value, i) => {
-      const n = next.neurons[i];
+      const n = this.connected.neurons[i];
       n.setOutput(value);
     });
   }

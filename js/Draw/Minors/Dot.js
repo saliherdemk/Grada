@@ -7,6 +7,7 @@ class Dot extends Pressable {
     this.r = 20;
     this.hidden = false;
     this.color = [244, 63, 94];
+    this.theme = "red";
     this.setColor();
     this.updateCoordinates();
     this.setOnClick(this.pressed);
@@ -70,6 +71,8 @@ class Dot extends Pressable {
         mainOrganizer.setActiveLine(new WeightlessLine(this, null));
       return;
     }
+    console.log(activeLine.from.getTheme(), this.getTheme());
+    if (activeLine.from.getTheme() !== this.getTheme()) return;
 
     if (this.isInput()) {
       const layer1 = activeLine.from.parent;
@@ -79,6 +82,10 @@ class Dot extends Pressable {
     mainOrganizer.setActiveLine(null);
   }
 
+  getTheme() {
+    return this.theme;
+  }
+
   setColor() {
     const parent = this.parent;
     let theme = "red";
@@ -86,6 +93,7 @@ class Dot extends Pressable {
     if (isIOLayer || parent.parent?.isInitialized()) {
       theme = "cyan";
     }
+    this.theme = theme;
     this.color = themeManager.getColor(theme);
   }
 

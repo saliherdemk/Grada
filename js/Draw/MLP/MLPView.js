@@ -2,6 +2,7 @@ class MlpView extends Playable {
   constructor() {
     super();
     this.inputComponent = null;
+    this.outputComponent = null;
     this.layers = [];
     this.label = "MLP1";
     this.origin = null;
@@ -14,14 +15,30 @@ class MlpView extends Playable {
 
   setInputComponent(component) {
     this.inputComponent = component;
+    this.updateButtons();
   }
 
   getInput() {
     return this.inputComponent;
   }
 
+  setOutputComponent(component) {
+    this.outputComponent = component;
+    this.updateButtons();
+  }
+
+  getOutput() {
+    return this.outputComponent;
+  }
+
   clearInput() {
     this.inputComponent = null;
+    this.updateButtons();
+  }
+
+  clearOutput() {
+    this.outputComponent = null;
+    this.updateButtons();
   }
 
   isInactive() {
@@ -68,7 +85,6 @@ class MlpView extends Playable {
     this.layers = layers;
     layers.forEach((l) => l.setParent(this));
     this.updateBorders();
-    this.updateButtons();
   }
 
   isPropsShown() {
@@ -117,7 +133,6 @@ class MlpView extends Playable {
 
     properties.forEach((prop) => targetMlpView[prop.method](prop.value));
 
-    targetMlpView.updateButtons();
     targetMlpView.updateBorders();
 
     this.setLayers([]);
@@ -167,13 +182,26 @@ class MlpView extends Playable {
 
     let lastX = originLayer.x;
 
+    const input = this.getInput();
+    input?.setCoordinates(
+      lastX - input.w - 50,
+      originLayer.y - (input.h - originLayer.h) / 2,
+    );
+
     layers.forEach((layer, index) => {
       const y = originLayer.y - (layer.h - originLayer.h) / 2;
       const x = lastX + (index != 0) * 50;
       lastX = x + layer.w;
       layer.setCoordinates(x, y);
-      layer.parent.updateBorders();
     });
+
+    const output = this.getOutput();
+    output?.setCoordinates(
+      lastX + 50,
+      originLayer.y - (output.h - originLayer.h) / 2,
+    );
+
+    originLayer.parent.updateBorders();
   }
 
   handleKeyPressed() {
@@ -202,6 +230,8 @@ class MlpView extends Playable {
   }
 
   destroy() {
+    this.getInput()?.clearLines();
+    this.getOutput()?.clearLines();
     this.getLayers().forEach((l) => l.destroy());
     this.setLayers([]);
     if (editMLPOrganizer.getSelected() == this) {

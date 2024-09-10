@@ -55,6 +55,10 @@ class HiddenLayer extends FunctionalLayerView {
   }
 
   connectLayer(targetLayer) {
+    if (targetLayer instanceof Component) {
+      targetLayer.connectLayer(this);
+      return;
+    }
     if (this.parent == targetLayer.parent) return;
 
     this.connectNeurons(targetLayer);
@@ -77,7 +81,11 @@ class HiddenLayer extends FunctionalLayerView {
   }
 
   isIsolated() {
-    return this.parent.layers.length == 1 && !this.parent.inputComponent;
+    return (
+      this.parent.layers.length == 1 &&
+      !this.parent.getInput() &&
+      !this.parent.getOutput()
+    );
   }
 
   isolate() {
@@ -90,6 +98,13 @@ class HiddenLayer extends FunctionalLayerView {
     } else {
       parent.getInput()?.clearLines();
     }
+
+    if (next) {
+      this.clearLines(next);
+    } else {
+      parent.getOutput()?.clearLines();
+    }
+
     next && this.clearLines(next);
     this.splitLayers(index).forEach((l) => this.createNewMlp(l));
   }
