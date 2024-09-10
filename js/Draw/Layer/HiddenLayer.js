@@ -22,6 +22,7 @@ class HiddenLayer extends FunctionalLayerView {
   updateButtons() {
     const button = this.removeButton;
     this.parentInitialized() ? button.hide() : button.visible();
+    this.getDots().forEach((d) => d.setColor());
   }
 
   replace(layer) {
@@ -126,11 +127,6 @@ class HiddenLayer extends FunctionalLayerView {
   postUpdateCoordinates() {
     super.postUpdateCoordinates();
     this.parent.updateBorders();
-  }
-
-  updateButtons() {
-    const button = this.removeButton;
-    this.parentInitialized() ? button.hide() : button.visible();
   }
 
   clearOrigin() {

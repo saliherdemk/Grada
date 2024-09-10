@@ -6,6 +6,8 @@ class Dot extends Pressable {
     this.occupied = false;
     this.r = 20;
     this.hidden = false;
+    this.color = [244, 63, 94];
+    this.setColor();
     this.updateCoordinates();
     this.setOnClick(this.pressed);
   }
@@ -77,13 +79,23 @@ class Dot extends Pressable {
     mainOrganizer.setActiveLine(null);
   }
 
+  setColor() {
+    const parent = this.parent;
+    let theme = "red";
+    const isIOLayer = parent instanceof IOLayer;
+    if (isIOLayer || parent.parent?.isInitialized()) {
+      theme = "cyan";
+    }
+    this.color = themeManager.getColor(theme);
+  }
+
   show() {
     const r = this.r + (this.rollover ? 5 : 0);
     const start = this.isInput() ? HALF_PI : PI + TWO_PI + HALF_PI;
     const stop = this.isInput() ? HALF_PI + PI : HALF_PI;
 
     const commands = [
-      { func: "fill", args: this.isOccupied() ? [0, 255, 0] : [255, 0, 0] },
+      { func: "fill", args: this.color },
       { func: "arc", args: [this.x, this.y, r, r, start, stop] },
     ];
 

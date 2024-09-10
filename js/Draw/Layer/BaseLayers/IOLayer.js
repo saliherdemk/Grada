@@ -1,35 +1,25 @@
 class IOLayer extends Component {
-  constructor(datasetId, _x, _y, isInput = true) {
+  constructor(datasetId, _x, _y) {
     super(_x, _y, 350);
-    this.neuronAlignment = isInput ? "right" : "left";
     this.datasetId = datasetId;
-    this.currentIndex = -2;
-    this.labels = [];
-    // this.initialize();
+    this.currentIndex = -2; // FIXME explain why it's -2 if ur not slothful
+    this.datasetId = datasetId;
   }
 
   initialize() {
-    super.initialize();
-    this.adjustNeuronNum();
-    this.reInitializeDots();
-  }
-
-  reset() {
-    this.currentIndex = -2;
     this.updateBatch();
+    this.adjustNeurons();
+    this.postUpdateCoordinates();
   }
 
-  play() {
-    const { batchX, batchY } = this.getDataset().getBatch(
-      ++this.currentIndex,
-      5,
-    );
-    this.batchX = batchX;
-    this.batchY = batchY;
+  adjustNeurons() {
+    const neuronNum = this.batch[0].length;
+    this.adjustNeuronNum(neuronNum);
+    this.setShownNeuronsNum(neuronNum > 4 ? 4 : neuronNum);
   }
 
-  isDataReady() {
-    return this.parent.isDataFetched();
+  getDataset() {
+    return datasetOrganizer.getDatasetById(this.datasetId);
   }
 
   fetchNext() {
@@ -37,8 +27,12 @@ class IOLayer extends Component {
     this.updateBatch();
   }
 
+  setValues() {
+    return this.batch[0];
+  }
+
   getColorful(i) {
-    const dataStatus = this.parent.getDataStatus();
+    const dataStatus = this.parent?.getDataStatus() ?? -1;
     if (i !== 0 || dataStatus === -1) {
       return [
         { func: "noStroke", args: [] },
@@ -60,14 +54,6 @@ class IOLayer extends Component {
       args: [text, this.x + 21.5 + x, y - 5, 25, 25],
     });
     return commands;
-  }
-
-  getTrainXSize() {
-    return this.getDataset().getTrainX()[0].length;
-  }
-
-  getTrainYSize() {
-    return this.getDataset().getTrainY()[0].length;
   }
 
   showValues(batch, lineX, valX, labelX) {
@@ -96,14 +82,21 @@ class IOLayer extends Component {
     executeDrawingCommands(commands.flat());
   }
 
-  show() {
-    const commands = [{ func: "rect", args: [this.x, this.y, this.w, this.h] }];
-    executeDrawingCommands(commands);
-  }
-
-  updateBatch() {}
-  draw() {
-    super.draw();
-    this.showValues();
-  }
+  // reset() {
+  //   this.currentIndex = -2;
+  //   this.updateBatch();
+  // }
+  //
+  // play() {
+  //   const { batchX, batchY } = this.getDataset().getBatch(
+  //     ++this.currentIndex,
+  //     5,
+  //   );
+  //   this.batchX = batchX;
+  //   this.batchY = batchY;
+  // }
+  //
+  // isDataReady() {
+  //   return this.parent.isDataFetched();
+  // }
 }

@@ -1,39 +1,29 @@
 class OutputLayer extends IOLayer {
   constructor(datasetId) {
-    super(datasetId, 800, 300, false);
-    this.batchY = [];
-    this.setLabels();
-    this.updateBatch();
+    super(datasetId, 800, 300);
+    this.neuronAlignment = "left";
+    this.batch = [];
+    this.labels = this.getDataset().getYLabels();
+    this.initialize();
   }
 
-  reInitializeDots() {
+  initialize() {
     this.outputDot.destroy();
     this.outputDot = null;
+    super.initialize();
   }
 
   updateBatch() {
     const { batchY } = this.getDataset().getBatch(this.currentIndex, 6);
-    this.batchY = batchY;
-  }
-
-  setLabels() {
-    this.labels = this.getDataset().getYLabels();
-  }
-
-  adjustNeuronNum() {
-    super.adjustNeuronNum(this.getTrainYSize());
-  }
-
-  setValues() {
-    return this.batchY[0];
+    this.batch = batchY;
   }
 
   getNeuronValue() {
     return this.neurons[0].origin?.output.getFixedData(2) ?? 0;
   }
 
-  showValues() {
-    const lineX = this.x + this.w - 50;
-    super.showValues(this.batchY, lineX, 0, this.w - 50);
+  draw() {
+    super.draw();
+    this.showValues(this.batch, this.x + this.w - 50, 0, this.w - 50);
   }
 }
