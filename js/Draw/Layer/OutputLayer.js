@@ -34,7 +34,6 @@ class OutputLayer extends IOLayer {
 
   clearLines() {
     this.connected.clearLines(this);
-    console.log(this.connected);
     this.connected.parent.clearOutput();
     this.connected = null;
   }
@@ -42,10 +41,6 @@ class OutputLayer extends IOLayer {
   updateBatch() {
     const { batchY } = this.getDataset().getBatch(this.currentIndex, 6);
     this.batch = batchY;
-  }
-
-  getNeuronValue() {
-    return this.neurons[0].origin?.output.getFixedData(2) ?? 0;
   }
 
   draw() {

@@ -86,22 +86,4 @@ class IOLayer extends Component {
     });
     executeDrawingCommands(commands.flat());
   }
-
-  // reset() {
-  //   this.currentIndex = -2;
-  //   this.updateBatch();
-  // }
-  //
-  // play() {
-  //   const { batchX, batchY } = this.getDataset().getBatch(
-  //     ++this.currentIndex,
-  //     5,
-  //   );
-  //   this.batchX = batchX;
-  //   this.batchY = batchY;
-  // }
-  //
-  // isDataReady() {
-  //   return this.parent.isDataFetched();
-  // }
 }

@@ -130,7 +130,7 @@ class MlpView extends Playable {
 
   pushLayer(layer) {
     layer.parent = this;
-    this.getLayers().push(layer);
+    this.layers.push(layer);
   }
 
   updateBorders() {
@@ -149,10 +149,8 @@ class MlpView extends Playable {
       firstY = Math.min(layer.y, firstY);
       lastY = Math.max(lastY, layer.y + layer.h);
     }
+    super.setCoordinates(firstX - 35, firstY - 35);
     this.w = lastX - firstX + 70;
-    // FIXME: find a way to call setCoordinates without adding base case
-    this.x = firstX - 35;
-    this.y = firstY - 35;
     this.h = lastY - firstY + 75;
     this.updateButtonsCoordinates();
   }
@@ -229,6 +227,22 @@ class MlpView extends Playable {
     mainOrganizer.removeMlpView(this);
   }
 
+  showParamNum() {
+    if (!this.origin) return;
+    const commands = [
+      {
+        func: "text",
+        args: [
+          "Total Parameters:" + this.origin.totalParams,
+          this.x + 5,
+          this.y + this.h - 10,
+        ],
+      },
+    ];
+
+    executeDrawingCommands(commands);
+  }
+
   showProps() {
     const commands = [
       {
@@ -267,6 +281,7 @@ class MlpView extends Playable {
     if (!this.isInactive()) {
       this.show();
       this.isPropsShown() && this.showProps();
+      this.showParamNum();
       this.controlButtons.forEach((btn) => btn.draw());
     }
     this.getLayers().forEach((layer) => layer.draw());

@@ -32,16 +32,6 @@ class LayerView extends Draggable {
     return diff;
   }
 
-  // cpyNeuron(neuronNum) {
-  //   const diff = neuronNum - this.getNeuronNum();
-  //   for (let i = 0; i < Math.abs(diff); i++) {
-  //     diff > 0 ? this.pushNeuron() : this.popNeuron();
-  //   }
-  //   this.getNeuronNum() > 4 ? this.shrink() : this.expand();
-  //   // this.setShownNeuronsNum(Math.min(this.getNeuronNum(), 4));
-  //   this.postUpdateCoordinates();
-  // }
-
   setActFunc(actFunc) {
     this.actFunc = actFunc;
   }

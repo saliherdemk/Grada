@@ -4,6 +4,7 @@ class MLP {
     this.lr = lr;
     this.batchSize = batchSize;
     this.errFunc = errFuncManager.getFunction("mse");
+    this.totalParams = 0;
   }
 
   export() {
@@ -49,6 +50,10 @@ class MLP {
       output = layer.call(output);
     });
     return output;
+  }
+
+  setTotalParams() {
+    this.totalParams = this.getParameters().length;
   }
 
   getParameters() {

@@ -21,10 +21,6 @@ class Component extends FunctionalLayerView {
     this.connected = targetLayer;
   }
 
-  getConnected() {
-    return this.connected;
-  }
-
   clearLines() {
     super.clearLines(this.connected);
     this.connected.parent.clearInput();

@@ -148,6 +148,7 @@ class Playable extends Draggable {
       mlp.addLayer(layerOrigin);
     }
     mlp.setErrFunc(this.errFunc);
+    mlp.setTotalParams();
     this.setOrigin(mlp);
     this.initialized = true;
     params && this.origin.import(params);
