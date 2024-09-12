@@ -71,7 +71,6 @@ class Dot extends Pressable {
         mainOrganizer.setActiveLine(new WeightlessLine(this, null));
       return;
     }
-    console.log(activeLine.from.getTheme(), this.getTheme());
     if (activeLine.from.getTheme() !== this.getTheme()) return;
 
     if (this.isInput()) {
@@ -86,13 +85,7 @@ class Dot extends Pressable {
     return this.theme;
   }
 
-  setColor() {
-    const parent = this.parent;
-    let theme = "red";
-    const isIOLayer = parent instanceof IOLayer;
-    if (isIOLayer || parent.parent?.isInitialized()) {
-      theme = "cyan";
-    }
+  setColor(theme = "red") {
     this.theme = theme;
     this.color = themeManager.getColor(theme);
   }

@@ -19,10 +19,10 @@ class HiddenLayer extends FunctionalLayerView {
     mainOrganizer.addMlpView(parent);
   }
 
-  updateButtons() {
+  updateButtons(hide) {
     const button = this.removeButton;
-    this.parentInitialized() ? button.hide() : button.visible();
-    this.getDots().forEach((d) => d.setColor());
+    hide ? button.hide() : button.visible();
+    this.getDots().forEach((d) => d.setColor(hide ? "cyan" : "red"));
   }
 
   replace(layer) {
@@ -91,7 +91,6 @@ class HiddenLayer extends FunctionalLayerView {
   isolate() {
     const parent = this.parent;
     const { prev, next, index } = parent.getPrevAndNext(this);
-    console.log(prev);
 
     if (prev) {
       prev.clearLines(this);
@@ -133,10 +132,6 @@ class HiddenLayer extends FunctionalLayerView {
 
   setParent(parent) {
     this.parent = parent;
-  }
-
-  parentInitialized() {
-    return this.parent.isInitialized();
   }
 
   postUpdateCoordinates() {

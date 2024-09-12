@@ -17,11 +17,13 @@ class CanvasButton extends Pressable {
   hide() {
     this.hidden = true;
     this.disable();
+    return this;
   }
 
   visible() {
     this.hidden = false;
     this.enable();
+    return this;
   }
 
   disable() {

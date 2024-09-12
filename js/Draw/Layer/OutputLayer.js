@@ -7,6 +7,13 @@ class OutputLayer extends IOLayer {
     this.initialize();
   }
 
+  initialize() {
+    this.outputDot.destroy();
+    this.outputDot = null;
+    this.inputDot.setColor("cyan");
+    super.initialize();
+  }
+
   connectLayer(targetLayer) {
     const isEqual = this.getNeuronNum() == targetLayer.getNeuronNum();
     if (!isEqual) return;
@@ -30,12 +37,6 @@ class OutputLayer extends IOLayer {
     console.log(this.connected);
     this.connected.parent.clearOutput();
     this.connected = null;
-  }
-
-  initialize() {
-    this.outputDot.destroy();
-    this.outputDot = null;
-    super.initialize();
   }
 
   updateBatch() {

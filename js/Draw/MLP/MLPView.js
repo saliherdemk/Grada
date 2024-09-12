@@ -15,7 +15,7 @@ class MlpView extends Playable {
 
   setInputComponent(component) {
     this.inputComponent = component;
-    this.updateButtons();
+    this.checkCompleted();
   }
 
   getInput() {
@@ -24,7 +24,7 @@ class MlpView extends Playable {
 
   setOutputComponent(component) {
     this.outputComponent = component;
-    this.updateButtons();
+    this.checkCompleted();
   }
 
   getOutput() {
@@ -33,12 +33,12 @@ class MlpView extends Playable {
 
   clearInput() {
     this.inputComponent = null;
-    this.updateButtons();
+    this.checkCompleted();
   }
 
   clearOutput() {
     this.outputComponent = null;
-    this.updateButtons();
+    this.checkCompleted();
   }
 
   isInactive() {
@@ -121,17 +121,6 @@ class MlpView extends Playable {
     this.getLayers().forEach((layer) => {
       targetMlpView.pushLayer(layer);
     });
-    const properties = [
-      { method: "setLabel", value: this.label },
-      { method: "setOrigin", value: this.origin },
-      { method: "setLr", value: this.lr },
-      { method: "setBatchSize", value: this.batchSize },
-      { method: "setErrFunc", value: this.errFunc },
-      { method: "setPlaySpeed", value: this.playSpeed },
-      { method: "setInitialized", value: this.isInitialized() },
-    ];
-
-    properties.forEach((prop) => targetMlpView[prop.method](prop.value));
 
     targetMlpView.updateBorders();
 

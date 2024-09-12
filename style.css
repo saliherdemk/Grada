@@ -150,15 +150,6 @@ body {
     color: var(--blue-active);
 }
 
-#err-message {
-    color: var(--rose-active);
-    display: none
-}
-
-#err-message.active {
-    display: block;
-}
-
 #mlp-edit-container {
     position: absolute;
     display: flex;

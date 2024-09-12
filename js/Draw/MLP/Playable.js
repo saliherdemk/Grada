@@ -1,12 +1,10 @@
 class Playable extends Draggable {
   constructor() {
     super(0, 0);
-    this.initialized = false;
     this.controlButtons = [];
     this.playInterval = null;
     this.playSpeed = 50;
-    this.dataStatus = -1;
-
+    this.status = -1;
     this.initializeButtons();
   }
 
@@ -23,30 +21,17 @@ class Playable extends Draggable {
   }
 
   initializeButtons() {
-    const playBtn = this.createButton(
-      "Play",
-      this.togglePlay.bind(this),
-      75,
-      35,
-      "cyan",
-    );
-    playBtn.hide();
-
-    const fetchBtn = this.createButton(
-      "Fetch Next",
-      this.goOnce.bind(this),
-      75,
-      35,
-      "yellow",
-    );
-    fetchBtn.hide();
-
     this.controlButtons = [
       this.createButton("Initialize MLP", () => this.toggleMlp(), 100, 35),
-      playBtn,
-      fetchBtn,
+      this.createButton("Play", () => this.togglePlay(), 75, 35, "cyan").hide(),
+      this.createButton(
+        "Fetch Next",
+        () => this.goOnce(),
+        75,
+        35,
+        "yellow",
+      ).hide(),
     ];
-    this.updateStatus(-1);
     this.updateButtonsCoordinates();
   }
 
@@ -54,32 +39,6 @@ class Playable extends Draggable {
     const button = new TextButton(text, action);
     button.setDimensions(w, h).setTheme(theme);
     return button;
-  }
-
-  //FIXME called from so many unnecessary places
-  updateButtons() {
-    const initBtn = this.getInitBtn();
-    const fetchBtn = this.getFetchBtn();
-    const playBtn = this.getPlayBtn();
-
-    if (this.isInitialized()) {
-      const isComplete =
-        this.getInput() instanceof InputLayer &&
-        this.getOutput() instanceof OutputLayer;
-
-      initBtn.setText("Terminate MLP").setTheme("red");
-      fetchBtn.visible();
-      playBtn.visible();
-
-      if (!isComplete) {
-        fetchBtn.disable();
-        playBtn.disable();
-      }
-      return;
-    }
-    initBtn.setText("Initialize MLP").setTheme("blue");
-    fetchBtn.hide();
-    playBtn.hide();
   }
 
   updateButtonsCoordinates() {
@@ -93,63 +52,84 @@ class Playable extends Draggable {
     });
   }
 
-  getInputLayer() {
-    return this.layers[0];
-  }
-
-  getOutputLayer() {
-    return this.layers[this.layers.length - 1];
-  }
-
-  getDataStatus() {
-    return this.dataStatus;
+  getStatus() {
+    return this.status;
   }
 
   isInitialized() {
-    return this.initialized;
+    return this.getStatus() > -1;
   }
 
-  setInitialized(value) {
-    this.initialized = value;
+  checkCompleted() {
+    this.updateStatus(
+      +(
+        this.getInput() instanceof InputLayer &&
+        this.getOutput() instanceof OutputLayer
+      ),
+    );
   }
 
   updateStatus(status) {
-    this.dataStatus = status;
+    this.status = status;
     const fetchBtn = this.getFetchBtn();
     const playBtn = this.getPlayBtn();
     const initBtn = this.getInitBtn();
-    const isDataAvailable = this.getDataStatus() > 0;
-    const isPlaying = !!this.playInterval;
+    const ioLayers = [this.getInput(), this.getOutput()];
 
-    fetchBtn
-      .setTheme(isDataAvailable ? "green" : "yellow")
-      .setText(isDataAvailable ? "Execute" : "Fetch Next");
+    fetchBtn.hide();
+    playBtn.hide();
+    initBtn.hide();
 
-    playBtn.setText(isPlaying ? "Pause" : "Play");
+    switch (this.status) {
+      case -1:
+        initBtn.setText("Initialize MLP").setTheme("blue").visible();
+        this.layers.forEach((l) => l.updateButtons(false));
+        break;
+      case 0:
+        playBtn.visible().disable();
+        fetchBtn.visible().disable();
+        initBtn.setText("Terminate MLP").setTheme("red").visible();
+        this.layers.forEach((l) => l.updateButtons(true));
+        break;
+      case 1:
+        fetchBtn.setText("Fetch Next").setTheme("yellow").visible();
+        playBtn.setText("Play").visible();
+        initBtn.setText("Terminate MLP").setTheme("red").visible();
+        ioLayers.forEach((io) => io?.updateButtons(false));
+        break;
+      case 2:
+        fetchBtn.setText("Execute").setTheme("green").visible();
+        playBtn.visible().disable();
+        initBtn.visible().disable();
+        ioLayers.forEach((io) => io?.updateButtons(true));
 
-    if (isDataAvailable) {
-      fetchBtn.enable();
-      playBtn.disable();
-      initBtn.disable();
-    } else {
-      playBtn.enable();
-      isPlaying ? fetchBtn.disable() : fetchBtn.enable();
-      isPlaying ? initBtn.disable() : initBtn.enable();
+        break;
+      case 3:
+        playBtn.setText("Pause").visible();
+        fetchBtn.visible().disable();
+        initBtn.visible().disable();
+        ioLayers.forEach((io) => io?.updateButtons(true));
+
+        break;
+
+      default:
+        break;
     }
   }
 
-  checkMlpCompleted() {
-    const isComplete =
-      this.getInputLayer() instanceof InputLayer &&
-      this.getOutputLayer() instanceof OutputLayer;
-
-    this.controlButtons.forEach((b) => b[isComplete ? "enable" : "disable"]());
-    this.getInitBtn().enable();
+  toggleMlp() {
+    this.getStatus() > -1 ? this.destroyMlp() : this.initializeMlp();
+    this.updateStatus(this.getStatus() > -1 ? -1 : 0);
   }
 
-  toggleMlp() {
-    this.isInitialized() ? this.destroyMlp() : this.initializeMlp();
-    this.layers.forEach((layer) => layer.updateButtons());
+  togglePlay() {
+    this.getStatus() == 3 ? this.pause() : this.play();
+    this.updateStatus(this.getStatus() == 3 ? 1 : 3);
+  }
+
+  goOnce() {
+    this.getStatus() == 2 ? this.executeOnce() : this.fetchNext();
+    this.updateStatus(this.getStatus() == 2 ? 1 : 2);
   }
 
   initializeMlp(params = null) {
@@ -173,18 +153,15 @@ class Playable extends Draggable {
     params && this.origin.import(params);
 
     !this.isPropsShown() && this.togglePropsShown();
-    this.updateButtons();
     mainOrganizer.setActiveLine(null);
   }
 
   destroyMlp() {
     this.pause();
     this.clearOrigin();
-    this.initialized = false;
     this.isPropsShown() && this.togglePropsShown();
     this.getInput()?.clearLines();
     this.getOutput()?.clearLines();
-    this.updateButtons();
   }
 
   clearOrigin() {
@@ -213,26 +190,14 @@ class Playable extends Draggable {
     this.playInterval = null;
   }
 
-  togglePlay() {
-    this.playInterval ? this.pause() : this.play();
-    this.updateStatus(0);
-  }
-
-  goOnce() {
-    this.getDataStatus() > 0 ? this.executeOnce() : this.fetchNext();
-  }
-
   executeOnce() {
     const inputValues = this.getInput().setValues();
     const outputValues = this.getOutput().setValues();
-
     this.origin.goOneCycle(inputValues, outputValues);
-    this.updateStatus(0);
   }
 
   fetchNext() {
     this.getInput().fetchNext();
     this.getOutput().fetchNext();
-    this.updateStatus(1);
   }
 }

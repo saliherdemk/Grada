@@ -10,6 +10,7 @@ class InputLayer extends IOLayer {
   initialize() {
     this.inputDot.destroy();
     this.inputDot = null;
+    this.outputDot.setColor("cyan");
     super.initialize();
   }
 

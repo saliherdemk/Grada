@@ -6,6 +6,11 @@ class IOLayer extends Component {
     this.datasetId = datasetId;
   }
 
+  updateButtons(hide) {
+    const button = this.removeButton;
+    hide ? button.hide() : button.visible();
+  }
+
   initialize() {
     this.updateBatch();
     this.adjustNeurons();
@@ -32,15 +37,15 @@ class IOLayer extends Component {
   }
 
   getColorful(i) {
-    const dataStatus = this.connected?.parent.getDataStatus() ?? -1;
-    if (i !== 0 || dataStatus === -1) {
+    const dataStatus = this.connected?.parent.getStatus();
+    if (i !== 0 || !dataStatus || dataStatus < 1) {
       return [
         { func: "noStroke", args: [] },
         { func: "fill", args: [0, 0, 0] },
       ];
     }
 
-    const args = themeManager.getColor(dataStatus ? "yellow" : "green");
+    const args = themeManager.getColor(dataStatus == 2 ? "yellow" : "green");
     return [
       { func: "stroke", args: args },
       { func: "fill", args: args },

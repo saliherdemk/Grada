@@ -63,7 +63,7 @@ class EventManager {
   onNeuronNumChange(e) {
     const context = this.context;
     const selected = context.getSelected();
-    if (selected instanceof IOLayer || selected.parentInitialized()) return;
+    if (selected instanceof IOLayer || this.isParentInitialized()) return;
 
     const layer = context.selectedCopy;
     const val = this.makeInputValid(e.target.value);
@@ -119,7 +119,7 @@ class EventManager {
   onActFuncChange(e) {
     const context = this.context;
     const selected = context.getSelected();
-    if (selected instanceof InputLayer || selected.parentInitialized()) return;
+    if (selected instanceof InputLayer || this.isParentInitialized()) return;
 
     context.selectedCopy.setActFunc(e.target.value);
   }
@@ -140,10 +140,14 @@ class EventManager {
     this.context.disable();
   }
 
+  isParentInitialized() {
+    return this.context.getSelected().parent?.isInitialized() ?? true;
+  }
+
   setRestrictions() {
     const selected = this.context.getSelected();
     const isIOLayer = selected instanceof IOLayer;
-    const parentInitialized = selected.parentInitialized();
+    const parentInitialized = this.isParentInitialized();
 
     setElementProperties("set-neuron-num", {
       disabled: isIOLayer || parentInitialized,
