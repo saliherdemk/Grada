@@ -229,34 +229,37 @@ class MlpView extends Playable {
 
   showParamNum() {
     if (!this.origin) return;
-    const commands = [
+    const { totalParams, stepCounter } = this.origin.getProps();
+    const epoch = this.recordNum > 0 ? ~~(stepCounter / this.recordNum) : 0;
+    const x = this.x + 5;
+    const y = this.y + this.h;
+    let commands = [
       {
         func: "text",
-        args: [
-          "Total Parameters:" + this.origin.totalParams,
-          this.x + 5,
-          this.y + this.h - 10,
-        ],
+        args: [`Total Parameters: ${totalParams}\n`, x, y - 10],
       },
     ];
+    commands.push({
+      func: "text",
+      args: [
+        `Step: ${stepCounter}\nEpoch: ${epoch}\nBatch Size: ${this.batchSize}`,
+        x,
+        y + 15,
+      ],
+    });
 
     executeDrawingCommands(commands);
   }
 
   showProps() {
+    const x = this.x + 5;
+    const y = this.y + this.h + 60;
     const commands = [
       {
         func: "text",
-        args: [
-          `Play Speed: ${this.playSpeed} ms \n
-          Learning Rate: ${this.lr} \n
-          Batch Size: ${this.batchSize}`,
-          this.x + 5,
-          this.y + this.h + 5,
-          this.w + 50,
-          75,
-        ],
+        args: [`Play Speed: ${this.playSpeed} ms`, x, y],
       },
+      { func: "text", args: [`Learning Rate: ${this.lr}`, x + 125, y] },
     ];
 
     executeDrawingCommands(commands);

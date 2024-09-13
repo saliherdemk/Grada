@@ -1,10 +1,20 @@
 class MLP {
-  constructor(layers = [], lr = 0.1, batchSize = 1) {
+  constructor(layers, lr, batchSize) {
     this.layers = layers;
     this.lr = lr;
     this.batchSize = batchSize;
     this.errFunc = errFuncManager.getFunction("mse");
     this.totalParams = 0;
+    this.stepCounter = 0;
+    this.recordNum = 0;
+  }
+
+  getProps() {
+    return { totalParams: this.totalParams, stepCounter: this.stepCounter };
+  }
+
+  setTotalParams() {
+    this.totalParams = this.getParameters().length;
   }
 
   export() {
@@ -52,10 +62,6 @@ class MLP {
     return output;
   }
 
-  setTotalParams() {
-    this.totalParams = this.getParameters().length;
-  }
-
   getParameters() {
     return this.layers.flatMap((layer) => layer.parameters());
   }
@@ -63,7 +69,10 @@ class MLP {
   goOneCycle(trainXData, trainYData) {
     const predict = this.predict(trainXData);
 
+    this.stepCounter++;
+
     const loss = this.errFunc(predict, trainYData);
+    console.log(loss);
 
     this.getParameters().forEach((p) => (p.grad = 0.0));
     loss.backprop();

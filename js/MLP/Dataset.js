@@ -6,6 +6,7 @@ class Dataset {
     this.trainY = [];
     this.trainXLabels = [];
     this.trainYLabels = [];
+    this.recordNum = 0;
     this.setData(data);
   }
 
@@ -72,5 +73,6 @@ class Dataset {
       xValues.length && this.trainX.push(xValues);
       yValues.length && this.trainY.push(yValues);
     }
+    this.recordNum = data.length - 1;
   }
 }

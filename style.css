@@ -89,9 +89,7 @@ body {
     overflow: hidden;
 }
 
-#mlp-batch-size>label {
-    color: var(--gray)
-}
+
 
 #disable-background {
     position: absolute;

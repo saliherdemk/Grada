@@ -4,6 +4,7 @@ class IOLayer extends Component {
     this.datasetId = datasetId;
     this.currentIndex = -2; // FIXME explain why it's -2 if ur not slothful
     this.datasetId = datasetId;
+    this.recordNum = this.getDataset().recordNum;
   }
 
   updateButtons(hide) {
@@ -61,6 +62,22 @@ class IOLayer extends Component {
     return commands;
   }
 
+  showTotalRecordNum() {
+    const commands = [
+      { func: "textAlign", args: [CENTER, CENTER] },
+      {
+        func: "text",
+        args: [
+          `Total Record: ${this.recordNum}`,
+          this.x,
+          this.y + this.h - 10,
+          this.w,
+        ],
+      },
+    ];
+    executeDrawingCommands(commands);
+  }
+
   showValues(batch, lineX, valX, labelX) {
     const commands = [
       {
@@ -85,5 +102,6 @@ class IOLayer extends Component {
       });
     });
     executeDrawingCommands(commands.flat());
+    this.showTotalRecordNum();
   }
 }

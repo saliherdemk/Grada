@@ -5,6 +5,7 @@ class Playable extends Draggable {
     this.playInterval = null;
     this.playSpeed = 50;
     this.status = -1;
+    this.recordNum = 0;
     this.initializeButtons();
   }
 
@@ -67,6 +68,8 @@ class Playable extends Draggable {
         this.getOutput() instanceof OutputLayer
       ),
     );
+
+    this.recordNum = this.getStatus() == 1 ? this.getInput().recordNum : 0;
   }
 
   updateStatus(status) {
@@ -150,7 +153,6 @@ class Playable extends Draggable {
     mlp.setErrFunc(this.errFunc);
     mlp.setTotalParams();
     this.setOrigin(mlp);
-    this.initialized = true;
     params && this.origin.import(params);
 
     !this.isPropsShown() && this.togglePropsShown();
