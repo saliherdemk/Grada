@@ -29,7 +29,7 @@ class EditMLPOrganizer extends EditOrganizer {
       },
       {
         id: "mlp-play-speed",
-        event: "input",
+        event: "change",
         handler: this.updatePlaySpeed,
       },
       {
@@ -76,15 +76,15 @@ class EditMLPOrganizer extends EditOrganizer {
     this.getSelected().setLr(e.target.value);
   }
 
-  updateBatchSize() {
-    let selectedRadio = document.querySelector(
-      'input[name="mlp-batch-size"]:checked',
-    );
-    this.getSelected().setBatchSize(selectedRadio.value);
+  updateBatchSize(e) {
+    this.getSelected().setBatchSize(e.target.value);
   }
 
-  updatePlaySpeed(e) {
-    this.getSelected().setPlaySpeed(e.target.value);
+  updatePlaySpeed() {
+    let selectedRadio = document.querySelector(
+      'input[name="mlp-play-speed"]:checked',
+    );
+    this.getSelected().setPlaySpeed(selectedRadio.value);
   }
 
   handleErrFuncChange(e) {
@@ -118,7 +118,8 @@ class EditMLPOrganizer extends EditOrganizer {
     const selected = this.getSelected();
     setElementProperties("mlp-label", { value: selected.label });
     setElementProperties("mlp-lr", { value: selected.lr });
-    setElementProperties(`batch${selected.batchSize}`, { checked: true });
+    setElementProperties(`mlp-batch-size`, { value: selected.batchSize });
+    setElementProperties(`${selected.playSpeed}ms`, { checked: true });
     setElementProperties("err-function-select", { value: selected.errFunc });
     this.setPropsBtnText();
   }

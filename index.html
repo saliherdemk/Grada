@@ -59,32 +59,30 @@
       </div>
 
       <div>
-        <label>Batch Size</label>
-        <div id="mlp-batch-size">
-          <input type="radio" id="batch1" name="mlp-batch-size" value="1" />
-          <label for="batch1">1</label>
-
-          <input type="radio" id="batch32" name="mlp-batch-size" value="32" />
-          <label for="batch32">32</label>
-
-          <input type="radio" id="batch64" name="mlp-batch-size" value="64" />
-          <label for="batch64">64</label>
-
-          <input type="radio" id="batch128" name="mlp-batch-size" value="128" />
-          <label for="batch128">128</label>
-        </div>
+        <label for="mlp-batch-size">Batch Size</label><br />
+        <input id="mlp-batch-size" type="range" value="" max="128" min="1" />
       </div>
-
       <div>
         <label for="mlp-play-speed">Play Speed (ms)</label> <br />
-        <input
-          id="mlp-play-speed"
-          type="range"
-          value="100"
-          step="10"
-          max="2000"
-          min="0"
-        />
+        <div id="mlp-play-speed">
+          <input type="radio" id="0ms" name="mlp-play-speed" value="0" />
+          <label for="0ms">0</label>
+
+          <input type="radio" id="50ms" name="mlp-play-speed" value="50" />
+          <label for="50ms">50</label>
+
+          <input type="radio" id="100ms" name="mlp-play-speed" value="100" />
+          <label for="100ms">100</label><br />
+
+          <input type="radio" id="200ms" name="mlp-play-speed" value="200" />
+          <label for="200ms">200</label>
+
+          <input type="radio" id="500ms" name="mlp-play-speed" value="500" />
+          <label for="500ms">500</label>
+
+          <input type="radio" id="1000ms" name="mlp-play-speed" value="1000" />
+          <label for="1000ms">1000</label>
+        </div>
       </div>
 
       <div class="flex-center">

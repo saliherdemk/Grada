@@ -61,6 +61,10 @@ class Playable extends Draggable {
     return this.getStatus() > -1;
   }
 
+  setRecordNum(recordNum) {
+    this.recordNum = recordNum;
+  }
+
   checkCompleted() {
     this.updateStatus(
       +(
@@ -68,8 +72,9 @@ class Playable extends Draggable {
         this.getOutput() instanceof OutputLayer
       ),
     );
-
-    this.recordNum = this.getStatus() == 1 ? this.getInput().recordNum : 0;
+    if (!this.origin) return;
+    this.origin.recordNum =
+      this.getStatus() == 1 ? this.getInput().recordNum : 0;
   }
 
   updateStatus(status) {
@@ -135,7 +140,7 @@ class Playable extends Draggable {
     this.updateStatus(this.getStatus() == 2 ? 1 : 2);
   }
 
-  initializeMlp(params = null) {
+  initializeMlp() {
     const mlp = new MLP([], this.lr, this.batchSize);
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
@@ -153,7 +158,6 @@ class Playable extends Draggable {
     mlp.setErrFunc(this.errFunc);
     mlp.setTotalParams();
     this.setOrigin(mlp);
-    params && this.origin.import(params);
 
     !this.isPropsShown() && this.togglePropsShown();
     mainOrganizer.setActiveLine(null);

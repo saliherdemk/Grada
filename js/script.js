@@ -49,9 +49,9 @@ function createLayer() {
 
 function importMLP(jsonData) {
   let prevLayer = null;
-  jsonData.layerSizes.forEach((layerSize, i) => {
+  jsonData.layers.forEach((layerData, i) => {
     const newLayer = new HiddenLayer((i + 1) * 100, 300);
-    newLayer.adjustNeuronNum(layerSize);
+    newLayer.import(layerData);
     prevLayer?.connectLayer(newLayer);
     prevLayer = newLayer;
   });

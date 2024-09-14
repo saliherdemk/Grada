@@ -13,6 +13,25 @@ class LayerView extends Draggable {
     this.initializeNeurons();
   }
 
+  export() {
+    return {
+      neuronNum: this.neurons.length,
+      label: this.label,
+      actFunc: this.actFunc,
+      shrank: this.shrank,
+      shownNeuronNum: this.shownNeurons.num,
+    };
+  }
+
+  import(layerData) {
+    const { neuronNum, label, actFunc, shrank, shownNeuronNum } = layerData;
+    this.adjustNeuronNum(neuronNum);
+    this.setLabel(label);
+    this.setActFunc(actFunc);
+    this.setShownNeuronsNum(shownNeuronNum);
+    shrank ? this.shrink() : this.expand();
+  }
+
   initializeNeurons() {
     const numOfNeurons = parseInt(Math.random() * 7) + 1;
     for (let i = 0; i < numOfNeurons; i++) {

@@ -7,32 +7,32 @@ class MLP {
     this.totalParams = 0;
     this.stepCounter = 0;
     this.recordNum = 0;
+    this.epoch = 0;
+    this.currentLoss = new Value(0);
   }
 
   getProps() {
-    return { totalParams: this.totalParams, stepCounter: this.stepCounter };
+    return {
+      totalParams: this.totalParams,
+      stepCounter: this.stepCounter,
+      epoch: this.epoch,
+    };
   }
 
   setTotalParams() {
     this.totalParams = this.getParameters().length;
   }
 
+  // FIXME maybe we can export parameters layer by layer
   export() {
-    const layerSizes = [
-      this.layers[0].nin,
-      ...this.layers.map((l) => l.neurons.length),
-    ];
-
     return {
-      layerSizes: layerSizes,
       parameters: this.getParameters(),
-      lr: this.lr,
-      batchSize: this.batchSize,
-      errFunc: this.errFunc.name,
+      stepCounter: this.stepCounter,
+      epoch: this.epoch,
     };
   }
 
-  import(parameters) {
+  import(parameters, stepCounter, epoch) {
     const currentParams = this.getParameters();
     for (let i = 0; i < currentParams.length; i++) {
       const current = currentParams[i];
@@ -40,6 +40,8 @@ class MLP {
       current.setData(saved.data);
       current.setGrad(saved.grad);
     }
+    this.stepCounter = stepCounter;
+    this.epoch = epoch;
   }
 
   setErrFunc(errFunc) {
@@ -48,6 +50,10 @@ class MLP {
 
   setLr(lr) {
     this.lr = lr;
+  }
+
+  setBatchSize(batchSize) {
+    this.batchSize = batchSize;
   }
 
   addLayer(layer) {
@@ -69,14 +75,18 @@ class MLP {
   goOneCycle(trainXData, trainYData) {
     const predict = this.predict(trainXData);
 
-    this.stepCounter++;
+    if (++this.stepCounter % this.recordNum === 0) this.epoch++;
 
-    const loss = this.errFunc(predict, trainYData);
-    console.log(loss);
+    this.currentLoss = this.currentLoss.add(this.errFunc(predict, trainYData));
 
+    if (this.stepCounter % this.batchSize !== 0) return;
+
+    this.currentLoss = this.currentLoss.div(this.batchSize);
+    console.log(this.currentLoss);
     this.getParameters().forEach((p) => (p.grad = 0.0));
-    loss.backprop();
+    this.currentLoss.backprop();
     this.getParameters().forEach((p) => (p.data += -this.lr * p.grad));
+    this.currentLoss = new Value(0);
   }
 
   train(x_train, y_train, epochs) {

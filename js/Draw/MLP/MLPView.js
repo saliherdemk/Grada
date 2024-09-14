@@ -79,6 +79,7 @@ class MlpView extends Playable {
 
   setBatchSize(batchSize) {
     this.batchSize = batchSize;
+    this.origin?.setBatchSize(batchSize);
   }
 
   setLayers(layers) {
@@ -227,39 +228,42 @@ class MlpView extends Playable {
     mainOrganizer.removeMlpView(this);
   }
 
-  showParamNum() {
-    if (!this.origin) return;
-    const { totalParams, stepCounter } = this.origin.getProps();
-    const epoch = this.recordNum > 0 ? ~~(stepCounter / this.recordNum) : 0;
-    const x = this.x + 5;
-    const y = this.y + this.h;
-    let commands = [
-      {
-        func: "text",
-        args: [`Total Parameters: ${totalParams}\n`, x, y - 10],
-      },
-    ];
-    commands.push({
-      func: "text",
-      args: [
-        `Step: ${stepCounter}\nEpoch: ${epoch}\nBatch Size: ${this.batchSize}`,
-        x,
-        y + 15,
-      ],
-    });
+  getProps() {
+    return {
+      playSpeed: this.playSpeed,
+      lr: this.lr,
+      errFunc: this.errFunc,
+      batchSize: this.batchSize,
+    };
+  }
 
-    executeDrawingCommands(commands);
+  getOriginProps() {
+    const {
+      totalParams = 0,
+      stepCounter = 0,
+      epoch = 0,
+    } = this.origin ? this.origin.getProps() : {};
+    return { totalParams, stepCounter, epoch };
   }
 
   showProps() {
     const x = this.x + 5;
-    const y = this.y + this.h + 60;
+    const y = this.y + this.h;
+    const { playSpeed, lr, errFunc, batchSize } = this.getProps();
+    const { totalParams, stepCounter, epoch } = this.getOriginProps();
     const commands = [
+      { func: "text", args: [`Learning Rate: ${lr}`, x, y + 60] },
+      { func: "text", args: [`Play Speed: ${playSpeed} ms`, x + 125, y + 60] },
+      { func: "text", args: [errFunc, this.x + this.w - 35, y - 10] },
+      { func: "text", args: [`Total Parameters: ${totalParams}\n`, x, y - 10] },
       {
         func: "text",
-        args: [`Play Speed: ${this.playSpeed} ms`, x, y],
+        args: [
+          `Step: ${stepCounter}\nEpoch: ${epoch}\nBatch Size: ${batchSize}`,
+          x,
+          y + 15,
+        ],
       },
-      { func: "text", args: [`Learning Rate: ${this.lr}`, x + 125, y] },
     ];
 
     executeDrawingCommands(commands);
@@ -271,10 +275,6 @@ class MlpView extends Playable {
       { func: "rect", args: [this.x, this.y, this.w, this.h, 10, 10] },
       { func: "noStroke", args: [] },
       { func: "text", args: [this.label, this.x + 5, this.y + 5, this.w, 25] },
-      {
-        func: "text",
-        args: [this.errFunc, this.x + this.w - 35, this.y + this.h - 10],
-      },
     ];
 
     executeDrawingCommands(commands);
@@ -284,24 +284,35 @@ class MlpView extends Playable {
     if (!this.isInactive()) {
       this.show();
       this.isPropsShown() && this.showProps();
-      this.showParamNum();
       this.controlButtons.forEach((btn) => btn.draw());
     }
     this.getLayers().forEach((layer) => layer.draw());
   }
 
   export() {
-    downloadJSON({ ...this.origin.export(), label: this.label }, this.label);
+    const viewsProps = {
+      layers: this.layers.map((layer) => layer.export()),
+      label: this.label,
+      lr: this.lr,
+      batchSize: this.batchSize,
+      errFunc: this.errFunc,
+      playSpeed: this.playSpeed,
+    };
+    const originProps = this.origin.export();
+
+    downloadJSON({ ...viewsProps, ...originProps }, this.label);
   }
 
   import(mlpData) {
-    this.setLabel(mlpData.label);
-    this.setLr(mlpData.lr);
-    this.setBatchSize(mlpData.batchSize);
-    this.setErrFunc(mlpData.errFunc);
+    const { lr, batchSize, errFunc, label, playSpeed } = mlpData;
+    this.setLr(lr);
+    this.setBatchSize(batchSize);
+    this.setErrFunc(errFunc);
+    this.setLabel(label);
+    this.setPlaySpeed(playSpeed);
     this.resetCoordinates();
-    this.initializeMlp();
-    this.origin.import(mlpData.parameters);
-    // this.destroyMlp();
+    this.toggleMlp();
+    const { parameters, stepCounter, epoch } = mlpData;
+    this.origin.import(parameters, stepCounter, epoch);
   }
 }
