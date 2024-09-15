@@ -16,6 +16,7 @@ class MlpView extends Playable {
 
   setInputComponent(component) {
     this.inputComponent = component;
+    mainOrganizer.removeComponent(component);
     this.checkCompleted();
   }
 
@@ -25,6 +26,7 @@ class MlpView extends Playable {
 
   setOutputComponent(component) {
     this.outputComponent = component;
+    mainOrganizer.removeComponent(component);
     this.checkCompleted();
   }
 
@@ -33,11 +35,13 @@ class MlpView extends Playable {
   }
 
   clearInput() {
+    mainOrganizer.addComponent(this.inputComponent);
     this.inputComponent = null;
     this.checkCompleted();
   }
 
   clearOutput() {
+    mainOrganizer.addComponent(this.outputComponent);
     this.outputComponent = null;
     this.checkCompleted();
   }
@@ -171,12 +175,22 @@ class MlpView extends Playable {
     this.updateButtonsCoordinates();
   }
 
+  getLayerReversed() {
+    return reverseArray(this.getLayers());
+  }
+
   getPressables() {
+    const pressables = this.getLayerReversed().flatMap((layer) =>
+      layer.getPressables(),
+    );
+
     return [
-      ...this.getLayers().flatMap((l) => l.getPressables()),
+      this.getInput(),
+      ...pressables,
+      this.getOutput(),
       ...this.controlButtons,
       this,
-    ];
+    ].filter(Boolean);
   }
 
   resetCoordinates() {
@@ -219,7 +233,8 @@ class MlpView extends Playable {
   }
 
   handleDoubleClicked() {
-    this.getLayers().forEach((layer) => layer.doubleClicked());
+    this.getLayerReversed().forEach((l) => l.doubleClicked());
+
     if (this.isInactive() || iManager.isBusy()) {
       iManager.handleRelease();
       return;
@@ -330,7 +345,9 @@ class MlpView extends Playable {
       this.isPropsShown() && this.showProps();
       this.controlButtons.forEach((btn) => btn.draw());
     }
+    this.inputComponent?.draw();
     this.getLayers().forEach((layer) => layer.draw());
+    this.outputComponent?.draw();
   }
 
   export() {

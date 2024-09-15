@@ -148,6 +148,10 @@ function removeClass(el, classList) {
   el.classList.remove(classList);
 }
 
+function reverseArray(array) {
+  return array.slice().reverse();
+}
+
 function convertSetsToArrays(obj) {
   if (obj instanceof Set) {
     return Array.from(obj);

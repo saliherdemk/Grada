@@ -35,4 +35,21 @@ class Component extends FunctionalLayerView {
     this.destroy();
     mainOrganizer.removeComponent(this);
   }
+
+  handleDoubleClicked() {
+    this.doubleClicked();
+  }
+
+  replace(layer) {
+    const isShrank = layer.isShrank();
+    const neuronsNum = isShrank
+      ? layer.getShownNeuronsNum()
+      : layer.getNeuronNum();
+
+    this[isShrank ? "shrink" : "expand"]();
+    this.setShownNeuronsNum(neuronsNum);
+
+    this.setLabel(layer.label);
+    this.postUpdateCoordinates();
+  }
 }

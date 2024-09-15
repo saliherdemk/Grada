@@ -72,7 +72,7 @@ class InteractionManager {
   handlePress() {
     if (mainOrganizer.isDisabled()) return;
 
-    mainOrganizer.getAll().forEach((el) => {
+    reverseArray(mainOrganizer.getAll()).forEach((el) => {
       el.getPressables().forEach((p) => p.handlePressed());
     });
 
@@ -99,7 +99,9 @@ class InteractionManager {
 
   handleDoubleClicked() {
     if (mainOrganizer.isDisabled()) return;
-    mainOrganizer.mlpViews.forEach((mlpView) => mlpView.handleDoubleClicked());
+    reverseArray(mainOrganizer.getAll()).forEach((el) =>
+      el.handleDoubleClicked(),
+    );
   }
 
   isHovered(obj) {
