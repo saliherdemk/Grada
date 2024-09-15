@@ -9,6 +9,7 @@ class MlpView extends Playable {
     this.lr = 0.1;
     this.batchSize = 1;
     this.errFunc = "mse";
+    this.mode = "train";
     this.propsShown = false;
     this.selected = false;
   }
@@ -80,6 +81,20 @@ class MlpView extends Playable {
   setBatchSize(batchSize) {
     this.batchSize = batchSize;
     this.origin?.setBatchSize(batchSize);
+  }
+
+  handleSetMode(mode) {
+    this.setMode(mode);
+    this.checkCompleted();
+  }
+
+  setMode(mode) {
+    this.mode = mode;
+    this.origin?.setMode(mode);
+  }
+
+  getMode() {
+    return this.mode;
   }
 
   setLayers(layers) {
@@ -246,16 +261,14 @@ class MlpView extends Playable {
     return { totalParams, stepCounter, epoch };
   }
 
-  showProps() {
+  getTrainCommands() {
     const x = this.x + 5;
     const y = this.y + this.h;
-    const { playSpeed, lr, errFunc, batchSize } = this.getProps();
-    const { totalParams, stepCounter, epoch } = this.getOriginProps();
+    const { playSpeed, lr, batchSize } = this.getProps();
+    const { stepCounter, epoch } = this.getOriginProps();
     const commands = [
       { func: "text", args: [`Learning Rate: ${lr}`, x, y + 60] },
       { func: "text", args: [`Play Speed: ${playSpeed} ms`, x + 125, y + 60] },
-      { func: "text", args: [errFunc, this.x + this.w - 35, y - 10] },
-      { func: "text", args: [`Total Parameters: ${totalParams}\n`, x, y - 10] },
       {
         func: "text",
         args: [
@@ -266,7 +279,38 @@ class MlpView extends Playable {
       },
     ];
 
-    executeDrawingCommands(commands);
+    return commands;
+  }
+
+  getEvalCommands() {
+    const x = this.x + 5;
+    const y = this.y + this.h;
+    const { playSpeed } = this.getProps();
+    return [
+      {
+        func: "text",
+        args: [`Mode: eval\nPlay Speed: ${playSpeed} ms`, x, y + 15],
+      },
+    ];
+  }
+
+  showProps() {
+    const { errFunc } = this.getProps();
+    const { totalParams } = this.getOriginProps();
+
+    const x = this.x + 5;
+    const y = this.y + this.h;
+    const common = [
+      { func: "text", args: [errFunc, x + this.w - 35, y - 10] },
+      { func: "text", args: [`Total Parameters: ${totalParams}\n`, x, y - 10] },
+    ];
+
+    const commands =
+      this.getMode() == "train"
+        ? this.getTrainCommands()
+        : this.getEvalCommands();
+
+    executeDrawingCommands([...commands, ...common]);
   }
 
   show() {
@@ -310,6 +354,7 @@ class MlpView extends Playable {
     this.setErrFunc(errFunc);
     this.setLabel(label);
     this.setPlaySpeed(playSpeed);
+    this.setMode("eval");
     this.resetCoordinates();
     this.toggleMlp();
     const { parameters, stepCounter, epoch } = mlpData;

@@ -66,12 +66,15 @@ class Playable extends Draggable {
   }
 
   checkCompleted() {
+    const isEval = this.getMode() == "eval";
+    this.pause();
     this.updateStatus(
       +(
         this.getInput() instanceof InputLayer &&
-        this.getOutput() instanceof OutputLayer
+        (isEval || this.getOutput() instanceof OutputLayer)
       ),
     );
+
     if (!this.origin) return;
     this.origin.recordNum =
       this.getStatus() == 1 ? this.getInput().recordNum : 0;
@@ -179,6 +182,10 @@ class Playable extends Draggable {
 
   setPlaySpeed(ms) {
     this.playSpeed = ms;
+    this.reboot();
+  }
+
+  reboot() {
     if (this.playInterval) {
       this.pause();
       this.play();
@@ -199,12 +206,12 @@ class Playable extends Draggable {
 
   executeOnce() {
     const inputValues = this.getInput().setValues();
-    const outputValues = this.getOutput().setValues();
+    const outputValues = this.getOutput()?.setValues() ?? null;
     this.origin.goOneCycle(inputValues, outputValues);
   }
 
   fetchNext() {
     this.getInput().fetchNext();
-    this.getOutput().fetchNext();
+    this.getOutput()?.fetchNext();
   }
 }

@@ -8,6 +8,7 @@ class MLP {
     this.stepCounter = 0;
     this.recordNum = 0;
     this.epoch = 0;
+    this.mode = "train";
     this.currentLoss = new Value(0);
   }
 
@@ -56,6 +57,10 @@ class MLP {
     this.batchSize = batchSize;
   }
 
+  setMode(mode) {
+    this.mode = mode;
+  }
+
   addLayer(layer) {
     this.layers.push(layer);
   }
@@ -72,12 +77,18 @@ class MLP {
     return this.layers.flatMap((layer) => layer.parameters());
   }
 
-  goOneCycle(trainXData, trainYData) {
-    const predict = this.predict(trainXData);
+  goOneEval(xData, yData) {
+    const predict = this.predict(xData);
+    if (yData !== null) {
+      // this is for eval loss graph
+    }
+  }
 
+  goOneTrain(xData, yData) {
+    const predict = this.predict(xData);
     if (++this.stepCounter % this.recordNum === 0) this.epoch++;
 
-    this.currentLoss = this.currentLoss.add(this.errFunc(predict, trainYData));
+    this.currentLoss = this.currentLoss.add(this.errFunc(predict, yData));
 
     if (this.stepCounter % this.batchSize !== 0) return;
 
@@ -87,6 +98,12 @@ class MLP {
     this.currentLoss.backprop();
     this.getParameters().forEach((p) => (p.data += -this.lr * p.grad));
     this.currentLoss = new Value(0);
+  }
+
+  goOneCycle(xData, yData) {
+    this.mode == "eval"
+      ? this.goOneEval(xData, yData)
+      : this.goOneTrain(xData, yData);
   }
 
   train(x_train, y_train, epochs) {

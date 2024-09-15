@@ -62,32 +62,26 @@
         <label for="mlp-batch-size">Batch Size</label><br />
         <input id="mlp-batch-size" type="range" value="" max="128" min="1" />
       </div>
+
       <div>
         <label for="mlp-play-speed">Play Speed (ms)</label> <br />
-        <div id="mlp-play-speed">
-          <input type="radio" id="0ms" name="mlp-play-speed" value="0" />
-          <label for="0ms">0</label>
-
-          <input type="radio" id="50ms" name="mlp-play-speed" value="50" />
-          <label for="50ms">50</label>
-
-          <input type="radio" id="100ms" name="mlp-play-speed" value="100" />
-          <label for="100ms">100</label><br />
-
-          <input type="radio" id="200ms" name="mlp-play-speed" value="200" />
-          <label for="200ms">200</label>
-
-          <input type="radio" id="500ms" name="mlp-play-speed" value="500" />
-          <label for="500ms">500</label>
-
-          <input type="radio" id="1000ms" name="mlp-play-speed" value="1000" />
-          <label for="1000ms">1000</label>
-        </div>
+        <input id="mlp-play-speed" type="range" value="" max="2000" min="0" />
       </div>
 
       <div class="flex-center">
         Error Func:
         <select id="err-function-select" class="inp"></select>
+      </div>
+
+      <div>
+        <div id="mlp-mode">
+          Mode:
+          <input type="radio" id="mode-eval" name="mlp-mode" value="eval" />
+          <label for="mode-eval">eval</label>
+
+          <input type="radio" id="mode-train" name="mlp-mode" value="train" />
+          <label for="mode-train">train</label>
+        </div>
       </div>
 
       <button id="toggle-mlp-props" class="btn btn-cyan" type="button">
