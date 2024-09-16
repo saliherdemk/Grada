@@ -188,6 +188,7 @@ body {
 }
 
 .btn {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -201,6 +202,34 @@ body {
     font-weight: 700;
     color: var(--white);
     cursor: pointer;
+}
+
+.btn[loading="true"] {
+    opacity: 0.8;
+    pointer-events: none;
+    color: transparent
+}
+
+.btn[loading="true"]::after {
+    content: '';
+    border: 2px solid transparent;
+    border-top-color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    animation: spinner 0.8s linear infinite;
+}
+
+
+@keyframes spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .btn-sky {
@@ -335,6 +364,7 @@ body {
 .flex-between {
     display: flex;
     justify-content: space-between;
+    align-items: center
 }
 
 .control-container {
@@ -361,7 +391,7 @@ body {
 }
 
 #datasets-container.active {
-    height: 800px;
+    height: 300px;
 }
 
 #datasets-container div:first-child {

@@ -30,7 +30,7 @@ function getElementById(el) {
 function setElementProperties(elId, properties) {
   const el = getElementById(elId);
   for (let prop in properties) {
-    el[prop] = properties[prop];
+    el.setAttribute(prop, properties[prop]);
   }
 }
 
@@ -193,6 +193,7 @@ function downloadJSON(obj, filename) {
 }
 
 function createMNIST() {
+  setElementProperties("mnist-button", { loading: "true" });
   fetch("../Data/new.json")
     .then((response) => {
       if (!response.ok) {
@@ -205,5 +206,12 @@ function createMNIST() {
     })
     .catch((error) => {
       alert(error);
+    })
+    .finally(() => {
+      setElementProperties("mnist-button", { loading: "false" });
     });
+}
+
+function toggleDatasetMode() {
+  tableOrganizer.toggleMode();
 }

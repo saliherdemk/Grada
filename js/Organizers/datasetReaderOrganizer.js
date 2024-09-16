@@ -4,7 +4,7 @@ class DatasetReaderOrganizer {
   }
 
   initialize() {
-    addEventToElement("import-dataset", "input", async (event) => {
+    addEventToElement("import-dataset-container", "input", async (event) => {
       const fileInput = event.target;
       const files = fileInput.files;
       if (!files.length) return;

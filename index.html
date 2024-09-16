@@ -176,7 +176,7 @@
       </div>
 
       <div id="create-dataset-container" onclick="event.stopPropagation()">
-        <div id="dataset-control-container">
+        <div class="flex-end">
           <img
             id="create-dataset-close"
             class="cancel-icon"
@@ -188,11 +188,37 @@
           />
         </div>
         <div id="scrollable-container"></div>
-
-        <div class="flex-between">
-          <button class="btn btn-cyan" type="" onclick="createMNIST()">
-            MNIST
+        <div id="edit-dataset-container">edit</div>
+        <div id="import-dataset-container">
+          <label id="custom-image" for="upload-photo">
+            <img src="./media/upload.png" alt="" width="100" height="100" />
+            Import Dataset
+          </label>
+          <input
+            type="file"
+            id="upload-photo"
+            accept="image/*"
+            onchange="uploadImage(event)"
+          />
+          <button
+            id="mnist-button"
+            class="btn btn-cyan"
+            onclick="createMNIST()"
+          >
+            Continue with MNIST
           </button>
+        </div>
+        <div class="flex-between">
+          <input
+            type="checkbox"
+            class="dataset-checkbox"
+            id="chk"
+            onchange="toggleDatasetMode()"
+          />
+          <label class="label" for="chk">
+            <div class="ball"></div>
+          </label>
+
           <button class="btn btn-blue" type="" onclick="handleCreateDataset()">
             Create
           </button>
@@ -210,7 +236,6 @@
         />
       </div>
       <div id="datasets-container" class="active">
-        <input type="file" id="import-dataset" accept=".json" />
         <div>Datasets</div>
         <div id="dataset-scrollable"></div>
         <button onclick="openCreateDataset()" class="btn btn-sky">

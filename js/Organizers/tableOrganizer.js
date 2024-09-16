@@ -4,7 +4,49 @@ class TableOrganizer {
     this.yData = [];
     this.xLabels = [];
     this.yLabels = [];
+    this.mode = 1;
   }
+
+  setMode(mode) {
+    this.mode = mode;
+    this.setLayout();
+  }
+
+  toggleMode() {
+    this.mode = +!this.mode;
+    this.setLayout();
+  }
+
+  reset() {
+    this.xData = [];
+    this.yData = [];
+    this.xLabels = [];
+    this.yLabels = [];
+    addClass(getElementById("scrollable-container"), "hidden");
+    addClass(getElementById("edit-dataset-container"), "hidden");
+    addClass(getElementById("import-dataset-container"), "hidden");
+  }
+
+  setLayout() {
+    this.reset();
+    switch (this.mode) {
+      case 0:
+        removeClass(getElementById("import-dataset-container"), "hidden");
+        this.setImportLayout();
+        break;
+      case 1:
+        removeClass(getElementById("scrollable-container"), "hidden");
+        this.initializeTable();
+        break;
+      case 2:
+        removeClass(getElementById("edit-dataset-container"), "hidden");
+        break;
+      default:
+        break;
+    }
+  }
+
+  setImportLayout() {}
 
   createTable() {
     const container = document.getElementById("scrollable-container");
@@ -223,8 +265,8 @@ class TableOrganizer {
   }
 
   enable() {
-    this.initializeTable();
-    getElementById("create-dataset-container").style.display = "initial";
+    this.setLayout();
+    getElementById("create-dataset-container").style.display = "flex";
     mainOrganizer.disable();
   }
 
@@ -275,7 +317,7 @@ class TableOrganizer {
     }
   }
 
-  setPreparedDataset(data, name) {
+  setPreparedDataset(data) {
     const [x, y] = Object.values(data);
     this.xData = x;
     this.yData = y;
@@ -283,7 +325,7 @@ class TableOrganizer {
     this.xLabels = this.xData.map((_, i) => "X" + i);
     this.yLabels = this.yData.map((_, i) => "Y" + i);
 
-    datasetOrganizer.addDataset(new Dataset(name, this.getData()));
+    this.setMode(2);
   }
 
   setData() {
