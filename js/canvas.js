@@ -7,6 +7,7 @@ let datasetOrganizer;
 let themeManager;
 let actFuncManager;
 let errFuncManager;
+let datasetReaderOrganizer;
 
 let canvasManager;
 
@@ -23,6 +24,7 @@ let mainSketch = function (p) {
     datasetOrganizer = new DatasetOrganizer();
     actFuncManager = new ActivationFunctionManager();
     errFuncManager = new ErrorFunctionManager();
+    datasetReaderOrganizer = new DatasetReaderOrganizer();
   };
 
   p.draw = function () {

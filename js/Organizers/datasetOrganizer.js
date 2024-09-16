@@ -15,10 +15,8 @@ class DatasetOrganizer {
     btn.classList.add("btn", "btn-gray");
   }
 
-  addDataset(name, data) {
-    const id = this.getDatasetId();
-    this.datasets.push(new Dataset(id, name, data));
-    this.createButtonForDataset(name, id);
+  addDataset(dataset) {
+    this.datasets.push(dataset);
   }
 
   getDatasetId() {

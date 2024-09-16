@@ -1,13 +1,13 @@
 class Dataset {
-  constructor(id, name, data) {
-    this.id = id;
+  constructor(name, data, fromFile = false) {
+    this.id = datasetOrganizer.getDatasetId();
     this.name = name;
     this.trainX = [];
     this.trainY = [];
     this.trainXLabels = [];
     this.trainYLabels = [];
     this.recordNum = 0;
-    this.setData(data);
+    fromFile ? this.setDataFromFile(data) : this.setData(data);
   }
 
   getXLabels() {
@@ -46,6 +46,21 @@ class Dataset {
     this.name = name;
   }
 
+  setDataFromFile(data) {
+    this.trainX = data.xDatas.map((_x) => _x.flat());
+    this.trainY = data.yDatas.map((y) => (y instanceof Array ? y : [y]));
+    this.recordNum = this.trainY.length;
+    this.trainXLabels = Array.from(
+      { length: this.recordNum },
+      (_, i) => `X${i + 1}`,
+    );
+    this.trainYLabels = Array.from(
+      { length: this.trainY[0].length },
+      (_, i) => `Y${i + 1}`,
+    );
+    datasetOrganizer.createButtonForDataset(this.name, this.id);
+  }
+
   setData(data) {
     const labelIndexes = data.pop();
     for (let i = 0; i < data.length; i++) {
@@ -74,5 +89,6 @@ class Dataset {
       yValues.length && this.trainY.push(yValues);
     }
     this.recordNum = data.length - 1;
+    datasetOrganizer.createButtonForDataset(this.name, this.id);
   }
 }

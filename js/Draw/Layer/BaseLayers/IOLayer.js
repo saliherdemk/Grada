@@ -20,6 +20,7 @@ class IOLayer extends Component {
 
   adjustNeurons() {
     const neuronNum = this.batch[0].length;
+    console.log(this.batch);
     this.adjustNeuronNum(neuronNum);
     this.setShownNeuronsNum(neuronNum > 4 ? 4 : neuronNum);
   }

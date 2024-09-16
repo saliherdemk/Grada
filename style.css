@@ -355,7 +355,7 @@ body {
 }
 
 #datasets-container.active {
-    height: 300px;
+    height: 800px;
 }
 
 #datasets-container div:first-child {

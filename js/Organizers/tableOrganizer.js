@@ -52,7 +52,7 @@ class TableOrganizer {
     }
     data.push(labelColIndexes);
 
-    datasetOrganizer.addDataset(name, data);
+    datasetOrganizer.addDataset(new Dataset(name, data));
   }
 
   getTableProps() {
