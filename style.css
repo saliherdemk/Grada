@@ -331,6 +331,12 @@ body {
     justify-content: end;
 }
 
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+}
+
 .control-container {
     position: absolute;
     bottom: 0;

@@ -3,8 +3,8 @@ class IOLayer extends Component {
     super(_x, _y, 350);
     this.datasetId = datasetId;
     this.currentIndex = -2; // FIXME explain why it's -2 if ur not slothful
-    this.datasetId = datasetId;
-    this.recordNum = this.getDataset().recordNum;
+    this.recordNum = this.getDataset().shape[0];
+    this.shape = this.getDataset().shape;
   }
 
   updateButtons(hide) {
@@ -68,12 +68,7 @@ class IOLayer extends Component {
       { func: "textAlign", args: [CENTER, CENTER] },
       {
         func: "text",
-        args: [
-          `Total Record: ${this.recordNum}`,
-          this.x,
-          this.y + this.h - 10,
-          this.w,
-        ],
+        args: [`Shape: ${this.shape}`, this.x, this.y + this.h - 10, this.w],
       },
     ];
     executeDrawingCommands(commands);

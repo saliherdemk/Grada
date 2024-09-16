@@ -1,5 +1,10 @@
 class TableOrganizer {
-  constructor() {}
+  constructor() {
+    this.xData = [];
+    this.yData = [];
+    this.xLabels = [];
+    this.yLabels = [];
+  }
 
   createTable() {
     const container = document.getElementById("scrollable-container");
@@ -28,31 +33,6 @@ class TableOrganizer {
     });
 
     container.appendChild(table);
-  }
-
-  createDataset() {
-    const { table, rowCount, colCount } = this.getTableProps();
-    const name = getElementById("dataset-name-inp").value;
-    const data = [];
-    const labelColIndexes = [];
-
-    for (const [key, value] of Object.entries(table.rows[0].cells)) {
-      if (value.getAttribute("selected") == "true") {
-        labelColIndexes.push(key - 1);
-      }
-    }
-
-    for (let i = 1; i < rowCount - 1; i++) {
-      const values = [];
-      for (let j = 1; j < colCount; j++) {
-        const cellInput = table.rows[i].cells[j].querySelector("input");
-        values.push(cellInput.value);
-      }
-      data.push(values);
-    }
-    data.push(labelColIndexes);
-
-    datasetOrganizer.addDataset(new Dataset(name, data));
   }
 
   getTableProps() {
@@ -91,35 +71,9 @@ class TableOrganizer {
     return { addRowBtn, addColBtn };
   }
 
-  setXorValues() {
-    Array.from({ length: 4 }).forEach(() => this.addRow());
-    Array.from({ length: 2 }).forEach(() => this.addColumn());
-
-    setElementProperties("dataset-name-inp", { value: "XOR" });
-
-    const { table, rowCount } = this.getTableProps();
-    table.rows[1].cells[1].querySelector("input").value = "X1";
-    table.rows[1].cells[2].querySelector("input").value = "X2";
-    table.rows[1].cells[3].querySelector("input").value = "Y";
-    table.rows[0].cells[3].setAttribute("selected", "true");
-
-    this.setLabelsIcon();
-    for (let i = 2; i < rowCount - 1; i++) {
-      const cells = table.rows[i].cells;
-      for (let j = 1; j < cells.length; j++) {
-        const cellInput = cells[j].querySelector("input");
-        if (
-          i == 2 ||
-          (j == 1 && i == 3) ||
-          (j == 2 && i == 4) ||
-          (j == 3 && i == 5)
-        ) {
-          cellInput.value = "0";
-        } else {
-          cellInput.value = "1";
-        }
-      }
-    }
+  setTableInputValue(rowIndex, cellIndex, value) {
+    const { table } = this.getTableProps();
+    table.rows[rowIndex].cells[cellIndex].querySelector("input").value = value;
   }
 
   createInput(value = "0") {
@@ -278,5 +232,105 @@ class TableOrganizer {
     getElementById("scrollable-container").innerHTML = "";
     getElementById("create-dataset-container").style.display = "none";
     mainOrganizer.enable();
+  }
+
+  getData() {
+    return { x: this.xData, y: this.yData, xL: this.xLabels, yL: this.yLabels };
+  }
+
+  createDataset() {
+    this.setData();
+    const name = getElementById("dataset-name-inp").value;
+    datasetOrganizer.addDataset(new Dataset(name, this.getData()));
+  }
+
+  setXorValues() {
+    Array.from({ length: 4 }).forEach(() => this.addRow());
+    Array.from({ length: 2 }).forEach(() => this.addColumn());
+
+    setElementProperties("dataset-name-inp", { value: "XOR" });
+
+    const { table, rowCount } = this.getTableProps();
+    table.rows[1].cells[1].querySelector("input").value = "X1";
+    table.rows[1].cells[2].querySelector("input").value = "X2";
+    table.rows[1].cells[3].querySelector("input").value = "Y";
+    table.rows[0].cells[3].setAttribute("selected", "true");
+
+    this.setLabelsIcon();
+    for (let i = 2; i < rowCount - 1; i++) {
+      const cells = table.rows[i].cells;
+      for (let j = 1; j < cells.length; j++) {
+        const cellInput = cells[j].querySelector("input");
+        if (
+          i == 2 ||
+          (j == 1 && i == 3) ||
+          (j == 2 && i == 4) ||
+          (j == 3 && i == 5)
+        ) {
+          cellInput.value = "0";
+        } else {
+          cellInput.value = "1";
+        }
+      }
+    }
+  }
+
+  setPreparedDataset(data, name) {
+    const [x, y] = Object.values(data);
+    this.xData = x;
+    this.yData = y;
+
+    this.xLabels = this.xData.map((_, i) => "X" + i);
+    this.yLabels = this.yData.map((_, i) => "Y" + i);
+
+    datasetOrganizer.addDataset(new Dataset(name, this.getData()));
+  }
+
+  setData() {
+    const labelIndexes = [];
+    const { table, rowCount, colCount } = this.getTableProps();
+
+    for (const [key, value] of Object.entries(table.rows[0].cells)) {
+      if (value.getAttribute("selected") == "true") {
+        labelIndexes.push(key - 1);
+      }
+    }
+
+    const data = [];
+
+    for (let i = 1; i < rowCount - 1; i++) {
+      const values = [];
+      for (let j = 1; j < colCount; j++) {
+        const cellInput = table.rows[i].cells[j].querySelector("input");
+        values.push(cellInput.value);
+      }
+      data.push(values);
+    }
+
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      const xValues = [];
+      const yValues = [];
+
+      for (let j = 0; j < row.length; j++) {
+        const value = row[j];
+        if (i == 0) {
+          if (labelIndexes.includes(j)) {
+            this.yLabels.push(value);
+            continue;
+          }
+          this.xLabels.push(value);
+          continue;
+        }
+
+        if (labelIndexes.includes(j)) {
+          yValues.push(value);
+          continue;
+        }
+        xValues.push(value);
+      }
+      xValues.length && this.xData.push(xValues);
+      yValues.length && this.yData.push(yValues);
+    }
   }
 }

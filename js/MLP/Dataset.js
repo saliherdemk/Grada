@@ -1,26 +1,25 @@
 class Dataset {
-  constructor(name, data, fromFile = false) {
+  constructor(name, data) {
     this.id = datasetOrganizer.getDatasetId();
     this.name = name;
-    this.trainX = [];
-    this.trainY = [];
-    this.trainXLabels = [];
-    this.trainYLabels = [];
-    this.recordNum = 0;
-    fromFile ? this.setDataFromFile(data) : this.setData(data);
+    this.x = [];
+    this.y = [];
+    this.xLabels = [];
+    this.yLabels = [];
+    this.shape;
+    this.setData(data);
   }
 
   getXLabels() {
-    return this.trainXLabels;
+    return this.xLabels;
   }
 
   getYLabels() {
-    return this.trainYLabels;
+    return this.yLabels;
   }
 
   getBatch(index, batchSize = 100) {
-    const trainX = this.getTrainX();
-    const trainY = this.getTrainY();
+    const trainX = this.x;
     const batchX = [];
     const batchY = [];
     index = Math.max(-1, index);
@@ -28,67 +27,41 @@ class Dataset {
     for (let _ = 0; _ < batchSize; _++) {
       index = (index + 1) % trainX.length;
       batchX.push(trainX[index]);
-      batchY.push(trainY[index]);
+      batchY.push(this.y[index]);
     }
 
     return { batchX, batchY };
-  }
-
-  getTrainX() {
-    return this.trainX;
-  }
-
-  getTrainY() {
-    return this.trainY;
   }
 
   setName(name) {
     this.name = name;
   }
 
-  setDataFromFile(data) {
-    this.trainX = data.xDatas.map((_x) => _x.flat());
-    this.trainY = data.yDatas.map((y) => (y instanceof Array ? y : [y]));
-    this.recordNum = this.trainY.length;
-    this.trainXLabels = Array.from(
-      { length: this.recordNum },
-      (_, i) => `X${i + 1}`,
-    );
-    this.trainYLabels = Array.from(
-      { length: this.trainY[0].length },
-      (_, i) => `Y${i + 1}`,
-    );
-    datasetOrganizer.createButtonForDataset(this.name, this.id);
+  // flattenArray(arr) {
+  //   return arr.reduce((acc, item) => {
+  //     return acc.concat(Array.isArray(item) ? this.flattenArray(item) : item);
+  //   }, []);
+  // }
+
+  getShape(arr) {
+    const shape = [];
+    let currentArray = arr;
+
+    while (Array.isArray(currentArray)) {
+      shape.push(currentArray.length);
+      currentArray = currentArray[0];
+    }
+
+    return shape;
   }
 
   setData(data) {
-    const labelIndexes = data.pop();
-    for (let i = 0; i < data.length; i++) {
-      const row = data[i];
-      const xValues = [];
-      const yValues = [];
+    this.x = data.x;
+    this.y = data.y.map((_y) => (_y instanceof Array ? _y : [_y]));
+    this.xLabels = data.xL;
+    this.yLabels = data.yL;
 
-      for (let j = 0; j < row.length; j++) {
-        const value = row[j];
-        if (i == 0) {
-          if (labelIndexes.includes(j)) {
-            this.trainYLabels.push(value);
-            continue;
-          }
-          this.trainXLabels.push(value);
-          continue;
-        }
-
-        if (labelIndexes.includes(j)) {
-          yValues.push(value);
-          continue;
-        }
-        xValues.push(value);
-      }
-      xValues.length && this.trainX.push(xValues);
-      yValues.length && this.trainY.push(yValues);
-    }
-    this.recordNum = data.length - 1;
+    this.shape = this.getShape(this.x);
     datasetOrganizer.createButtonForDataset(this.name, this.id);
   }
 }

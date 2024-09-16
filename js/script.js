@@ -191,3 +191,19 @@ function downloadJSON(obj, filename) {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
+
+function createMNIST() {
+  fetch("../Data/new.json")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      tableOrganizer.setPreparedDataset(data, "MNIST");
+    })
+    .catch((error) => {
+      alert(error);
+    });
+}
