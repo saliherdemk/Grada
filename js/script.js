@@ -31,6 +31,7 @@ function setElementProperties(elId, properties) {
   const el = getElementById(elId);
   for (let prop in properties) {
     el.setAttribute(prop, properties[prop]);
+    el[prop] = properties[prop];
   }
 }
 
@@ -113,10 +114,6 @@ function scaleCanvas(event) {
   iManager.scaleFactor = newScaleFactor;
 }
 
-function handleCreateDataset() {
-  tableOrganizer.createDataset();
-}
-
 function createButton(parentId = null) {
   const btn = document.createElement("button");
   const parent = getElementById(parentId);
@@ -192,26 +189,19 @@ function downloadJSON(obj, filename) {
   URL.revokeObjectURL(url);
 }
 
-function createMNIST() {
-  setElementProperties("mnist-button", { loading: "true" });
-  fetch("../Data/new.json")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      tableOrganizer.setPreparedDataset(data, "MNIST");
-    })
-    .catch((error) => {
-      alert(error);
-    })
-    .finally(() => {
-      setElementProperties("mnist-button", { loading: "false" });
-    });
-}
-
 function toggleDatasetMode() {
   tableOrganizer.toggleMode();
+}
+
+function getShape(arr) {
+  const shape = [];
+  let currentArray = arr;
+
+  while (Array.isArray(currentArray)) {
+    shape.push(currentArray.length);
+    currentArray = currentArray[0];
+  }
+  shape.push(1);
+
+  return shape;
 }

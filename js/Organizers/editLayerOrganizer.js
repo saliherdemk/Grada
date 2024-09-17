@@ -47,13 +47,13 @@ class EditLayerOrganizer extends EditOrganizer {
   }
 
   enable(layer) {
-    getElementById("canvas-parent").style.display = "initial";
     this.selected = layer;
     this.selectedCopy = this.createCopy(layer);
     this.eventManager.setShownNeuronsNum(layer.getShownNeuronsNum());
     this.enabled = true;
     this.setup();
     mainOrganizer.disable();
+    removeClass(getElementById("canvas-parent"), "hidden");
   }
 
   createCopy(layer) {
@@ -75,7 +75,6 @@ class EditLayerOrganizer extends EditOrganizer {
     this.selectedCopy.destroy();
     this.selectedCopy = null;
     this.enabled = false;
-    getElementById("canvas-parent").style.display = "none";
     mainOrganizer.enable();
   }
 

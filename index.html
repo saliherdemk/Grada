@@ -188,23 +188,32 @@
           />
         </div>
         <div id="scrollable-container"></div>
-        <div id="edit-dataset-container">edit</div>
+        <div id="edit-dataset-container">
+          <div>
+            Name:
+            <input class="inp" id="edit-dataset-name" type="text" value="" />
+          </div>
+          <br />
+          <div class="flex-center gap-10">
+            xData Shape: <span id="x-shape"></span>
+            <button class="btn btn-blue" id="flat-btn" type="">Flatten</button>
+          </div>
+          <div id="flat-progress-bar"></div>
+          <div class="flex-center gap-10">
+            yData Shape:<span id="y-shape"></span>
+            <button class="btn btn-blue" id="one-hot-encode-btn" type="">
+              One hot Encode
+            </button>
+          </div>
+          <div id="onehot-progress-bar"></div>
+        </div>
         <div id="import-dataset-container">
-          <label id="custom-image" for="upload-photo">
+          <label id="import-dataset" for="import-dataset-inp">
             <img src="./media/upload.png" alt="" width="100" height="100" />
             Import Dataset
           </label>
-          <input
-            type="file"
-            id="upload-photo"
-            accept="image/*"
-            onchange="uploadImage(event)"
-          />
-          <button
-            id="mnist-button"
-            class="btn btn-cyan"
-            onclick="createMNIST()"
-          >
+          <input type="file" id="import-dataset-inp" accept=".json" />
+          <button id="mnist-button" class="btn btn-cyan">
             Continue with MNIST
           </button>
         </div>
@@ -219,9 +228,7 @@
             <div class="ball"></div>
           </label>
 
-          <button class="btn btn-blue" type="" onclick="handleCreateDataset()">
-            Create
-          </button>
+          <button id="create-dataset-btn" class="btn btn-blue">Create</button>
         </div>
       </div>
     </div>
@@ -259,6 +266,10 @@
 
     <script src="js/script.js"></script>
 
+    <script src="js/Workers/flattenWorker.js"></script>
+    <script src="js/Workers/getMaxWorker.js"></script>
+    <script src="js/Workers/oneHotWorker.js"></script>
+
     <script src="js/Managers/themeManager.js"></script>
     <script src="js/Managers/canvasManager.js"></script>
     <script src="js/Managers/interactionManager.js"></script>
@@ -266,13 +277,14 @@
     <script src="js/Managers/activationFunctionManager.js"></script>
     <script src="js/Managers/errorFunctionManager.js"></script>
 
+    <script src="js/Organizers/FunctionalTable.js"></script>
+
     <script src="js/Organizers/tableOrganizer.js"></script>
     <script src="js/Organizers/datasetOrganizer.js"></script>
     <script src="js/Organizers/mainOrganizer.js"></script>
     <script src="js/Organizers/editOrganizer.js"></script>
     <script src="js/Organizers/editLayerOrganizer.js"></script>
     <script src="js/Organizers/editMlpOrganizer.js"></script>
-    <script src="js/Organizers/datasetReaderOrganizer.js"></script>
 
     <script src="js/MLP/Dataset.js"></script>
     <script src="js/MLP/Value.js"></script>

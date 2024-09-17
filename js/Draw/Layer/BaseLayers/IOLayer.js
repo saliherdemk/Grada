@@ -3,8 +3,7 @@ class IOLayer extends Component {
     super(_x, _y, 350);
     this.datasetId = datasetId;
     this.currentIndex = -2; // FIXME explain why it's -2 if ur not slothful
-    this.recordNum = this.getDataset().shape[0];
-    this.shape = this.getDataset().shape;
+    this.recordNum = this.getDataset().getShape().recordNum;
   }
 
   updateButtons(hide) {
@@ -20,7 +19,6 @@ class IOLayer extends Component {
 
   adjustNeurons() {
     const neuronNum = this.batch[0].length;
-    console.log(this.batch);
     this.adjustNeuronNum(neuronNum);
     this.setShownNeuronsNum(neuronNum > 4 ? 4 : neuronNum);
   }

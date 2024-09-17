@@ -28,7 +28,7 @@ td {
     border-radius: 10px;
     padding: 10px;
     box-shadow: 0px 1px 10px #999;
-    display: none;
+    display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
@@ -221,7 +221,7 @@ td {
 }
 
 
-#custom-image {
+#import-dataset {
     width: 100%;
     cursor: pointer;
     color: white;
@@ -236,15 +236,13 @@ td {
 
 }
 
-
-#custom-image:hover {
+#import-dataset:hover {
     scale: 1.2;
     background-size: 100px 100px;
     color: transparent;
-
 }
 
-#upload-photo {
+#import-dataset-inp {
     opacity: 0;
     position: absolute;
     z-index: -1;
@@ -255,4 +253,39 @@ td {
     flex-direction: column;
     justify-content: center;
     gap: 20px;
+}
+
+#edit-dataset-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px
+}
+
+#edit-dataset-container .inp {
+    width: 200px;
+
+}
+
+#import-dataset[loading="true"] {
+    opacity: 0.8;
+    pointer-events: none;
+    color: transparent
+}
+
+#import-dataset[loading="true"]::after {
+    content: '';
+    border: 2px solid transparent;
+    border-top-color: black;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    animation: spinner 0.8s linear infinite;
+}
+
+#create-dataset-container[loading="true"]>*:not(:first-child) {
+    opacity: 0.8;
+    pointer-events: none;
 }

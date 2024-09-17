@@ -6,7 +6,8 @@ class Dataset {
     this.y = [];
     this.xLabels = [];
     this.yLabels = [];
-    this.shape;
+    this.shapeX = [];
+    this.shapeY = [];
     this.setData(data);
   }
 
@@ -16,6 +17,14 @@ class Dataset {
 
   getYLabels() {
     return this.yLabels;
+  }
+
+  getShape() {
+    return {
+      shapeX: this.shapeX,
+      shapeY: this.shapeY,
+      recordNum: this.shapeY[0],
+    };
   }
 
   getBatch(index, batchSize = 100) {
@@ -37,31 +46,14 @@ class Dataset {
     this.name = name;
   }
 
-  // flattenArray(arr) {
-  //   return arr.reduce((acc, item) => {
-  //     return acc.concat(Array.isArray(item) ? this.flattenArray(item) : item);
-  //   }, []);
-  // }
-
-  getShape(arr) {
-    const shape = [];
-    let currentArray = arr;
-
-    while (Array.isArray(currentArray)) {
-      shape.push(currentArray.length);
-      currentArray = currentArray[0];
-    }
-
-    return shape;
-  }
-
   setData(data) {
     this.x = data.x;
     this.y = data.y.map((_y) => (_y instanceof Array ? _y : [_y]));
     this.xLabels = data.xL;
     this.yLabels = data.yL;
 
-    this.shape = this.getShape(this.x);
+    this.shapeX = getShape(this.x);
+    this.shapeY = getShape(this.y);
     datasetOrganizer.createButtonForDataset(this.name, this.id);
   }
 }

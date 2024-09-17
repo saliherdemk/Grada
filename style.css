@@ -98,7 +98,7 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.2);
-    display: none;
+    display: flex;
     z-index: 99;
 }
 
@@ -107,7 +107,6 @@ body {
     width: 500px;
     height: 500px;
     filter: drop-shadow(0 1px 10px #999);
-    display: none;
 }
 
 #layer-settings-container {
@@ -377,6 +376,10 @@ body {
     flex-direction: column;
     border-radius: 10px;
     overflow: hidden;
+}
+
+.gap-10 {
+    gap: 10px
 }
 
 #datasets-container {

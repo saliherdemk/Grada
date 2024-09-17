@@ -5,15 +5,20 @@ class MainOrganizer {
     this.mlpViews = [];
     this.mainDisabled = false;
     this.setImages();
+    this.enable();
   }
 
   enable() {
-    getElementById("disable-background").style.display = "none";
+    const parent = getElementById("disable-background");
+    addClass(parent, "hidden");
+    parent.children.forEach((c) => removeClass(c, "hidden"));
     this.mainDisabled = false;
   }
 
   disable() {
-    getElementById("disable-background").style.display = "flex";
+    const parent = getElementById("disable-background");
+    removeClass(parent, "hidden");
+    parent.children.forEach((c) => addClass(c, "hidden"));
     this.mainDisabled = true;
   }
 

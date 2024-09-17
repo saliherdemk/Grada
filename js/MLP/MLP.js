@@ -93,7 +93,6 @@ class MLP {
     if (this.stepCounter % this.batchSize !== 0) return;
 
     this.currentLoss = this.currentLoss.div(this.batchSize);
-    console.log(this.currentLoss);
     this.getParameters().forEach((p) => (p.grad = 0.0));
     this.currentLoss.backprop();
     this.getParameters().forEach((p) => (p.data += -this.lr * p.grad));
