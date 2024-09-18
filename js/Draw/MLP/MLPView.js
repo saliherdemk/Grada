@@ -176,7 +176,9 @@ class MlpView extends Playable {
   }
 
   getLayerReversed() {
-    return reverseArray(this.getLayers());
+    return reverseArray(
+      [this.getInput(), ...this.getLayers(), this.getOutput()].filter(Boolean),
+    );
   }
 
   getPressables() {
@@ -184,13 +186,7 @@ class MlpView extends Playable {
       layer.getPressables(),
     );
 
-    return [
-      this.getInput(),
-      ...pressables,
-      this.getOutput(),
-      ...this.controlButtons,
-      this,
-    ].filter(Boolean);
+    return [...pressables, ...this.controlButtons, this].filter(Boolean);
   }
 
   resetCoordinates() {

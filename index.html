@@ -194,18 +194,32 @@
             <input class="inp" id="edit-dataset-name" type="text" value="" />
           </div>
           <br />
-          <div class="flex-center gap-10">
-            xData Shape: <span id="x-shape"></span>
-            <button class="btn btn-blue" id="flat-btn" type="">Flatten</button>
-          </div>
-          <div id="flat-progress-bar"></div>
-          <div class="flex-center gap-10">
-            yData Shape:<span id="y-shape"></span>
-            <button class="btn btn-blue" id="one-hot-encode-btn" type="">
+
+          <div class="edit-dataset-grid-container">
+            <div class="edit-dataset-grid-item">
+              xData Shape: <span id="x-shape"></span>
+            </div>
+            <button class="btn btn-blue" id="flat-btn">Flatten</button>
+            <button class="btn btn-blue" id="min-max-btn">
+              min-max Normalization
+            </button>
+
+            <div></div>
+            <div id="flat-progress-bar"></div>
+            <div id="normalize-progress-bar"></div>
+
+            <div class="edit-dataset-grid-item">
+              yData Shape: <span id="y-shape"></span>
+            </div>
+            <button class="btn btn-blue" id="one-hot-encode-btn">
               One hot Encode
             </button>
+            <div></div>
+
+            <div></div>
+            <div id="onehot-progress-bar" class="progress-bar"></div>
+            <div></div>
           </div>
-          <div id="onehot-progress-bar"></div>
         </div>
         <div id="import-dataset-container">
           <label id="import-dataset" for="import-dataset-inp">
@@ -227,8 +241,12 @@
           <label class="label" for="chk">
             <div class="ball"></div>
           </label>
-
-          <button id="create-dataset-btn" class="btn btn-blue">Create</button>
+          <div class="flex-center gap-10">
+            <button id="download-dataset-btn" class="btn btn-blue">
+              Download
+            </button>
+            <button id="create-dataset-btn" class="btn btn-blue">Create</button>
+          </div>
         </div>
       </div>
     </div>
@@ -267,8 +285,9 @@
     <script src="js/script.js"></script>
 
     <script src="js/Workers/flattenWorker.js"></script>
-    <script src="js/Workers/getMaxWorker.js"></script>
+    <script src="js/Workers/getMinMaxWorker.js"></script>
     <script src="js/Workers/oneHotWorker.js"></script>
+    <script src="js/Workers/minMaxNormalizeWorker.js"></script>
 
     <script src="js/Managers/themeManager.js"></script>
     <script src="js/Managers/canvasManager.js"></script>
@@ -277,9 +296,10 @@
     <script src="js/Managers/activationFunctionManager.js"></script>
     <script src="js/Managers/errorFunctionManager.js"></script>
 
-    <script src="js/Organizers/FunctionalTable.js"></script>
+    <script src="js/Organizers/Table/FunctionalTable.js"></script>
+    <script src="js/Organizers/Table/DataProcessor.js"></script>
+    <script src="js/Organizers/Table/tableOrganizer.js"></script>
 
-    <script src="js/Organizers/tableOrganizer.js"></script>
     <script src="js/Organizers/datasetOrganizer.js"></script>
     <script src="js/Organizers/mainOrganizer.js"></script>
     <script src="js/Organizers/editOrganizer.js"></script>

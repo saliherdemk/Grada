@@ -41,6 +41,7 @@ class MLP {
       current.setData(saved.data);
       current.setGrad(saved.grad);
     }
+    this.mode = "eval";
     this.stepCounter = stepCounter;
     this.epoch = epoch;
   }

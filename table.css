@@ -289,3 +289,11 @@ td {
     opacity: 0.8;
     pointer-events: none;
 }
+
+.edit-dataset-grid-container {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    align-items: center;
+    grid-gap: 30px;
+    text-align: center;
+}

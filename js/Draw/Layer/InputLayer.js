@@ -4,7 +4,6 @@ class InputLayer extends IOLayer {
     this.neuronAlignment = "right";
     this.batch = [];
     this.shape = this.getDataset().getShape().shapeX;
-    console.log(this.shape);
     this.labels = this.getDataset().getXLabels();
     this.initialize();
   }

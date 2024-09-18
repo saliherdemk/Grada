@@ -1,4 +1,4 @@
-class TableOrganizer extends FunctionalTable {
+class TableOrganizer extends DataProcessor {
   constructor() {
     super();
     this.name = "";
@@ -7,101 +7,6 @@ class TableOrganizer extends FunctionalTable {
     this.xLabels = [];
     this.yLabels = [];
     this.mode = 1;
-
-    this.initialize();
-  }
-
-  initialize() {
-    addEventToElement("edit-dataset-name", "input", (e) =>
-      this.setName(e.target.value),
-    );
-    addEventToElement("import-dataset-inp", "change", (e) =>
-      this.importDataset(e),
-    );
-    addEventToElement("create-dataset-btn", "click", () =>
-      this.createDataset(),
-    );
-    addEventToElement("mnist-button", "click", () => this.createMNIST());
-    addEventToElement("flat-btn", "click", () => this.flatten());
-    addEventToElement("one-hot-encode-btn", "click", () => this.oneHotEncode());
-  }
-
-  oneHotEncode() {
-    const categories = this.yData;
-
-    if (categories[0] instanceof Array) return;
-
-    this.disableAll();
-    setElementProperties("one-hot-encode-btn", { loading: true });
-
-    const chunkSize = 1000;
-    let encoded = [];
-    let startIndex = 0;
-
-    const processChunk = (numClasses) => {
-      const endIndex = Math.min(startIndex + chunkSize, categories.length);
-      this.oneHotWorker.postMessage({
-        categories: categories.slice(startIndex, endIndex),
-        numClasses,
-      });
-      startIndex = endIndex;
-    };
-
-    this.getMaxWorker.postMessage(categories);
-
-    this.getMaxWorker.onmessage = (e) => {
-      processChunk(e.data);
-    };
-
-    this.oneHotWorker.onmessage = (event) => {
-      const { encodedChunk, numClasses } = event.data;
-      encoded.push(...encodedChunk);
-      setElementProperties("onehot-progress-bar", {
-        innerText: `${startIndex}/ ${categories.length}`,
-      });
-
-      if (startIndex >= categories.length) {
-        this.yData = encoded;
-        this.enableAll();
-        this.setLayout();
-        setElementProperties("one-hot-encode-btn", { loading: false });
-      } else {
-        processChunk(numClasses);
-      }
-    };
-  }
-
-  flatten() {
-    this.disableAll();
-    setElementProperties("flat-btn", { loading: true });
-
-    const chunkSize = 1000;
-    let flattenXData = [];
-    let startIndex = 0;
-
-    const processChunk = () => {
-      const endIndex = Math.min(startIndex + chunkSize, this.xData.length);
-      this.flattenWorker.postMessage(this.xData.slice(startIndex, endIndex));
-      startIndex = endIndex;
-    };
-
-    this.flattenWorker.onmessage = (event) => {
-      flattenXData.push(...event.data);
-      setElementProperties("flat-progress-bar", {
-        innerText: `${startIndex}/ ${this.xData.length}`,
-      });
-
-      if (startIndex >= this.xData.length) {
-        this.xData = flattenXData;
-        this.enableAll();
-        this.setLayout();
-        setElementProperties("flat-btn", { loading: false });
-      } else {
-        processChunk();
-      }
-    };
-
-    processChunk();
   }
 
   setName(name) {
@@ -123,6 +28,7 @@ class TableOrganizer extends FunctionalTable {
     addClass(getElementById("edit-dataset-container"), "hidden");
     addClass(getElementById("import-dataset-container"), "hidden");
     addClass(getElementById("create-dataset-btn"), "hidden");
+    addClass(getElementById("download-dataset-btn"), "hidden");
   }
 
   reset() {
@@ -136,6 +42,7 @@ class TableOrganizer extends FunctionalTable {
   setEditDatasetLayout() {
     removeClass(getElementById("edit-dataset-container"), "hidden");
     removeClass(getElementById("create-dataset-btn"), "hidden");
+    removeClass(getElementById("download-dataset-btn"), "hidden");
     setElementProperties("x-shape", { innerText: getShape(this.xData) });
     setElementProperties("y-shape", { innerText: getShape(this.yData) });
     setElementProperties("edit-dataset-name", { value: this.name });
@@ -145,6 +52,7 @@ class TableOrganizer extends FunctionalTable {
     this.reset();
     removeClass(getElementById("scrollable-container"), "hidden");
     removeClass(getElementById("create-dataset-btn"), "hidden");
+    removeClass(getElementById("download-dataset-btn"), "hidden");
     this.initializeTable();
   }
 
@@ -165,19 +73,6 @@ class TableOrganizer extends FunctionalTable {
     }
   }
 
-  initializeWorkers() {
-    this.flattenWorker = new Worker("/js/Workers/flattenWorker.js");
-    this.oneHotWorker = new Worker("/js/Workers/oneHotWorker.js");
-    this.getMaxWorker = new Worker("/js/Workers/getMaxWorker.js");
-  }
-
-  enable() {
-    this.initializeWorkers();
-    this.setLayout();
-    mainOrganizer.disable();
-    removeClass(getElementById("create-dataset-container"), "hidden");
-  }
-
   reset() {
     this.name = "";
     this.xData = [];
@@ -185,12 +80,6 @@ class TableOrganizer extends FunctionalTable {
     this.xLabels = [];
     this.yLabels = [];
     this.mode = 1;
-  }
-
-  terminateWorkers() {
-    [this.flattenWorker, this.getMaxWorker, this.oneHotWorker].forEach((w) =>
-      w.terminate(),
-    );
   }
 
   resetButtons() {
@@ -201,9 +90,16 @@ class TableOrganizer extends FunctionalTable {
     setElementProperties("onehot-progress-bar", { innerText: "" });
   }
 
+  enable() {
+    super.enable();
+    this.setLayout();
+    mainOrganizer.disable();
+    removeClass(getElementById("create-dataset-container"), "hidden");
+  }
+
   disable() {
+    super.disable();
     this.reset();
-    this.terminateWorkers();
     this.resetButtons();
     this.enableAll();
     mainOrganizer.enable();
@@ -213,9 +109,22 @@ class TableOrganizer extends FunctionalTable {
     return { x: this.xData, y: this.yData, xL: this.xLabels, yL: this.yLabels };
   }
 
-  createDataset() {
-    this.mode == 1 && this.setDataFromTable();
-    datasetOrganizer.addDataset(new Dataset(this.name, this.getData()));
+  createdataset() {
+    this.mode == 1 && this.setdatafromtable();
+    datasetorganizer.adddataset(new dataset(this.name, this.getdata()));
+  }
+
+  downloadDataset() {
+    this.mode == 1 && this.setdatafromtable();
+    downloadJSON({ x: this.xData, y: this.yData }, this.name);
+  }
+
+  disableAll() {
+    setElementProperties("create-dataset-container", { loading: "true" });
+  }
+
+  enableAll() {
+    setElementProperties("create-dataset-container", { loading: "false" });
   }
 
   setPreparedDataset(data, name) {
@@ -277,14 +186,6 @@ class TableOrganizer extends FunctionalTable {
     }
 
     this.name = getElementById("dataset-name-inp").value;
-  }
-
-  disableAll() {
-    setElementProperties("create-dataset-container", { loading: "true" });
-  }
-
-  enableAll() {
-    setElementProperties("create-dataset-container", { loading: "false" });
   }
 
   importDataset(e) {

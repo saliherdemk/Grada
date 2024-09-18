@@ -4,8 +4,8 @@ function flattenArray(arr) {
   }, []);
 }
 
-onmessage = (event) => {
-  const { data } = event;
+onmessage = (e) => {
+  const { data } = e.data;
 
   const flattenedData = data.map((_x) =>
     flattenArray(_x instanceof Array ? _x : [_x]),
