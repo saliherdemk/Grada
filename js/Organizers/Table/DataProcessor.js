@@ -14,10 +14,12 @@ class DataProcessor extends FunctionalTable {
   }
 
   initializeWorkers() {
-    this.flattenWorker = new Worker("/js/Workers/flattenWorker.js");
-    this.oneHotWorker = new Worker("/js/Workers/oneHotWorker.js");
-    this.getMinMaxWorker = new Worker("/js/Workers/getMinMaxWorker.js");
-    this.normalizerWorker = new Worker("/js/Workers/minMaxNormalizeWorker.js");
+    const workerPath = "../../../js/Workers/";
+
+    this.flattenWorker = new Worker(workerPath + "flattenWorker.js");
+    this.oneHotWorker = new Worker(workerPath + "oneHotWorker.js");
+    this.getMinMaxWorker = new Worker(workerPath + "getMinMaxWorker.js");
+    this.normalizerWorker = new Worker(workerPath + "minMaxNormalizeWorker.js");
   }
 
   terminateWorkers() {
