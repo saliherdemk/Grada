@@ -3,7 +3,7 @@ class InputLayer extends IOLayer {
     super(datasetId, 300, 300);
     this.neuronAlignment = "right";
     this.batch = [];
-    this.shape = this.getDataset().getShape().shapeX;
+    this.shape = this.getDataset().shapeX;
     this.labels = this.getDataset().getXLabels();
     this.initialize();
   }

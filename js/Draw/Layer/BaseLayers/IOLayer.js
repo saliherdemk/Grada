@@ -3,7 +3,7 @@ class IOLayer extends Component {
     super(_x, _y, 350);
     this.datasetId = datasetId;
     this.currentIndex = -2; // FIXME explain why it's -2 if ur not slothful
-    this.recordNum = this.getDataset().getShape().recordNum;
+    this.recordNum = this.getDataset().shapeY[0];
   }
 
   updateButtons(hide) {

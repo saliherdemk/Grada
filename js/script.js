@@ -1,51 +1,50 @@
 document.addEventListener("contextmenu", (event) => event.preventDefault());
 
-function executeDrawingCommands(arr) {
-  const instance = canvasManager.getInstance();
-  instance.push();
-  for (let i = 0; i < arr.length; i++) {
-    let { func, args } = arr[i];
-    if (typeof instance[func] === "function") {
-      instance[func](...args);
-    } else {
-      console.error(`Function '${func}' does not exist on canvas`);
-    }
-  }
-  instance.pop();
-}
-
-function getCurrentMouseCoordinates() {
-  const instance = canvasManager.getInstance();
-  return { mouseX: instance.mouseX, mouseY: instance.mouseY };
-}
-
-function getMouseButton() {
-  return canvasManager.getInstance().mouseButton;
-}
-
-function getElementById(el) {
-  return document.getElementById(el);
-}
-
-function setElementProperties(elId, properties) {
-  const el = getElementById(elId);
-  for (let prop in properties) {
-    el.setAttribute(prop, properties[prop]);
-    el[prop] = properties[prop];
-  }
-}
-
-function addEventToElement(elId, eventName, func) {
-  getElementById(elId).addEventListener(eventName, func);
-}
-
-function removeEvents(elId) {
-  getElementById(elId).removeEventListeners();
-}
-
 function createLayer() {
   // new DigitInputGrid(100, 100);
   return new HiddenLayer(300, 500);
+}
+
+function logMLPs() {
+  console.log(mainOrganizer.mlpViews);
+}
+
+function openCreateDataset() {
+  tableOrganizer.enable();
+}
+
+function closeCreateDataset() {
+  tableOrganizer.disable();
+}
+
+function toggleDatasetsContainer() {
+  getElementById("datasets-container").classList.toggle("active");
+  getElementById("toggle-dataset-btn").classList.toggle("active");
+}
+
+function toggleWelcome() {
+  getElementById("welcome-container").classList.toggle("hidden");
+}
+
+function closeEdit() {
+  editLayerOrganizer.disable();
+  closeCreateDataset();
+}
+
+function toggleDatasetMode() {
+  tableOrganizer.toggleMode();
+}
+
+function disableCanvas() {
+  mainOrganizer.setMainDisabled(true);
+}
+
+function enableCanvas() {
+  mainOrganizer.setMainDisabled(false);
+}
+
+function triggerImportMlpInput() {
+  getElementById("import-mlp-input").click();
 }
 
 function importMLP(jsonData) {
@@ -67,6 +66,7 @@ function readMLPFile(event) {
   const file = files[0];
   if (!(file.type === "application/json")) return;
 
+  setElementProperties("import-mlp-btn", { loading: true });
   const reader = new FileReader();
   reader.onload = function (e) {
     try {
@@ -74,25 +74,11 @@ function readMLPFile(event) {
       importMLP(jsonData);
     } catch (error) {
       console.error("Error parsing JSON:", error);
+    } finally {
+      setElementProperties("import-mlp-btn", { loading: false });
     }
   };
   reader.readAsText(file);
-}
-
-function createInput() {
-  return canvasManager.getInstance().createInput();
-}
-
-function logMLPs() {
-  console.log(mainOrganizer.mlpViews);
-}
-
-function openCreateDataset() {
-  tableOrganizer.enable();
-}
-
-function closeCreateDataset() {
-  tableOrganizer.disable();
 }
 
 function scaleCanvas(event) {
@@ -112,96 +98,4 @@ function scaleCanvas(event) {
   iManager.panY = mouseY - (mouseY - iManager.panY) * scaleDiff;
 
   iManager.scaleFactor = newScaleFactor;
-}
-
-function createButton(parentId = null) {
-  const btn = document.createElement("button");
-  const parent = getElementById(parentId);
-  if (parent) {
-    parent.appendChild(btn);
-  }
-  return btn;
-}
-
-function toggleDatasetsContainer() {
-  getElementById("datasets-container").classList.toggle("active");
-  getElementById("toggle-dataset-btn").classList.toggle("active");
-}
-
-function toggleWelcome() {
-  getElementById("welcome-container").classList.toggle("hidden");
-}
-
-function closeEdit() {
-  editLayerOrganizer.disable();
-  closeCreateDataset();
-}
-
-function addClass(el, classList) {
-  el.classList.add(classList);
-}
-
-function removeClass(el, classList) {
-  el.classList.remove(classList);
-}
-
-function reverseArray(array) {
-  return array.slice().reverse();
-}
-
-function convertSetsToArrays(obj) {
-  if (obj instanceof Set) {
-    return Array.from(obj);
-  }
-
-  if (Array.isArray(obj)) {
-    return obj.map(convertSetsToArrays);
-  }
-
-  if (typeof obj === "object" && obj !== null) {
-    if (obj.children && typeof obj.children === "object") {
-      obj.children = convertSetsToArrays(obj.children);
-    }
-
-    return Object.keys(obj).reduce((acc, key) => {
-      acc[key] = convertSetsToArrays(obj[key]);
-      return acc;
-    }, {});
-  }
-
-  return obj;
-}
-
-function downloadJSON(obj, filename) {
-  const convertedObject = convertSetsToArrays(obj);
-  const jsonStr = JSON.stringify(convertedObject, null, 2);
-  const blob = new Blob([jsonStr], { type: "application/json" });
-  const link = document.createElement("a");
-  const url = URL.createObjectURL(blob);
-
-  link.href = url;
-  link.download = `${filename}.json`;
-
-  document.body.appendChild(link);
-  link.click();
-
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
-
-function toggleDatasetMode() {
-  tableOrganizer.toggleMode();
-}
-
-function getShape(arr) {
-  const shape = [];
-  let currentArray = arr;
-
-  while (Array.isArray(currentArray)) {
-    shape.push(currentArray.length);
-    currentArray = currentArray[0];
-  }
-  shape.push(1);
-
-  return shape;
 }

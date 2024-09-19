@@ -6,11 +6,6 @@ class EditMLPOrganizer extends EditOrganizer {
 
   initializeEventListeners() {
     const events = [
-      {
-        id: "mlp-edit-container",
-        event: "mousemove",
-        handler: this.preventCanvasDragging,
-      },
       { id: "mlp-layer-close", event: "click", handler: this.disable },
       {
         id: "mlp-label",
@@ -29,7 +24,7 @@ class EditMLPOrganizer extends EditOrganizer {
       },
       {
         id: "mlp-play-speed",
-        event: "change",
+        event: "input",
         handler: this.updatePlaySpeed,
       },
       {
@@ -67,10 +62,6 @@ class EditMLPOrganizer extends EditOrganizer {
     events.forEach(({ id, event, handler }) => {
       addEventToElement(id, event, handler.bind(this));
     });
-  }
-
-  preventCanvasDragging() {
-    iManager.handleRelease();
   }
 
   updateLabel(e) {

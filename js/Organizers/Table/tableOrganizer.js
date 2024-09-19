@@ -1,4 +1,4 @@
-class TableOrganizer extends DataProcessor {
+class TableOrganizer extends FunctionalTable {
   constructor() {
     super();
     this.name = "";
@@ -7,6 +7,26 @@ class TableOrganizer extends DataProcessor {
     this.xLabels = [];
     this.yLabels = [];
     this.mode = 1;
+    this.initialize();
+  }
+
+  initialize() {
+    addEventToElement("edit-dataset-name", "input", (e) =>
+      this.setName(e.target.value),
+    );
+    addEventToElement("import-dataset-inp", "change", (e) =>
+      this.importDataset(e),
+    );
+    addEventToElement("create-dataset-btn", "click", () =>
+      this.createDataset(),
+    );
+    addEventToElement("mnist-button", "click", () => this.createMNIST());
+    addEventToElement("download-dataset-btn", "click", () =>
+      this.downloadDataset(),
+    );
+    addEventToElement("flat-btn", "click", () => this.flatten());
+    addEventToElement("one-hot-encode-btn", "click", () => this.oneHotEncode());
+    addEventToElement("min-max-btn", "click", () => this.minMaxNormalization());
   }
 
   setName(name) {
@@ -91,14 +111,14 @@ class TableOrganizer extends DataProcessor {
   }
 
   enable() {
-    super.enable();
+    dataProcessor.enable();
     this.setLayout();
     mainOrganizer.disable();
     removeClass(getElementById("create-dataset-container"), "hidden");
   }
 
   disable() {
-    super.disable();
+    dataProcessor.disable();
     this.reset();
     this.resetButtons();
     this.enableAll();
@@ -109,13 +129,13 @@ class TableOrganizer extends DataProcessor {
     return { x: this.xData, y: this.yData, xL: this.xLabels, yL: this.yLabels };
   }
 
-  createdataset() {
-    this.mode == 1 && this.setdatafromtable();
-    datasetorganizer.adddataset(new dataset(this.name, this.getdata()));
+  createDataset() {
+    this.mode == 1 && this.setDataFromTable();
+    datasetOrganizer.addDataset(new Dataset(this.name, this.getData()));
   }
 
   downloadDataset() {
-    this.mode == 1 && this.setdatafromtable();
+    this.mode == 1 && this.setDataFromTable();
     downloadJSON({ x: this.xData, y: this.yData }, this.name);
   }
 
@@ -223,7 +243,7 @@ class TableOrganizer extends DataProcessor {
   createMNIST() {
     this.disableAll();
     setElementProperties("mnist-button", { loading: "true" });
-    fetch("../Data/new.json")
+    fetch("../Data/mnist.json")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -240,5 +260,72 @@ class TableOrganizer extends DataProcessor {
         this.enableAll();
         setElementProperties("mnist-button", { loading: "false" });
       });
+  }
+
+  onProcessFinish(btnId) {
+    this.enableAll();
+    this.setLayout();
+    setElementProperties(btnId, { loading: false });
+  }
+
+  flatten() {
+    this.disableAll();
+    setElementProperties("flat-btn", { loading: true });
+
+    const promise = dataProcessor.processInChunks(
+      "flatten",
+      this.xData,
+      {},
+      "flat-progress-bar",
+      "Flatting...",
+    );
+    promise
+      .then((result) => (this.xData = result))
+      .catch((err) => alert(err))
+      .finally(() => this.onProcessFinish("flat-btn"));
+  }
+
+  oneHotEncode() {
+    const data = this.yData;
+
+    if (data[0] instanceof Array) return;
+
+    this.disableAll();
+    setElementProperties("one-hot-encode-btn", { loading: true });
+
+    dataProcessor.getMinMax(data, "onehot-progress-bar").then((result) => {
+      const promise = dataProcessor.processInChunks(
+        "oneHot",
+        data,
+        { numClasses: result.max + 1 },
+        "onehot-progress-bar",
+        "Encoding...",
+      );
+      promise
+        .then((r) => (this.yData = r))
+        .catch((err) => alert(err))
+        .finally(() => this.onProcessFinish("one-hot-encode-btn"));
+    });
+  }
+
+  minMaxNormalization() {
+    const xData = this.xData;
+    this.disableAll();
+    setElementProperties("min-max-btn", { loading: true });
+
+    dataProcessor.getMinMax(xData, "normalize-progress-bar").then((result) => {
+      const { min, max } = result;
+      const promise = dataProcessor.processInChunks(
+        "normalizer",
+        xData,
+        { min, max },
+        "normalize-progress-bar",
+        "Normalizing...",
+      );
+      promise
+        .then((r) => (this.xData = r))
+        .catch((err) => alert(err))
+        .finally(() => this.onProcessFinish("min-max-btn"));
+    });
   }
 }

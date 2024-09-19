@@ -356,8 +356,9 @@ class MlpView extends Playable {
       playSpeed: this.playSpeed,
     };
     const originProps = this.origin.export();
+    const sanitized = convertSetsToArrays({ ...viewsProps, ...originProps });
 
-    downloadJSON({ ...viewsProps, ...originProps }, this.label);
+    downloadJSON(sanitized, this.label);
   }
 
   import(mlpData) {

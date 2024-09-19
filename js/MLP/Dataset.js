@@ -19,14 +19,6 @@ class Dataset {
     return this.yLabels;
   }
 
-  getShape() {
-    return {
-      shapeX: this.shapeX,
-      shapeY: this.shapeY,
-      recordNum: this.shapeY[0],
-    };
-  }
-
   getBatch(index, batchSize = 100) {
     const trainX = this.x;
     const batchX = [];

@@ -47,7 +47,11 @@
 
     <img id="tip-button" src="media/tip.png" alt="" onclick="toggleWelcome()" />
 
-    <div id="mlp-edit-container">
+    <div
+      id="mlp-edit-container"
+      onmouseover="disableCanvas()"
+      onmouseout="enableCanvas()"
+    >
       <div>
         <label for="mlp-label">Name</label><br />
         <input id="mlp-label" type="text" value="" />
@@ -260,7 +264,12 @@
           alt=""
         />
       </div>
-      <div id="datasets-container" class="active">
+      <div
+        id="datasets-container"
+        class="active"
+        onmouseover="disableCanvas()"
+        onmouseout="enableCanvas()"
+      >
         <div>Datasets</div>
         <div id="dataset-scrollable"></div>
         <button onclick="openCreateDataset()" class="btn btn-sky">
@@ -274,7 +283,20 @@
         >
           Add Layer
         </button>
-        <input type="file" oninput="readMLPFile(event)" accept=".json" />
+        <button
+          class="btn btn-cyan"
+          id="import-mlp-btn"
+          onclick="triggerImportMlpInput()"
+        >
+          Import MLP
+        </button>
+        <input
+          type="file"
+          id="import-mlp-input"
+          oninput="readMLPFile(event)"
+          accept=".json"
+          class="hidden"
+        />
       </div>
     </div>
 
@@ -283,11 +305,13 @@
     <script src="js/p5.min.js"></script>
 
     <script src="js/script.js"></script>
+    <script src="js/helpers.js"></script>
 
     <script src="js/Workers/flattenWorker.js"></script>
     <script src="js/Workers/getMinMaxWorker.js"></script>
     <script src="js/Workers/oneHotWorker.js"></script>
     <script src="js/Workers/minMaxNormalizeWorker.js"></script>
+    <script src="js/Workers/DataProcessor.js"></script>
 
     <script src="js/Managers/themeManager.js"></script>
     <script src="js/Managers/canvasManager.js"></script>
@@ -297,7 +321,6 @@
     <script src="js/Managers/errorFunctionManager.js"></script>
 
     <script src="js/Organizers/Table/FunctionalTable.js"></script>
-    <script src="js/Organizers/Table/DataProcessor.js"></script>
     <script src="js/Organizers/Table/tableOrganizer.js"></script>
 
     <script src="js/Organizers/datasetOrganizer.js"></script>

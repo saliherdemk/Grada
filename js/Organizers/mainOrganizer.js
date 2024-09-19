@@ -8,18 +8,22 @@ class MainOrganizer {
     this.enable();
   }
 
+  setMainDisabled(isDisabled) {
+    this.mainDisabled = isDisabled;
+  }
+
   enable() {
     const parent = getElementById("disable-background");
     addClass(parent, "hidden");
-    parent.children.forEach((c) => removeClass(c, "hidden"));
-    this.mainDisabled = false;
+    Array.from(parent.children).forEach((c) => removeClass(c, "hidden"));
+    this.setMainDisabled(false);
   }
 
   disable() {
     const parent = getElementById("disable-background");
     removeClass(parent, "hidden");
-    parent.children.forEach((c) => addClass(c, "hidden"));
-    this.mainDisabled = true;
+    Array.from(parent.children).forEach((c) => addClass(c, "hidden"));
+    this.setMainDisabled(true);
   }
 
   isDisabled() {
