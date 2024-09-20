@@ -145,6 +145,10 @@ class Playable extends Draggable {
 
   initializeMlp() {
     const mlp = new MLP([], this.lr, this.batchSize);
+    const worker = new Worker("../../../js/Workers/initializeMlpWorker.js");
+    console.log(this.layers);
+    worker.postMessage(this.layers.length);
+    return;
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
       const { prev } = layer.parent.getPrevAndNext(layer);

@@ -7,6 +7,8 @@ class CanvasButton extends Pressable {
     this.h = 25;
     this.disabled = false;
     this.hidden = false;
+    this.angle = 0;
+    this.loading = false;
     this.setOnClick(() => !this.isDisabled() && onClick());
   }
 
@@ -53,7 +55,34 @@ class CanvasButton extends Pressable {
     this.y = y;
   }
 
+  setLoading(state) {
+    this.loading = state;
+    this.loading ? this.disable() : this.enable();
+  }
+
+  showLoading() {
+    let radius = 10;
+    const commands = [
+      { func: "strokeWeight", args: [4] },
+      { func: "stroke", args: [0] },
+      { func: "noFill", args: [] },
+      { func: "translate", args: [this.x + this.w / 2, this.y + this.h / 2] },
+      { func: "rotate", args: [this.angle] },
+      {
+        func: "arc",
+        args: [0, 0, radius * 2, radius * 2, 0, HALF_PI],
+      },
+    ];
+
+    this.angle += 0.05;
+    if (this.angle >= TWO_PI) {
+      this.angle = 0;
+    }
+    executeDrawingCommands(commands);
+  }
+
   draw() {
     !this.isHidden() && this.show();
+    this.showLoading();
   }
 }
