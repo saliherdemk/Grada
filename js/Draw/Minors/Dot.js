@@ -1,6 +1,5 @@
-class Dot extends Pressable {
+class Dot {
   constructor(parent) {
-    super();
     this.parent = parent;
     this.rollover = false;
     this.occupied = false;
@@ -10,7 +9,6 @@ class Dot extends Pressable {
     this.theme = "red";
     this.setColor();
     this.updateCoordinates();
-    this.setOnClick(this.pressed);
   }
 
   isHidden() {
@@ -48,7 +46,6 @@ class Dot extends Pressable {
 
   destroy() {
     this.parent = null;
-    super.destroy();
   }
 
   updateCoordinates() {
@@ -61,8 +58,8 @@ class Dot extends Pressable {
     this.rollover = iManager.isHovered(this);
   }
 
-  pressed() {
-    if (this.isHidden() || !this.rollover) return;
+  handlePressed() {
+    if (this.isHidden() || !iManager.checkRollout(this)) return;
 
     const activeLine = mainOrganizer.getActiveLine();
 

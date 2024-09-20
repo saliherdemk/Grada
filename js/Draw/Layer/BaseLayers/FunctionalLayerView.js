@@ -73,7 +73,6 @@ class FunctionalLayerView extends LayerView {
   }
 
   destroy() {
-    this.removeButton.destroy();
     this.removeButton = null;
 
     this.getDots().forEach((dot) => dot.destroy());

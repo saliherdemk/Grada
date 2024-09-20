@@ -84,15 +84,4 @@ class DataProcessor {
       processChunk();
     });
   }
-
-  jsonStringify(data) {
-    const jsonWorker = new Worker("../../../js/Workers/jsonStringifyWorker.js");
-    return new Promise((resolve) => {
-      jsonWorker.postMessage(data);
-      jsonWorker.onmessage = function (e) {
-        jsonWorker.terminate();
-        resolve(e.data);
-      };
-    });
-  }
 }

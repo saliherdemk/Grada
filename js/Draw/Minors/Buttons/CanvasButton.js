@@ -1,6 +1,5 @@
-class CanvasButton extends Pressable {
+class CanvasButton {
   constructor(onClick) {
-    super();
     this.x = 0;
     this.y = 0;
     this.w = 25;
@@ -8,7 +7,9 @@ class CanvasButton extends Pressable {
     this.disabled = false;
     this.hidden = false;
     this.loading = false;
-    this.setOnClick(() => !this.isDisabled() && onClick());
+    this.handlePressed = () => {
+      !this.isDisabled() && iManager.checkRollout(this) && onClick();
+    };
   }
 
   isHidden() {

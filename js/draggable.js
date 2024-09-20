@@ -1,10 +1,13 @@
-class Draggable extends Pressable {
+class Draggable {
   constructor(x, y, w, h) {
-    super();
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+  }
+
+  handlePressed() {
+    iManager.checkRollout(this);
   }
 
   setCoordinates(x, y) {
