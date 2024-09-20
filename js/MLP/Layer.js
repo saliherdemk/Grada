@@ -11,13 +11,31 @@ class Layer {
   setActFunction(actFunc) {
     this.actFunc = actFuncManager.getFunction(actFunc);
   }
+  async call(x) {
+    const batchSize = 10;
+    let outs = [];
 
-  call(x) {
-    let outs = this.neurons.map((neuron) => neuron.call(x));
+    for (let i = 0; i < this.neurons.length; i++) {
+      const output = this.neurons[i].call(x);
+      outs.push(output);
+
+      if (i % batchSize === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+    }
+
     if (this.actFunc) {
       outs = this.actFunc(outs);
     }
-    outs.forEach((o, i) => this.neurons[i].setOutput(o));
+
+    for (let i = 0; i < outs.length; i++) {
+      this.neurons[i].setOutput(outs[i]);
+
+      if (i % batchSize === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+    }
+
     return outs;
   }
 

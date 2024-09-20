@@ -210,6 +210,7 @@ class Playable extends Draggable {
     }
   }
 
+  // FIXME: it's not async
   play() {
     this.playInterval = setInterval(() => {
       this.fetchNext();

@@ -196,9 +196,10 @@ class MlpView extends Playable {
   }
 
   getPressables() {
-    const pressables = this.getLayerReversed().flatMap((layer) =>
-      layer.getPressables(),
-    );
+    const pressables = this.getLayerReversed().flatMap((layer) => [
+      ...layer.getPressables(),
+      layer,
+    ]);
 
     return [...pressables, ...this.controlButtons].filter(Boolean);
   }

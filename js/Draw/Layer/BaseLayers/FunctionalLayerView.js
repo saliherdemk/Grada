@@ -12,9 +12,7 @@ class FunctionalLayerView extends LayerView {
   }
 
   getPressables() {
-    return [this.inputDot, this.outputDot, this.removeButton, this].filter(
-      Boolean,
-    );
+    return [this.inputDot, this.outputDot, this.removeButton].filter(Boolean);
   }
 
   doubleClicked() {

@@ -66,11 +66,13 @@ class MLP {
     this.layers.push(layer);
   }
 
-  predict(x) {
+  async predict(x) {
     let output = x;
-    this.layers.forEach((layer) => {
-      output = layer.call(output);
-    });
+
+    for (const layer of this.layers) {
+      output = await layer.call(output);
+    }
+
     return output;
   }
 
