@@ -73,7 +73,7 @@ class InteractionManager {
     if (mainOrganizer.isDisabled()) return;
 
     reverseArray(mainOrganizer.getAll()).forEach((el) => {
-      el.getPressables().forEach((p) => p.handlePressed());
+      el.handlePressed();
     });
 
     this.enableCanvasDragging();

@@ -1,8 +1,11 @@
 class Layer {
-  constructor(nin, nout, actFunction) {
-    this.nin = nin;
-    this.neurons = Array.from({ length: nout }, () => new Neuron(nin));
+  constructor(actFunction) {
+    this.neurons = [];
     this.setActFunction(actFunction);
+  }
+
+  addNeuron(nin) {
+    this.neurons.push(new Neuron(nin));
   }
 
   setActFunction(actFunc) {

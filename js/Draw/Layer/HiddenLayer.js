@@ -65,15 +65,33 @@ class HiddenLayer extends FunctionalLayerView {
     targetLayer.parent.moveLayers(this.parent);
   }
 
-  connectNeurons(targetLayer) {
-    this.neurons.forEach((n1) => {
+  async connectNeurons(targetLayer, batchSize = 10000) {
+    const parent = this.parent;
+    const totalConnections = this.neurons.length * targetLayer.neurons.length;
+    let processedConnections = 0;
+    parent.setLoading(true);
+
+    for (let i = 0; i < this.neurons.length; i++) {
+      const n1 = this.neurons[i];
       n1.removeLines();
-      targetLayer.neurons.forEach((n2) => {
+
+      for (let j = 0; j < targetLayer.neurons.length; j++) {
+        const n2 = targetLayer.neurons[j];
         n1.addLine(new Line(n1, n2));
-      });
-    });
+
+        parent.setLoadingText(
+          ~~((processedConnections++ / totalConnections) * 100) + "%",
+        );
+
+        if (processedConnections % batchSize === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        }
+      }
+    }
+
     this.outputDot.occupy();
     targetLayer.inputDot.occupy();
+    parent.setLoading(false);
   }
 
   handleRemove() {

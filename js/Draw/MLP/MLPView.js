@@ -3,6 +3,8 @@ class MlpView extends Playable {
     super();
     this.inputComponent = null;
     this.outputComponent = null;
+    this.loading = false;
+    this.loadingText = "";
     this.layers = [];
     this.label = "MLP1";
     this.origin = null;
@@ -12,6 +14,18 @@ class MlpView extends Playable {
     this.mode = "train";
     this.propsShown = false;
     this.selected = false;
+  }
+
+  setLoadingText(text) {
+    this.loadingText = text;
+  }
+
+  setLoading(state) {
+    this.loading = state;
+  }
+
+  isLoading() {
+    return this.loading;
   }
 
   setInputComponent(component) {
@@ -186,7 +200,7 @@ class MlpView extends Playable {
       layer.getPressables(),
     );
 
-    return [...pressables, ...this.controlButtons, this].filter(Boolean);
+    return [...pressables, ...this.controlButtons].filter(Boolean);
   }
 
   resetCoordinates() {
@@ -217,6 +231,13 @@ class MlpView extends Playable {
     originLayer.parent.updateBorders();
   }
 
+  handlePressed() {
+    if (!this.isLoading()) {
+      this.getPressables().forEach((p) => p.handlePressed());
+    }
+    iManager.checkRollout(this);
+  }
+
   handleKeyPressed() {
     iManager.isHovered(this) && this.resetCoordinates();
   }
@@ -229,6 +250,7 @@ class MlpView extends Playable {
   }
 
   handleDoubleClicked() {
+    if (this.isLoading()) return;
     this.getLayerReversed().forEach((l) => l.doubleClicked());
 
     if (this.isInactive() || iManager.isBusy()) {
@@ -344,6 +366,15 @@ class MlpView extends Playable {
     this.inputComponent?.draw();
     this.getLayers().forEach((layer) => layer.draw());
     this.outputComponent?.draw();
+    if (this.isLoading()) {
+      LoadingIndiactor.drawText(
+        this.x,
+        this.y,
+        this.w,
+        this.h,
+        this.loadingText,
+      );
+    }
   }
 
   export() {
