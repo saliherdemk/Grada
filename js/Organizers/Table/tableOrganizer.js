@@ -240,26 +240,42 @@ class TableOrganizer extends FunctionalTable {
       });
   }
 
-  createMNIST() {
+  async createMNIST() {
     this.disableAll();
     setElementProperties("mnist-button", { loading: "true" });
-    fetch("Data/mnist.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+
+    async function loadXData() {
+      const allXData = [];
+
+      for (let chunkNumber = 1; chunkNumber <= 10; chunkNumber++) {
+        try {
+          const module = await import(
+            `../../../Data/mnist/xData/chunk_${chunkNumber}.js`
+          );
+          allXData.push(...module.default);
+        } catch (error) {
+          console.error(`Error loading xData chunk ${chunkNumber}:`, error);
         }
-        return response.json();
-      })
-      .then((data) => {
-        this.setPreparedDataset(data, "MNIST");
-      })
-      .catch((error) => {
-        alert(error);
-      })
-      .finally(() => {
-        this.enableAll();
-        setElementProperties("mnist-button", { loading: "false" });
-      });
+      }
+
+      return allXData;
+    }
+
+    async function loadYData() {
+      try {
+        const module = await import("../../../Data/mnist/yData.js");
+        return module.default;
+      } catch (error) {
+        console.error("Error loading yData:", error);
+      }
+    }
+
+    const xDatas = await loadXData();
+    const yDatas = await loadYData();
+
+    this.setPreparedDataset({ xDatas, yDatas }, "MNIST");
+    this.enableAll();
+    setElementProperties("mnist-button", { loading: "false" });
   }
 
   onProcessFinish(btnId) {
