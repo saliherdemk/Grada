@@ -12,10 +12,12 @@ class DataProcessor {
   }
 
   initializeWorkers() {
-    this.flattenWorker = new Worker("flattenWorker.js");
-    this.oneHotWorker = new Worker("oneHotWorker.js");
-    this.getMinMaxWorker = new Worker("getMinMaxWorker.js");
-    this.normalizerWorker = new Worker("minMaxNormalizeWorker.js");
+    const workerPath = "js/Workers/";
+
+    this.flattenWorker = new Worker(workerPath + "flattenWorker.js");
+    this.oneHotWorker = new Worker(workerPath + "oneHotWorker.js");
+    this.getMinMaxWorker = new Worker(workerPath + "getMinMaxWorker.js");
+    this.normalizerWorker = new Worker(workerPath + "minMaxNormalizeWorker.js");
   }
 
   terminateWorkers() {
