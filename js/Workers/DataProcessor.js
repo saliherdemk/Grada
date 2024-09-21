@@ -12,7 +12,7 @@ class DataProcessor {
   }
 
   initializeWorkers() {
-    const workerPath = "../../../js/Workers/";
+    const workerPath = "../../js/Workers/";
 
     this.flattenWorker = new Worker(workerPath + "flattenWorker.js");
     this.oneHotWorker = new Worker(workerPath + "oneHotWorker.js");
