@@ -67,11 +67,6 @@
         <input id="mlp-batch-size" type="range" value="" max="128" min="1" />
       </div>
 
-      <div>
-        <label for="mlp-play-speed">Play Speed (ms)</label> <br />
-        <input id="mlp-play-speed" type="range" value="" max="2000" min="0" />
-      </div>
-
       <div class="flex-center">
         Error Func:
         <select id="err-function-select" class="inp"></select>
@@ -85,6 +80,17 @@
 
           <input type="radio" id="mode-train" name="mlp-mode" value="train" />
           <label for="mode-train">train</label>
+        </div>
+      </div>
+
+      <div>
+        <div id="mlp-zen-mode">
+          Zen:
+          <input type="radio" id="zen-true" name="mlp-zen" value="true" />
+          <label for="zen-true">opened</label>
+
+          <input type="radio" id="zen-false" name="mlp-zen" value="false" />
+          <label for="zen-false">closed</label>
         </div>
       </div>
 

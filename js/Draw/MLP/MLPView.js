@@ -3,6 +3,7 @@ class MlpView extends Playable {
     super();
     this.inputComponent = null;
     this.outputComponent = null;
+    this.zenMode = false;
     this.loading = false;
     this.loadingText = "";
     this.layers = [];
@@ -104,6 +105,18 @@ class MlpView extends Playable {
   handleSetMode(mode) {
     this.setMode(mode);
     this.checkCompleted();
+  }
+
+  handleSetZenMode(mode) {
+    mode == "true" ? this.openZenMode() : this.closeZenMode();
+  }
+
+  openZenMode() {
+    this.zenMode = true;
+  }
+
+  closeZenMode() {
+    this.zenMode = false;
   }
 
   setMode(mode) {
@@ -233,7 +246,7 @@ class MlpView extends Playable {
   }
 
   handlePressed() {
-    if (!this.isLoading()) {
+    if (!this.isLoading() && !this.zenMode) {
       this.getPressables().forEach((p) => p.handlePressed());
     }
     iManager.checkRollout(this);
@@ -252,7 +265,7 @@ class MlpView extends Playable {
 
   handleDoubleClicked() {
     if (this.isLoading()) return;
-    this.getLayerReversed().forEach((l) => l.doubleClicked());
+    !this.zenMode && this.getLayerReversed().forEach((l) => l.doubleClicked());
 
     if (this.isInactive() || iManager.isBusy()) {
       iManager.handleRelease();
@@ -279,7 +292,6 @@ class MlpView extends Playable {
 
   getProps() {
     return {
-      playSpeed: this.playSpeed,
       lr: this.lr,
       errFunc: this.errFunc,
       batchSize: this.batchSize,
@@ -298,15 +310,14 @@ class MlpView extends Playable {
   getTrainCommands() {
     const x = this.x + 5;
     const y = this.y + this.h;
-    const { playSpeed, lr, batchSize } = this.getProps();
+    const { lr, batchSize } = this.getProps();
     const { stepCounter, epoch } = this.getOriginProps();
     const commands = [
       { func: "text", args: [`Learning Rate: ${lr}`, x, y + 60] },
-      { func: "text", args: [`Play Speed: ${playSpeed} ms`, x + 125, y + 60] },
       {
         func: "text",
         args: [
-          `Step: ${stepCounter}\nEpoch: ${epoch}\nBatch Size: ${batchSize}`,
+          `Step: ${stepCounter} - ${this.msPerStepText}\nEpoch: ${epoch}\nBatch Size: ${batchSize}`,
           x,
           y + 15,
         ],
@@ -314,18 +325,6 @@ class MlpView extends Playable {
     ];
 
     return commands;
-  }
-
-  getEvalCommands() {
-    const x = this.x + 5;
-    const y = this.y + this.h;
-    const { playSpeed } = this.getProps();
-    return [
-      {
-        func: "text",
-        args: [`Mode: eval\nPlay Speed: ${playSpeed} ms`, x, y + 15],
-      },
-    ];
   }
 
   showProps() {
@@ -339,10 +338,7 @@ class MlpView extends Playable {
       { func: "text", args: [`Total Parameters: ${totalParams}\n`, x, y - 10] },
     ];
 
-    const commands =
-      this.getMode() == "train"
-        ? this.getTrainCommands()
-        : this.getEvalCommands();
+    const commands = this.getMode() == "train" ? this.getTrainCommands() : [];
 
     executeDrawingCommands([...commands, ...common]);
   }
@@ -358,10 +354,18 @@ class MlpView extends Playable {
     executeDrawingCommands(commands);
   }
 
+  showZen() {
+    LoadingIndiactor.drawText(this.x, this.y, this.w, this.h, "Zen Mode");
+  }
+
   draw() {
     if (!this.isInactive()) {
       this.show();
       this.isPropsShown() && this.showProps();
+      if (this.zenMode) {
+        this.showZen();
+        return;
+      }
       this.controlButtons.forEach((btn) => btn.draw());
     }
     this.inputComponent?.draw();
@@ -385,7 +389,6 @@ class MlpView extends Playable {
       lr: this.lr,
       batchSize: this.batchSize,
       errFunc: this.errFunc,
-      playSpeed: this.playSpeed,
     };
     const originProps = this.origin.export();
     const sanitized = convertSetsToArrays({ ...viewsProps, ...originProps });
@@ -393,16 +396,15 @@ class MlpView extends Playable {
     downloadJSON(sanitized, this.label);
   }
 
-  import(mlpData) {
-    const { lr, batchSize, errFunc, label, playSpeed } = mlpData;
+  async import(mlpData) {
+    const { lr, batchSize, errFunc, label } = mlpData;
     this.setLr(lr);
     this.setBatchSize(batchSize);
     this.setErrFunc(errFunc);
     this.setLabel(label);
-    this.setPlaySpeed(playSpeed);
     this.setMode("eval");
     this.resetCoordinates();
-    this.toggleMlp();
+    await this.toggleMlp();
     const { parameters, stepCounter, epoch } = mlpData;
     this.origin.import(parameters, stepCounter, epoch);
   }

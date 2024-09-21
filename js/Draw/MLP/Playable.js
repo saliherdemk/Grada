@@ -2,10 +2,9 @@ class Playable extends Draggable {
   constructor() {
     super(0, 0);
     this.controlButtons = [];
-    this.playInterval = null;
-    this.playSpeed = 50;
     this.status = -1;
     this.recordNum = 0;
+    this.msPerStepText = "";
     this.initializeButtons();
   }
 
@@ -19,6 +18,10 @@ class Playable extends Draggable {
 
   getFetchBtn() {
     return this.controlButtons[2];
+  }
+
+  setMsPerStepText(value) {
+    this.msPerStepText = value;
   }
 
   initializeButtons() {
@@ -128,13 +131,13 @@ class Playable extends Draggable {
     }
   }
 
-  toggleMlp() {
-    this.getStatus() > -1 ? this.destroyMlp() : this.initializeMlp();
+  async toggleMlp() {
+    this.getStatus() > -1 ? this.destroyMlp() : await this.initializeMlp();
     this.updateStatus(this.getStatus() > -1 ? -1 : 0);
   }
 
   togglePlay() {
-    this.getStatus() == 3 ? this.pause() : this.play();
+    this.getStatus() == 1 && this.play();
     this.updateStatus(this.getStatus() == 3 ? 1 : 3);
   }
 
@@ -198,35 +201,29 @@ class Playable extends Draggable {
     this.origin = null;
   }
 
-  setPlaySpeed(ms) {
-    this.playSpeed = ms;
-    this.reboot();
-  }
-
   reboot() {
-    if (this.playInterval) {
+    if (this.getStatus() == 3) {
       this.pause();
       this.play();
     }
   }
 
-  // FIXME: it's not async
-  play() {
-    this.playInterval = setInterval(() => {
-      this.fetchNext();
-      this.executeOnce();
-    }, this.playSpeed);
+  async play() {
+    this.fetchNext();
+    await this.executeOnce();
+    this.getStatus() == 3 && setTimeout(() => this.play(), 0);
   }
 
   pause() {
-    clearInterval(this.playInterval);
-    this.playInterval = null;
+    this.updateStatus(1);
   }
 
-  executeOnce() {
+  async executeOnce() {
+    let startTime = performance.now();
     const inputValues = this.getInput().setValues();
     const outputValues = this.getOutput()?.setValues() ?? null;
-    this.origin.goOneCycle(inputValues, outputValues);
+    await this.origin.goOneCycle(inputValues, outputValues);
+    this.setMsPerStepText(performance.now() - startTime + "ms / step");
   }
 
   fetchNext() {

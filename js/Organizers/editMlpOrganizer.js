@@ -23,11 +23,6 @@ class EditMLPOrganizer extends EditOrganizer {
         handler: this.updateBatchSize,
       },
       {
-        id: "mlp-play-speed",
-        event: "input",
-        handler: this.updatePlaySpeed,
-      },
-      {
         id: "err-function-select",
         event: "change",
         handler: this.handleErrFuncChange,
@@ -57,6 +52,11 @@ class EditMLPOrganizer extends EditOrganizer {
         event: "change",
         handler: this.handleModeChange,
       },
+      {
+        id: "mlp-zen-mode",
+        event: "change",
+        handler: this.handleZenModeChange,
+      },
     ];
 
     events.forEach(({ id, event, handler }) => {
@@ -76,10 +76,6 @@ class EditMLPOrganizer extends EditOrganizer {
     this.getSelected().setBatchSize(e.target.value);
   }
 
-  updatePlaySpeed(e) {
-    this.getSelected().setPlaySpeed(e.target.value);
-  }
-
   handleErrFuncChange(e) {
     this.getSelected().setErrFunc(e.target.value);
   }
@@ -89,6 +85,11 @@ class EditMLPOrganizer extends EditOrganizer {
       'input[name="mlp-mode"]:checked',
     );
     this.getSelected().handleSetMode(selectedRadio.value);
+  }
+
+  handleZenModeChange() {
+    let selectedRadio = document.querySelector('input[name="mlp-zen"]:checked');
+    this.getSelected().handleSetZenMode(selectedRadio.value);
   }
 
   togglePropVisibility() {
@@ -119,9 +120,9 @@ class EditMLPOrganizer extends EditOrganizer {
     setElementProperties("mlp-label", { value: selected.label });
     setElementProperties("mlp-lr", { value: selected.lr });
     setElementProperties(`mlp-batch-size`, { value: selected.batchSize });
-    setElementProperties(`mlp-play-speed`, { value: selected.playSpeed });
     setElementProperties("err-function-select", { value: selected.errFunc });
     setElementProperties(`mode-${selected.mode}`, { checked: true });
+    setElementProperties(`zen-${selected.zenMode}`, { checked: true });
     this.setPropsBtnText();
   }
 

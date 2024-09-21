@@ -69,8 +69,8 @@ class MLP {
   async predict(x) {
     let output = x;
 
-    for (const layer of this.layers) {
-      output = await layer.call(output);
+    for (let i = 0; i < this.layers.length; i++) {
+      output = await this.layers[i].call(output, i == this.layers.length - 1);
     }
 
     return output;
@@ -87,8 +87,8 @@ class MLP {
     }
   }
 
-  goOneTrain(xData, yData) {
-    const predict = this.predict(xData);
+  async goOneTrain(xData, yData) {
+    const predict = await this.predict(xData);
     if (++this.stepCounter % this.recordNum === 0) this.epoch++;
 
     this.currentLoss = this.currentLoss.add(this.errFunc(predict, yData));
@@ -102,10 +102,10 @@ class MLP {
     this.currentLoss = new Value(0);
   }
 
-  goOneCycle(xData, yData) {
+  async goOneCycle(xData, yData) {
     this.mode == "eval"
       ? this.goOneEval(xData, yData)
-      : this.goOneTrain(xData, yData);
+      : await this.goOneTrain(xData, yData);
   }
 
   train(x_train, y_train, epochs) {
