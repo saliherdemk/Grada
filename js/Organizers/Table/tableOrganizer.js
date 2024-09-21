@@ -243,7 +243,7 @@ class TableOrganizer extends FunctionalTable {
   createMNIST() {
     this.disableAll();
     setElementProperties("mnist-button", { loading: "true" });
-    fetch("../Data/mnist.json")
+    fetch("Data/mnist.json")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
