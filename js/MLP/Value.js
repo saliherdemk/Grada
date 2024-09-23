@@ -127,4 +127,27 @@ class Value {
       node.backward();
     }
   }
+
+  backprop() {
+    let topo = [];
+    let visited = new Set();
+    let stack = [this];
+
+    while (stack.length) {
+      let node = stack.pop();
+
+      if (visited.has(node)) {
+        topo.push(node);
+      } else {
+        visited.add(node);
+        stack.push(node);
+        node.children.forEach((child) => stack.push(child));
+      }
+    }
+
+    this.setGrad(1.0);
+    for (let i = topo.length - 1; i >= 0; i--) {
+      topo[i].backward();
+    }
+  }
 }

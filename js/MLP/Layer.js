@@ -30,6 +30,7 @@ class Layer {
 
     return outs;
   }
+
   parameters() {
     return this.neurons.flatMap((neuron) => neuron.parameters());
   }
