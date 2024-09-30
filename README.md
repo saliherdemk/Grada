@@ -11,8 +11,5 @@ My goal is to create an interactive, real-time training experience for a handwri
 # Live Demo
 Available [here](https://saliherdemk.github.io/Grada/)
 
+<img src="https://github.com/saliherdemk/Grada/blob/master/media/demo.gif" width="600" height="338">
 
-<video controls>
-    <source src="https://github.com/saliherdemk/Grada/blob/master/media/demo.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
