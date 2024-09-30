@@ -1,7 +1,10 @@
 document.addEventListener("contextmenu", (event) => event.preventDefault());
 
+function createHandWrittenInput() {
+  mainOrganizer.addComponent(new DigitInputGrid(100, 100));
+}
+
 function createLayer() {
-  // new DigitInputGrid(100, 100);
   return new HiddenLayer(300, 500);
 }
 

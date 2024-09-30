@@ -10,12 +10,13 @@ class LoadingIndiactor {
     executeDrawingCommands(commands);
   }
 
-  static drawText(x, y, w, h, text) {
+  static drawText(x, y, w, h, text, textSize = null) {
+    textSize = textSize ?? w / 8;
     this.drawDisabledBackground(x, y, w, h);
     const commands = [
       { func: "stroke", args: [255] },
       { func: "strokeWeight", args: [3] },
-      { func: "textSize", args: [w / 8] },
+      { func: "textSize", args: [textSize] },
       { func: "textAlign", args: [CENTER, CENTER] },
       { func: "text", args: [text, x + w / 2, y + h / 2] },
     ];
