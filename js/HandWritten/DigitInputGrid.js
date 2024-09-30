@@ -8,22 +8,29 @@ class DigitInputGrid extends Component {
       Array(this.gridSize).fill(0),
     );
     this.initialize();
-    this.inputDot.destroy();
-    this.inputDot = null;
   }
 
-  initializeNeurons() {
-    const numOfNeurons = this.gridSize * this.gridSize;
-    for (let i = 0; i < numOfNeurons; i++) {
-      this.neurons.push(new NeuronView());
-    }
+  initialize() {
+    this.inputDot.destroy();
+    this.inputDot = null;
+    this.outputDot.setColor("cyan");
+    this.adjustNeurons();
+    this.postUpdateCoordinates();
+  }
 
-    this.setShownNeuronsNum(5);
+  adjustNeurons() {
+    const neuronNum = this.gridSize * this.gridSize;
+    this.adjustNeuronNum(neuronNum);
+    this.setShownNeuronsNum(neuronNum > 5 ? 5 : neuronNum);
   }
 
   setCoordinates(x, y) {
     super.setCoordinates(x, y);
     this.postUpdateCoordinates();
+  }
+
+  getPressables() {
+    return [this.removeButton];
   }
 
   doubleClicked() {}
@@ -52,7 +59,7 @@ class DigitInputGrid extends Component {
   show() {
     const middleX = this.x + this.w / 2;
     const commands = [
-      { func: "rect", args: [this.x, this.y, this.w, this.h] },
+      { func: "rect", args: [this.x, this.y, this.w, this.h, 10] },
       { func: "textAlign", args: [CENTER, CENTER] },
       {
         func: "text",
@@ -70,5 +77,13 @@ class DigitInputGrid extends Component {
     this.isShrank() && this.showInfoBox();
 
     this.neurons.forEach((neuron) => neuron.draw());
+    LoadingIndiactor.drawText(
+      this.x,
+      this.y,
+      this.w,
+      this.h,
+      "Work In Progress",
+      35,
+    );
   }
 }
