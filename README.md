@@ -1,6 +1,6 @@
 ## Grada
 
-Grada is an interactive tool that allows you to observe real-time changes as you train a multilayer perceptron (MLP).
+Grada is an interactive tool that allows you to observe real-time changes as you train a multilayer perceptron.
 
 There are no built-in libraries like TensorFlow, PyTorch, or NumPy used here; this is an extension of Karpathy's [micrograd](https://github.com/karpathy/micrograd). All the logic can be found in the python and js/MLP folders. Since this is a scalar-valued engine, it comes with some limitations. If the parameters are too large, the time required for each step becomes too long, which means training on some datasets could take an impractical amount of time.
 
