@@ -1,20 +1,24 @@
 class NeuronView {
-  constructor() {
+  constructor(i) {
     this.x;
     this.y;
+    this.index = i;
     this.hidden = false;
     this.lines = [];
     this.origin = null;
-    this._output = ""; // FIXME I hated it.
     this.r = 25;
   }
 
-  setOutput(o) {
-    this._output = o;
+  getOutput() {
+    return this.origin?.outputs[this.index] ?? "";
   }
 
-  getOutput() {
-    return this._output;
+  getBias() {
+    return this.origin.biases.data[this.index];
+  }
+
+  getBiasGrad() {
+    return this.origin.biases.grad?.[this.index] ?? 0;
   }
 
   clearOrigin() {
@@ -23,6 +27,7 @@ class NeuronView {
   }
 
   setOrigin(obj) {
+    console.log(obj);
     this.origin = obj;
   }
 
@@ -62,9 +67,6 @@ class NeuronView {
   }
 
   getOriginProps() {
-    const origin = this.origin;
-    const o = origin.output;
-    const b = origin.b;
     const { defaultColor: blue } = themeManager.getTheme("blue");
     const { defaultColor: cyan } = themeManager.getTheme("cyan");
     const { defaultColor: gray } = themeManager.getTheme("gray");
@@ -73,26 +75,20 @@ class NeuronView {
       { func: "stroke", args: [blue] },
       {
         func: "text",
-        args: [b.getFixedData(2), this.x, this.y - this.r / 2 - 5],
+        args: [this.getBias(), this.x, this.y - this.r / 2 - 5],
       },
       { func: "fill", args: [cyan] },
       { func: "stroke", args: [cyan] },
       {
         func: "text",
-        args: [b.getFixedGrad(2), this.x, this.y - this.r / 2 - 15],
+        args: [this.getBiasGrad(), this.x, this.y - this.r / 2 - 15],
       },
       { func: "fill", args: [gray] },
       { func: "stroke", args: [gray] },
-      { func: "text", args: [o.getFixedData(2), this.x, this.y] },
-    ];
-  }
-
-  getOutputProps() {
-    const { defaultColor: gray } = themeManager.getTheme("gray");
-    return [
-      { func: "fill", args: [gray] },
-      { func: "stroke", args: [gray] },
-      { func: "text", args: [this.getOutput(), this.x, this.y] },
+      {
+        func: "text",
+        args: [this.getOutput(), this.x, this.y],
+      },
     ];
   }
 
@@ -103,8 +99,8 @@ class NeuronView {
       { func: "textAlign", args: [CENTER, CENTER] },
       { func: "textSize", args: [8] },
     ];
-    const props = this.origin ? this.getOriginProps() : this.getOutputProps();
-    props.forEach((p) => commands.push(p));
+
+    this.origin && this.getOriginProps().forEach((p) => commands.push(p));
     executeDrawingCommands(commands);
   }
 

@@ -1,24 +1,34 @@
 class DenseLayer {
-  constructor(inputSize, outputSize) {
-    this.weights = new Matrix(inputSize, outputSize).randomize();
-    this.bias = new Matrix(1, outputSize).randomize();
+  constructor(nin, nout) {
+    this.weights = new Tensor(
+      Array.from({ length: nin }, (_) =>
+        Array.from({ length: nout }, (_) => Math.random() * 2 - 1),
+      ),
+    );
+    this.biases = new Tensor(Array(nout).fill(Math.random() * 2 - 1));
+    this.outputs = Array(nout).fill(0);
   }
 
-  forward(input) {
-    this.input = input;
-    this.output = input.dot(this.weights).add(this.bias);
-    return this.output;
+  setActFunc(actFunc) {
+    this.actFunc = actFunc;
   }
 
-  backward(gradOutput, learningRate) {
-    const gradWeights = this.input.T().dot(gradOutput);
-    const gradBias = gradOutput.sum(0);
+  setParameters(weights, biases) {
+    this.weights = new Tensor(weights);
+    this.biases = new Tensor(biases);
+  }
 
-    const gradInput = gradOutput.dot(this.weights.T());
+  getParameters() {
+    return [this.weights, this.biases];
+  }
 
-    this.weights = this.weights.sub(gradWeights.mul(learningRate));
-    this.bias = this.bias.sub(gradBias.mul(learningRate));
+  forward(inputs) {
+    this.outputs = inputs.dot(this.weights).add(this.biases);
+    return this.outputs;
+  }
 
-    return gradInput;
+  destroy() {
+    this.weights = null;
+    this.biases = null;
   }
 }

@@ -147,8 +147,11 @@ class Playable extends Draggable {
   }
 
   async initializeMlp() {
-    const batchSize = 10;
-    const mlp = new MLP([], this.lr, this.batchSize);
+    const reliefUI = 10;
+    const mlp = new MLP();
+    mlp.setLr(this.lr);
+    mlp.setBatchSize(this.batchSize);
+
     const layers = this.layers;
 
     this.setLoading(true);
@@ -158,17 +161,15 @@ class Playable extends Draggable {
 
       if (layer.isComponent() || prev == null || prev?.isComponent()) continue;
 
-      const layerOrigin = new Layer(layer.actFunc);
+      const layerOrigin = new DenseLayer(
+        layers[i - 1].neurons.length,
+        layer.neurons.length,
+      );
 
-      for (let j = 0; j < layer.neurons.length; j++) {
-        layerOrigin.addNeuron(layers[i - 1].neurons.length);
-        this.setLoadingText(
-          `${i + 1}/${layers.length} - ${j}/${layer.neurons.length}`,
-        );
+      this.setLoadingText(`${i + 1}/${layers.length}`);
 
-        if (j % batchSize === 0) {
-          await new Promise((resolve) => setTimeout(resolve, 0)); // Let the UI update
-        }
+      if (i % reliefUI === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 0));
       }
 
       layer.setOrigin(layerOrigin);

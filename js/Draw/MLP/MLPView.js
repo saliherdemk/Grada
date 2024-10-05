@@ -17,6 +17,22 @@ class MlpView extends Playable {
     this.selected = false;
   }
 
+  getAllParameters() {
+    let layersParameters = [];
+
+    for (let i = 1; i < this.layers.length; i++) {
+      const neurons = [...this.layers[i].neurons];
+
+      const lines = this.layers[i - 1].neurons.map((prevNeuron) =>
+        this.layers[i].neurons.map((_, j) => prevNeuron.lines[j]),
+      );
+
+      layersParameters.push({ lines, neurons });
+    }
+
+    return layersParameters;
+  }
+
   setLoadingText(text) {
     this.loadingText = text;
   }
@@ -161,6 +177,14 @@ class MlpView extends Playable {
   }
 
   setOrigin(obj) {
+    const layersElements = this.getAllParameters();
+    const parameters = obj.layers;
+    for (let i = 0; i < parameters.length; i++) {
+      const { weights, biases, outputs } = parameters[i];
+      const { lines, neurons } = layersElements[i];
+      console.log(weights);
+      console.log(lines);
+    }
     this.origin = obj;
   }
 
