@@ -51,7 +51,6 @@ class MLP extends MlpParams {
   }
 
   trainOneStep(x_batch, y_batch) {
-    console.log(x_batch, y_batch);
     const mlp_output = this.forward(new Tensor(x_batch));
 
     const loss = errFuncManager.getFunction(this.errFunc)(

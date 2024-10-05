@@ -25,7 +25,8 @@ class DenseLayer {
 
   forward(inputs) {
     this.outputs = inputs.dot(this.weights).add(this.biases);
-    return this.actFunc ? this.actFunc(this.outputs) : this.outputs;
+    this.outputs = this.actFunc ? this.actFunc(this.outputs) : this.outputs;
+    return this.outputs;
   }
 
   destroy() {
