@@ -12,7 +12,7 @@ class IOLayer extends Component {
   }
 
   initialize() {
-    this.updateBatch();
+    this.updateShownBatch();
     this.adjustNeurons();
     this.postUpdateCoordinates();
   }
@@ -28,12 +28,15 @@ class IOLayer extends Component {
   }
 
   fetchNext() {
-    this.currentIndex++;
-    this.updateBatch();
+    this.currentIndex += this.connected.parent.batchSize;
+    this.updateShownBatch();
   }
 
   setValues() {
-    return this.batch[0];
+    return this.getDataset().getBatch(
+      this.currentIndex,
+      this.connected.parent.batchSize,
+    );
   }
 
   getColorful(i) {

@@ -17,10 +17,6 @@ class MLP extends MlpParams {
   forward(inputs) {
     for (let i = 0; i < this.layers.length; i++) {
       inputs = this.layers[i].forward(inputs);
-
-      if (this.activations[i]) {
-        inputs = activationFunctions[this.activations[i]](inputs);
-      }
     }
     return inputs;
   }
@@ -52,6 +48,21 @@ class MLP extends MlpParams {
     weights.concat(biases).forEach((param) => {
       param.grad = null;
     });
+  }
+
+  trainOneStep(x_batch, y_batch) {
+    console.log(x_batch, y_batch);
+    const mlp_output = this.forward(new Tensor(x_batch));
+
+    const loss = errFuncManager.getFunction(this.errFunc)(
+      mlp_output,
+      new Tensor(y_batch),
+    );
+
+    this.zeroGrad();
+    loss.backward();
+    this.step(this.lr);
+    if (++this.stepCounter % this.recordNum === 0) this.epoch++;
   }
 
   destroy() {

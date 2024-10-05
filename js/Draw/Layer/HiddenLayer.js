@@ -2,7 +2,6 @@ class HiddenLayer extends FunctionalLayerView {
   constructor(x, y) {
     super(x, y, 55, 0);
     this.parent = null;
-    this.origin = null;
     this.actFunc = "";
     this.initialize();
   }
@@ -155,15 +154,6 @@ class HiddenLayer extends FunctionalLayerView {
   postUpdateCoordinates() {
     super.postUpdateCoordinates();
     this.parent.updateBorders();
-  }
-
-  clearOrigin() {
-    this.neurons.forEach((n) => n.clearOrigin());
-    this.origin = null;
-  }
-
-  setOrigin(obj) {
-    this.origin = obj;
   }
 
   destroy() {

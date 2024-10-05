@@ -23,7 +23,13 @@ class MlpParams {
   }
 
   setTotalParams() {
-    return;
+    let totalParams = 0;
+    const { weights, biases } = this.getParameters();
+    weights.forEach(
+      (weight) => (totalParams += weight.shape[0] * weight.shape[1]),
+    );
+    biases.forEach((bias) => (totalParams += bias.shape[0]));
+    this.totalParams = totalParams;
   }
 
   getProps() {

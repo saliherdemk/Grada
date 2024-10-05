@@ -4,8 +4,6 @@ class WeightlessLine {
     this.to = to;
   }
 
-  clearOrigin() {}
-
   getSourceNeuron() {
     return this.from;
   }

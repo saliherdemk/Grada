@@ -19,40 +19,37 @@ class ErrorFunctionManager {
     return this.functions[name];
   }
 
-  mse(y1, y2) {
-    let loss = new Value(0);
-    const n = y1.length;
+  mse(output, target) {
+    const squaredDiffs = output.data.map((outRow, i) =>
+      outRow.map((o, j) => (o - target.data[i][j]) ** 2),
+    );
 
-    for (let i = 0; i < n; i++) {
-      loss = loss.add(y1[i].sub(y2[i]).pow(2));
-    }
+    const totalElements = output.data.length * output.data[0].length;
+    const lossValue =
+      squaredDiffs.reduce(
+        (sumRow, row) => sumRow + row.reduce((sum, val) => sum + val, 0),
+        0,
+      ) / totalElements;
 
-    return loss.div(n);
+    const lossTensor = new Tensor([[lossValue]]);
+    lossTensor._prev = [output];
+
+    lossTensor._backward = function () {
+      if (output.grad === null) {
+        output.grad = output.data.map((row) => row.map(() => 0.0));
+      }
+      for (let i = 0; i < output.data.length; i++) {
+        for (let j = 0; j < output.data[0].length; j++) {
+          output.grad[i][j] +=
+            (2 * (output.data[i][j] - target.data[i][j])) / totalElements;
+        }
+      }
+    };
+
+    return lossTensor;
   }
 
-  mae(y1, y2) {
-    let loss = new Value(0);
-    const n = y1.length;
+  mae(y1, y2) {}
 
-    for (let i = 0; i < n; i++) {
-      loss = loss.add(y1[i].sub(y2[i]).abs());
-    }
-
-    return loss.div(n);
-  }
-
-  bce(y1, y2) {
-    let loss = new Value(0);
-    const n = y1.length;
-
-    for (let i = 0; i < n; i++) {
-      const [_y1, _y2] = [y1[i], new Value(y2[i])];
-      loss = loss.add(
-        _y1
-          .mul(_y2.log())
-          .add(new Value(1).sub(_y1).mul(new Value(1).sub(_y2))),
-      );
-    }
-    return loss.div(n).neg();
-  }
+  bce(y1, y2) {}
 }

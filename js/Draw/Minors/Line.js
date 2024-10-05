@@ -1,28 +1,24 @@
 class Line extends WeightlessLine {
   constructor(from, to) {
     super(from, to);
-    this.w = null;
+    this.weight = null;
+    this.grad = null;
   }
 
-  clearOrigin() {
-    this.w = null;
+  setWeight(w) {
+    this.weight = w;
   }
 
-  setOrigin(w) {
-    this.w = w;
+  setGrad(g) {
+    this.grad = g;
   }
 
   getWeight() {
-    return this.w?.getFixedData(4) ?? "";
+    return this.weight?.toFixed(2).toString() ?? "";
   }
 
   getGrad() {
-    return this.w?.getFixedGrad(4) ?? "";
-  }
-
-  destroy() {
-    this.w = null;
-    super.destroy();
+    return this.grad?.toFixed(2).toString() ?? "";
   }
 
   showData() {

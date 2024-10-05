@@ -165,6 +165,7 @@ class Playable extends Draggable {
         layers[i - 1].neurons.length,
         layer.neurons.length,
       );
+      layerOrigin.setActFunc(layer.actFunc);
 
       this.setLoadingText(`${i + 1}/${layers.length}`);
 
@@ -172,7 +173,6 @@ class Playable extends Draggable {
         await new Promise((resolve) => setTimeout(resolve, 0));
       }
 
-      layer.setOrigin(layerOrigin);
       mlp.addLayer(layerOrigin);
     }
 
@@ -198,7 +198,6 @@ class Playable extends Draggable {
 
   clearOrigin() {
     this.origin.destroy();
-    this.layers.forEach((layer) => layer.clearOrigin());
     this.origin = null;
   }
 
@@ -223,7 +222,8 @@ class Playable extends Draggable {
     let startTime = performance.now();
     const inputValues = this.getInput().setValues();
     const outputValues = this.getOutput()?.setValues() ?? null;
-    await this.origin.goOneCycle(inputValues, outputValues);
+    await this.origin.trainOneStep(inputValues.batchX, outputValues.batchY);
+    this.updateParameters();
     this.setMsPerStepText(performance.now() - startTime + "ms / step");
   }
 

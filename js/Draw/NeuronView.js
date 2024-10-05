@@ -2,33 +2,25 @@ class NeuronView {
   constructor(i) {
     this.x;
     this.y;
+    this.output = "";
+    this.bias = "";
+    this.biasGrad = "";
     this.index = i;
     this.hidden = false;
     this.lines = [];
-    this.origin = null;
     this.r = 25;
   }
 
-  getOutput() {
-    return this.origin?.outputs[this.index] ?? "";
+  setOutput(o) {
+    this.output = o.toFixed(2).toString();
   }
 
-  getBias() {
-    return this.origin.biases.data[this.index];
+  setBias(b) {
+    this.bias = b.toFixed(2).toString();
   }
 
-  getBiasGrad() {
-    return this.origin.biases.grad?.[this.index] ?? 0;
-  }
-
-  clearOrigin() {
-    this.lines.forEach((l) => l.clearOrigin());
-    this.origin = null;
-  }
-
-  setOrigin(obj) {
-    console.log(obj);
-    this.origin = obj;
+  setBiasGrad(g) {
+    this.biasGrad = g.toFixed(2).toString();
   }
 
   isHidden() {
@@ -75,19 +67,19 @@ class NeuronView {
       { func: "stroke", args: [blue] },
       {
         func: "text",
-        args: [this.getBias(), this.x, this.y - this.r / 2 - 5],
+        args: [this.bias, this.x, this.y - this.r / 2 - 5],
       },
       { func: "fill", args: [cyan] },
       { func: "stroke", args: [cyan] },
       {
         func: "text",
-        args: [this.getBiasGrad(), this.x, this.y - this.r / 2 - 15],
+        args: [this.biasGrad, this.x, this.y - this.r / 2 - 15],
       },
       { func: "fill", args: [gray] },
       { func: "stroke", args: [gray] },
       {
         func: "text",
-        args: [this.getOutput(), this.x, this.y],
+        args: [this.output, this.x, this.y],
       },
     ];
   }
@@ -100,7 +92,7 @@ class NeuronView {
       { func: "textSize", args: [8] },
     ];
 
-    this.origin && this.getOriginProps().forEach((p) => commands.push(p));
+    this.getOriginProps().forEach((p) => commands.push(p));
     executeDrawingCommands(commands);
   }
 

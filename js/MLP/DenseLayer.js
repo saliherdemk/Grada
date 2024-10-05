@@ -6,11 +6,12 @@ class DenseLayer {
       ),
     );
     this.biases = new Tensor(Array(nout).fill(Math.random() * 2 - 1));
-    this.outputs = Array(nout).fill(0);
+    this.outputs = new Tensor([Array(nout).fill(0)]);
+    this.actFunc = actFuncManager.getFunction("mse");
   }
 
   setActFunc(actFunc) {
-    this.actFunc = actFunc;
+    this.actFunc = actFuncManager.getFunction(actFunc);
   }
 
   setParameters(weights, biases) {
@@ -24,7 +25,7 @@ class DenseLayer {
 
   forward(inputs) {
     this.outputs = inputs.dot(this.weights).add(this.biases);
-    return this.outputs;
+    return this.actFunc ? this.actFunc(this.outputs) : this.outputs;
   }
 
   destroy() {

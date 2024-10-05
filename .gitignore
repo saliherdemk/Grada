@@ -1,1 +1,2 @@
-python/.venv
+.venv
+.ipynb_checkpoints

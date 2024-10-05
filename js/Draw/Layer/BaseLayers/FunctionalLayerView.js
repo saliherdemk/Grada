@@ -62,8 +62,6 @@ class FunctionalLayerView extends LayerView {
     targetLayer.inputDot.free();
   }
 
-  clearOrigin() {}
-
   draw() {
     this.getDots().forEach((dot) => dot.draw());
     this.removeButton.draw();

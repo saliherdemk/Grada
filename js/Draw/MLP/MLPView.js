@@ -176,16 +176,31 @@ class MlpView extends Playable {
     return this.layers;
   }
 
-  setOrigin(obj) {
+  updateParameters() {
     const layersElements = this.getAllParameters();
-    const parameters = obj.layers;
+    const parameters = this.origin.layers;
+
     for (let i = 0; i < parameters.length; i++) {
       const { weights, biases, outputs } = parameters[i];
       const { lines, neurons } = layersElements[i];
-      console.log(weights);
-      console.log(lines);
+      for (let i = 0; i < neurons.length; i++) {
+        neurons[i].setOutput(outputs.data[0][i]);
+        neurons[i].setBias(biases.data[i]);
+        neurons[i].setBiasGrad(biases.grad?.[i] ?? 0);
+      }
+
+      for (let j = 0; j < lines.length; j++) {
+        for (let k = 0; k < lines[0].length; k++) {
+          lines[j][k].setWeight(weights.data[j][k]);
+          lines[j][k].setGrad(weights.grad?.[j][k] ?? 0);
+        }
+      }
     }
+  }
+
+  setOrigin(obj) {
     this.origin = obj;
+    this.updateParameters();
   }
 
   moveLayers(targetMlpView) {
