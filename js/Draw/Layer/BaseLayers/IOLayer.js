@@ -28,7 +28,7 @@ class IOLayer extends Component {
   }
 
   fetchNext() {
-    this.currentIndex += this.connected.parent.batchSize;
+    this.currentIndex += parseInt(this.connected.parent.batchSize);
     this.updateShownBatch();
   }
 
