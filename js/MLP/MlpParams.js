@@ -7,6 +7,7 @@ class MlpParams {
     this.stepCounter = 0;
     this.recordNum = 0;
     this.epoch = 0;
+    this.seenRecordNum = 0;
     this.mode = "train";
   }
 
@@ -20,6 +21,10 @@ class MlpParams {
 
   setErrFunc(errFunc) {
     this.errFunc = errFunc;
+  }
+
+  setMode(mode) {
+    this.mode = mode;
   }
 
   setTotalParams() {
@@ -36,7 +41,7 @@ class MlpParams {
     return {
       totalParams: this.totalParams,
       stepCounter: this.stepCounter,
-      epoch: this.epoch,
+      epoch: ~~(this.seenRecordNum / this.recordNum),
     };
   }
 }

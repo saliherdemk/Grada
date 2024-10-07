@@ -32,13 +32,6 @@ class IOLayer extends Component {
     this.updateShownBatch();
   }
 
-  setValues() {
-    return this.getDataset().getBatch(
-      this.currentIndex,
-      this.connected.parent.batchSize,
-    );
-  }
-
   getColorful(i) {
     const dataStatus = this.connected?.parent.getStatus();
     if (i !== 0 || !dataStatus || dataStatus < 1) {

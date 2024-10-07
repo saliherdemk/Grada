@@ -178,10 +178,10 @@ class MlpView extends Playable {
 
   updateParameters() {
     const layersElements = this.getAllParameters();
-    const parameters = this.origin.layers;
+    const layers = this.origin.layers;
 
-    for (let i = 0; i < parameters.length; i++) {
-      const { weights, biases, outputs } = parameters[i];
+    for (let i = 0; i < layers.length; i++) {
+      const { weights, biases, outputs } = layers[i];
       const { lines, neurons } = layersElements[i];
       for (let i = 0; i < neurons.length; i++) {
         neurons[i].setOutput(outputs.data[0][i]);
@@ -429,7 +429,7 @@ class MlpView extends Playable {
       batchSize: this.batchSize,
       errFunc: this.errFunc,
     };
-    const originProps = this.origin.export();
+    const originProps = this.origin?.export() ?? {};
     const sanitized = convertSetsToArrays({ ...viewsProps, ...originProps });
 
     downloadJSON(sanitized, this.label);
@@ -444,7 +444,8 @@ class MlpView extends Playable {
     this.setMode("eval");
     this.resetCoordinates();
     await this.toggleMlp();
-    const { parameters, stepCounter, epoch } = mlpData;
-    this.origin.import(parameters, stepCounter, epoch);
+    const { weights, biases, seenRecordNum, stepCounter } = mlpData;
+    this.origin.import(weights, biases, seenRecordNum, stepCounter);
+    this.updateParameters();
   }
 }

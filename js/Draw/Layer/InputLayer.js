@@ -15,6 +15,13 @@ class InputLayer extends IOLayer {
     super.initialize();
   }
 
+  getData() {
+    return this.getDataset().getBatch(
+      this.currentIndex,
+      this.connected.parent.batchSize,
+    ).batchX;
+  }
+
   updateShownBatch() {
     const { batchX } = this.getDataset().getBatch(this.currentIndex, 6);
     this.batch = batchX;

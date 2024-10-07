@@ -52,6 +52,7 @@ class MLP extends MlpParams {
 
   trainOneStep(x_batch, y_batch) {
     const mlp_output = this.forward(new Tensor(x_batch));
+    if (this.mode == "eval") return;
 
     const loss = errFuncManager.getFunction(this.errFunc)(
       mlp_output,
@@ -61,7 +62,27 @@ class MLP extends MlpParams {
     this.zeroGrad();
     loss.backward();
     this.step(this.lr);
-    if (++this.stepCounter % this.recordNum === 0) this.epoch++;
+    this.stepCounter++;
+    this.seenRecordNum += parseInt(this.batchSize);
+  }
+
+  export() {
+    const { weights, biases } = this.getParameters();
+
+    return {
+      weights: weights.map((w) => w.data),
+      biases: biases.map((b) => b.data),
+      seenRecordNum: this.seenRecordNum,
+      stepCounter: this.stepCounter,
+    };
+  }
+
+  import(weights, biases, seenRecordNum, stepCounter) {
+    this.seenRecordNum = seenRecordNum;
+    this.stepCounter = stepCounter;
+    for (let i = 0; i < this.layers.length; i++) {
+      this.layers[i].setParameters(weights[i], biases[i]);
+    }
   }
 
   destroy() {

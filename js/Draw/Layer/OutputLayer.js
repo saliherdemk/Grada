@@ -39,6 +39,13 @@ class OutputLayer extends IOLayer {
     this.connected = null;
   }
 
+  getData() {
+    return this.getDataset().getBatch(
+      this.currentIndex,
+      this.connected.parent.batchSize,
+    ).batchY;
+  }
+
   updateShownBatch() {
     const { batchY } = this.getDataset().getBatch(this.currentIndex, 6);
     this.batch = batchY;

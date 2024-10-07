@@ -220,9 +220,9 @@ class Playable extends Draggable {
 
   async executeOnce() {
     let startTime = performance.now();
-    const inputValues = this.getInput().setValues();
-    const outputValues = this.getOutput()?.setValues() ?? null;
-    await this.origin.trainOneStep(inputValues.batchX, outputValues.batchY);
+    const inputData = this.getInput().getData();
+    const outputData = this.getOutput()?.getData() ?? null;
+    await this.origin.trainOneStep(inputData, outputData);
     this.updateParameters();
     this.setMsPerStepText(performance.now() - startTime + "ms / step");
   }
