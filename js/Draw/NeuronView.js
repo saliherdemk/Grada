@@ -1,11 +1,10 @@
 class NeuronView {
-  constructor(i) {
+  constructor() {
     this.x;
     this.y;
     this.output = "";
     this.bias = "";
     this.biasGrad = "";
-    this.index = i;
     this.hidden = false;
     this.lines = [];
     this.r = 25;

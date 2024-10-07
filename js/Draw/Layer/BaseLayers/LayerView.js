@@ -35,7 +35,7 @@ class LayerView extends Draggable {
   initializeNeurons() {
     const numOfNeurons = parseInt(Math.random() * 7) + 1;
     for (let i = 0; i < numOfNeurons; i++) {
-      this.pushNeuron(i);
+      this.pushNeuron();
     }
 
     this.setShownNeuronsNum(this.getNeuronNum());
@@ -45,7 +45,7 @@ class LayerView extends Draggable {
     const diff = neuronNum - this.getNeuronNum();
 
     for (let i = 0; i < Math.abs(diff); i++) {
-      diff > 0 ? this.pushNeuron(i) : this.popNeuron();
+      diff > 0 ? this.pushNeuron() : this.popNeuron();
     }
 
     return diff;
@@ -71,8 +71,8 @@ class LayerView extends Draggable {
     return this.shrank;
   }
 
-  pushNeuron(i) {
-    this.neurons.push(new NeuronView(i));
+  pushNeuron() {
+    this.neurons.push(new NeuronView());
   }
 
   popNeuron() {

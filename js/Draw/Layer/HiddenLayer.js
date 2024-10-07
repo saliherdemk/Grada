@@ -81,10 +81,10 @@ class HiddenLayer extends FunctionalLayerView {
         parent.setLoadingText(
           ~~((processedConnections++ / totalConnections) * 100) + "%",
         );
-
-        if (processedConnections % batchSize === 0) {
-          await new Promise((resolve) => setTimeout(resolve, 0));
-        }
+        // FINALLY FOUND THE BUG
+        // if (processedConnections % batchSize === 0) {
+        //   await new Promise((resolve) => setTimeout(resolve, 0));
+        // }
       }
     }
 
