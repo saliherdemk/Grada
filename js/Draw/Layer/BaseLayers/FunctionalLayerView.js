@@ -2,8 +2,8 @@ class FunctionalLayerView extends LayerView {
   constructor(x, y, w, h) {
     super(x, y, w, h);
     this.removeButton = new ImageButton("delete", () => this.handleRemove());
-    this.inputDot = new Dot(this);
-    this.outputDot = new Dot(this);
+    this.inputDot = new LayerDot(this, true);
+    this.outputDot = new LayerDot(this, false);
   }
 
   setCoordinates(x, y) {

@@ -3,10 +3,12 @@ class MlpView extends Playable {
     super();
     this.inputComponent = null;
     this.outputComponent = null;
+    this.calculationComponent = null;
     this.zenMode = false;
     this.loading = false;
     this.loadingText = "";
     this.layers = [];
+    this.dots = [new CalculationDot(this, false), new LossGraphDot(this)];
     this.label = "MLP1";
     this.origin = null;
     this.lr = 0.1;
@@ -34,6 +36,11 @@ class MlpView extends Playable {
     }
 
     return layersParameters;
+  }
+
+  setCalculationComponent(calcComponent) {
+    calcComponent.setCoordinates(this.x, this.y + 100);
+    this.calculationComponent = calcComponent;
   }
 
   setLoadingText(text) {
@@ -169,6 +176,10 @@ class MlpView extends Playable {
     });
   }
 
+  updateDotsCoordinates() {
+    this.dots.forEach((d) => d.updateCoordinates());
+  }
+
   getPrevAndNext(layer) {
     const layers = this.getLayers();
     const index = layers.indexOf(layer);
@@ -242,6 +253,7 @@ class MlpView extends Playable {
     this.w = lastX - firstX + 70;
     this.h = lastY - firstY + 75;
     this.updateButtonsCoordinates();
+    this.updateDotsCoordinates();
   }
 
   getLayerReversed() {
@@ -256,7 +268,12 @@ class MlpView extends Playable {
       layer,
     ]);
 
-    return [...pressables, ...this.controlButtons].filter(Boolean);
+    return [
+      ...pressables,
+      ...this.controlButtons,
+      ...this.dots,
+      this.calculationComponent,
+    ].filter(Boolean);
   }
 
   resetCoordinates() {
@@ -291,7 +308,7 @@ class MlpView extends Playable {
     if (!this.isLoading() && !this.zenMode) {
       this.getPressables().forEach((p) => p.handlePressed());
     }
-    iManager.checkRollout(this);
+    super.handlePressed();
   }
 
   handleKeyPressed() {
@@ -413,6 +430,7 @@ class MlpView extends Playable {
     this.inputComponent?.draw();
     this.getLayers().forEach((layer) => layer.draw());
     this.outputComponent?.draw();
+    this.dots.forEach((d) => d.draw());
     if (this.isLoading()) {
       LoadingIndiactor.drawText(
         this.x,
@@ -422,6 +440,7 @@ class MlpView extends Playable {
         this.loadingText,
       );
     }
+    this.calculationComponent?.draw();
   }
 
   export() {

@@ -53,21 +53,23 @@ class HiddenLayer extends FunctionalLayerView {
     next && this.connectLayer(next);
   }
 
-  connectLayer(targetLayer) {
+  async connectLayer(targetLayer) {
     if (targetLayer instanceof Component) {
       targetLayer.connectLayer(this);
       return;
     }
+
     if (this.parent == targetLayer.parent) return;
 
-    this.connectNeurons(targetLayer);
     targetLayer.parent.moveLayers(this.parent);
+    await this.connectNeurons(targetLayer);
   }
 
   async connectNeurons(targetLayer, batchSize = 10000) {
     const parent = this.parent;
     const totalConnections = this.neurons.length * targetLayer.neurons.length;
     let processedConnections = 0;
+
     parent.setLoading(true);
 
     for (let i = 0; i < this.neurons.length; i++) {
@@ -81,10 +83,10 @@ class HiddenLayer extends FunctionalLayerView {
         parent.setLoadingText(
           ~~((processedConnections++ / totalConnections) * 100) + "%",
         );
-        // FINALLY FOUND THE BUG
-        // if (processedConnections % batchSize === 0) {
-        //   await new Promise((resolve) => setTimeout(resolve, 0));
-        // }
+
+        if (processedConnections % batchSize === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        }
       }
     }
 

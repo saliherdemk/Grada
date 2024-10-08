@@ -48,10 +48,10 @@ class Playable extends Draggable {
   updateButtonsCoordinates() {
     this.controlButtons.forEach((b, i) => {
       if (i == 0) {
-        b.setCoordinates(this.x + this.w - b.w, this.y + this.h + 5);
+        b.setCoordinates(this.x + this.w - b.w, this.y + this.h + 10);
       } else {
         const x = this.x + (this.w - b.w) / 2 + (i % 2 ? 1 : -1) * 40;
-        b.setCoordinates(x, this.y - 40);
+        b.setCoordinates(x, this.y - 45);
       }
     });
   }
@@ -146,8 +146,28 @@ class Playable extends Draggable {
     this.updateStatus(this.getStatus() == 2 ? 1 : 2);
   }
 
+  async createDenseLayer(nin, nout, actFunc) {
+    return new Promise((resolve, reject) => {
+      const denseLayer = new DenseLayer();
+      const worker = new Worker("js/Workers/denseLayerWorker.js");
+
+      worker.onmessage = (e) => {
+        const { weights, biases, outputs } = e.data;
+
+        denseLayer.initialize(weights, biases, outputs, actFunc);
+        worker.terminate();
+        resolve(denseLayer);
+      };
+
+      worker.onerror = (error) => {
+        reject(new Error(`Worker error: ${error.message}`));
+      };
+
+      worker.postMessage({ nin, nout });
+    });
+  }
+
   async initializeMlp() {
-    const reliefUI = 10;
     const mlp = new MLP();
     mlp.setLr(this.lr);
     mlp.setBatchSize(this.batchSize);
@@ -161,17 +181,13 @@ class Playable extends Draggable {
 
       if (layer.isComponent() || prev == null || prev?.isComponent()) continue;
 
-      const layerOrigin = new DenseLayer(
+      const layerOrigin = await this.createDenseLayer(
         layers[i - 1].neurons.length,
         layer.neurons.length,
+        layer.actFunc,
       );
-      layerOrigin.setActFunc(layer.actFunc);
 
       this.setLoadingText(`${i + 1}/${layers.length}`);
-
-      if (i % reliefUI === 0) {
-        await new Promise((resolve) => setTimeout(resolve, 0));
-      }
 
       mlp.addLayer(layerOrigin);
     }

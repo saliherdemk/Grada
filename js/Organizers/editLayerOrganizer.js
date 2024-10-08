@@ -67,6 +67,7 @@ class EditLayerOrganizer extends EditOrganizer {
 
   update() {
     this.selected.replace(this.selectedCopy);
+    this.disable();
   }
 
   disable() {

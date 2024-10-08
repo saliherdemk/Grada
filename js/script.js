@@ -50,15 +50,24 @@ function triggerImportMlpInput() {
   getElementById("import-mlp-input").click();
 }
 
-function importMLP(jsonData) {
+async function importMLP(jsonData) {
   let prevLayer = null;
-  jsonData.layers.forEach((layerData, i) => {
-    const newLayer = new HiddenLayer((i + 1) * 100, 300);
+
+  for (const layerData of jsonData.layers) {
+    const newLayer = new HiddenLayer(
+      (jsonData.layers.indexOf(layerData) + 1) * 100,
+      300,
+    );
     newLayer.import(layerData);
-    prevLayer?.connectLayer(newLayer);
+
+    if (prevLayer) {
+      await prevLayer.connectLayer(newLayer);
+    }
+
     prevLayer = newLayer;
-  });
-  prevLayer.parent.import(jsonData);
+  }
+
+  await prevLayer.parent.import(jsonData);
 }
 
 function readMLPFile(event) {

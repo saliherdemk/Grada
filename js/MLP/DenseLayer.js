@@ -1,13 +1,16 @@
 class DenseLayer {
-  constructor(nin, nout) {
-    this.weights = new Tensor(
-      Array.from({ length: nin }, (_) =>
-        Array.from({ length: nout }, (_) => Math.random() * 0.1 - 0.05),
-      ),
-    );
-    this.biases = new Tensor(Array(nout).fill(Math.random() * 0.1 - 0.05));
-    this.outputs = new Tensor([Array(nout).fill(0)]);
+  constructor() {
+    this.weights = null;
+    this.biases = null;
+    this.outputs = null;
     this.actFunc = actFuncManager.getFunction("mse");
+  }
+
+  initialize(weights, biases, outputs, actFunc) {
+    this.weights = new Tensor(weights);
+    this.biases = new Tensor(biases);
+    this.outputs = new Tensor(outputs);
+    this.setActFunc(actFunc);
   }
 
   setActFunc(actFunc) {

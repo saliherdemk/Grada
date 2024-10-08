@@ -6,6 +6,8 @@ class Draggable {
     this.h = h;
   }
 
+  handleDoubleClicked() {}
+
   handlePressed() {
     iManager.checkRollout(this);
   }
