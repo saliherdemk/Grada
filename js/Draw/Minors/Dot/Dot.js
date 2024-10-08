@@ -11,6 +11,14 @@ class Dot {
     this.updateCoordinates();
   }
 
+  occupy() {
+    this.occupied = true;
+  }
+
+  free() {
+    this.occupied = false;
+  }
+
   isHidden() {
     return this.hidden || this.isOccupied();
   }
@@ -50,5 +58,9 @@ class Dot {
     if (this.isHidden()) return;
     this.show();
     this.over();
+  }
+
+  destroy() {
+    this.parent = null;
   }
 }

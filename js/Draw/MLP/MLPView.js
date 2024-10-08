@@ -39,8 +39,14 @@ class MlpView extends Playable {
   }
 
   setCalculationComponent(calcComponent) {
-    calcComponent.setCoordinates(this.x, this.y + 100);
+    calcComponent.setCoordinates(this.x + this.w / 2, this.y + this.h + 100);
     this.calculationComponent = calcComponent;
+  }
+
+  removeCalculationComponent() {
+    this.calculationComponent.destroy();
+    this.calculationComponent = null;
+    this.dots[0].free();
   }
 
   setLoadingText(text) {
@@ -258,7 +264,12 @@ class MlpView extends Playable {
 
   getLayerReversed() {
     return reverseArray(
-      [this.getInput(), ...this.getLayers(), this.getOutput()].filter(Boolean),
+      [
+        this.getInput(),
+        ...this.getLayers(),
+        this.getOutput(),
+        this.calculationComponent,
+      ].filter(Boolean),
     );
   }
 
@@ -268,12 +279,9 @@ class MlpView extends Playable {
       layer,
     ]);
 
-    return [
-      ...pressables,
-      ...this.controlButtons,
-      ...this.dots,
-      this.calculationComponent,
-    ].filter(Boolean);
+    return [...pressables, ...this.controlButtons, ...this.dots].filter(
+      Boolean,
+    );
   }
 
   resetCoordinates() {
@@ -342,6 +350,7 @@ class MlpView extends Playable {
     this.getInput()?.clearLines();
     this.getOutput()?.clearLines();
     this.getLayers().forEach((l) => l.destroy());
+    this.calculationComponent?.destroy();
     this.setLayers([]);
     if (editMLPOrganizer.getSelected() == this) {
       editMLPOrganizer.disable();

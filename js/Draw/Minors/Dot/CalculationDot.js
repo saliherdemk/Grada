@@ -12,8 +12,9 @@ class CalculationDot extends Dot {
 
   handlePressed() {
     if (this.isHidden() || !iManager.checkRollout(this)) return;
-
-    this.parent.setCalculationComponent(new CalculationViewer(0, 0));
+    const calculationViewer = new CalculationViewer(0, 0);
+    calculationViewer.setLine(this);
+    this.parent.setCalculationComponent(calculationViewer);
   }
 
   show() {
