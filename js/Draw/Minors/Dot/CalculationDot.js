@@ -2,6 +2,7 @@ class CalculationDot extends Dot {
   constructor(parent, isInput = false) {
     super(parent, isInput);
     this.setColor("yellow");
+    this.hidden = true;
   }
 
   updateCoordinates() {

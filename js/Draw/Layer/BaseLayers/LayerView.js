@@ -34,7 +34,7 @@ class LayerView extends Draggable {
 
   initializeNeurons() {
     const numOfNeurons = parseInt(Math.random() * 7) + 1;
-    for (let i = 0; i < numOfNeurons; i++) {
+    for (let i = 0; i < 2; i++) {
       this.pushNeuron();
     }
 

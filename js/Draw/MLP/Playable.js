@@ -5,6 +5,9 @@ class Playable extends Draggable {
     this.status = -1;
     this.recordNum = 0;
     this.msPerStepText = "";
+    this.inputComponent = null;
+    this.outputComponent = null;
+    this.calculationComponent = null;
     this.initializeButtons();
   }
 
@@ -18,6 +21,49 @@ class Playable extends Draggable {
 
   getFetchBtn() {
     return this.controlButtons[2];
+  }
+
+  setInputComponent(component) {
+    this.inputComponent = component;
+    mainOrganizer.removeComponent(component);
+    this.checkCompleted();
+  }
+
+  getInput() {
+    return this.inputComponent;
+  }
+
+  setOutputComponent(component) {
+    this.outputComponent = component;
+    mainOrganizer.removeComponent(component);
+    this.checkCompleted();
+  }
+
+  getOutput() {
+    return this.outputComponent;
+  }
+
+  clearInput() {
+    mainOrganizer.addComponent(this.inputComponent);
+    this.inputComponent = null;
+    this.checkCompleted();
+  }
+
+  clearOutput() {
+    mainOrganizer.addComponent(this.outputComponent);
+    this.outputComponent = null;
+    this.checkCompleted();
+  }
+
+  setCalculationComponent(calcComponent) {
+    calcComponent.setCoordinates(this.x + this.w / 2, this.y + this.h + 100);
+    this.calculationComponent = calcComponent;
+  }
+
+  removeCalculationComponent() {
+    this.calculationComponent?.destroy();
+    this.calculationComponent = null;
+    this.dots[0].free();
   }
 
   setMsPerStepText(value) {
@@ -48,7 +94,7 @@ class Playable extends Draggable {
   updateButtonsCoordinates() {
     this.controlButtons.forEach((b, i) => {
       if (i == 0) {
-        b.setCoordinates(this.x + this.w - b.w, this.y + this.h + 10);
+        b.setCoordinates(this.x + this.w - b.w, this.y + this.h + 15);
       } else {
         const x = this.x + (this.w - b.w) / 2 + (i % 2 ? 1 : -1) * 40;
         b.setCoordinates(x, this.y - 45);
@@ -98,12 +144,14 @@ class Playable extends Draggable {
       case -1:
         initBtn.setText("Initialize MLP").setTheme("blue").visible();
         this.layers.forEach((l) => l.updateButtons(false));
+        this.dots.forEach((d) => d.hide());
         break;
       case 0:
         playBtn.visible().disable();
         fetchBtn.visible().disable();
         initBtn.setText("Terminate MLP").setTheme("red").visible();
         this.layers.forEach((l) => l.updateButtons(true));
+        this.dots.forEach((d) => d.visible());
         break;
       case 1:
         fetchBtn.setText("Fetch Next").setTheme("yellow").visible();
@@ -207,6 +255,7 @@ class Playable extends Draggable {
   destroyMlp() {
     this.pause();
     this.clearOrigin();
+    this.removeCalculationComponent();
     this.isPropsShown() && this.togglePropsShown();
     this.getInput()?.clearLines();
     this.getOutput()?.clearLines();
@@ -237,6 +286,10 @@ class Playable extends Draggable {
   async executeOnce() {
     let startTime = performance.now();
     const inputData = this.getInput().getData();
+    this.calculationComponent?.setInputData(
+      inputData.slice(0, 5).map((row) => row.slice(0, 5)),
+      [parseInt(this.batchSize), this.getInput().shape[1]],
+    );
     const outputData = this.getOutput()?.getData() ?? null;
     await this.origin.trainOneStep(inputData, outputData);
     this.updateParameters();

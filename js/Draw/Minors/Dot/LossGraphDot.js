@@ -2,6 +2,7 @@ class LossGraphDot extends Dot {
   constructor(parent, isInput = false) {
     super(parent, isInput);
     this.setColor("sky");
+    this.hidden = true;
   }
 
   updateCoordinates() {

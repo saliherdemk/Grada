@@ -1,9 +1,6 @@
 class MlpView extends Playable {
   constructor() {
     super();
-    this.inputComponent = null;
-    this.outputComponent = null;
-    this.calculationComponent = null;
     this.zenMode = false;
     this.loading = false;
     this.loadingText = "";
@@ -38,17 +35,6 @@ class MlpView extends Playable {
     return layersParameters;
   }
 
-  setCalculationComponent(calcComponent) {
-    calcComponent.setCoordinates(this.x + this.w / 2, this.y + this.h + 100);
-    this.calculationComponent = calcComponent;
-  }
-
-  removeCalculationComponent() {
-    this.calculationComponent.destroy();
-    this.calculationComponent = null;
-    this.dots[0].free();
-  }
-
   setLoadingText(text) {
     this.loadingText = text;
   }
@@ -59,38 +45,6 @@ class MlpView extends Playable {
 
   isLoading() {
     return this.loading;
-  }
-
-  setInputComponent(component) {
-    this.inputComponent = component;
-    mainOrganizer.removeComponent(component);
-    this.checkCompleted();
-  }
-
-  getInput() {
-    return this.inputComponent;
-  }
-
-  setOutputComponent(component) {
-    this.outputComponent = component;
-    mainOrganizer.removeComponent(component);
-    this.checkCompleted();
-  }
-
-  getOutput() {
-    return this.outputComponent;
-  }
-
-  clearInput() {
-    mainOrganizer.addComponent(this.inputComponent);
-    this.inputComponent = null;
-    this.checkCompleted();
-  }
-
-  clearOutput() {
-    mainOrganizer.addComponent(this.outputComponent);
-    this.outputComponent = null;
-    this.checkCompleted();
   }
 
   isInactive() {
@@ -196,12 +150,39 @@ class MlpView extends Playable {
     return this.layers;
   }
 
+  sliceData(weights, biases, outputs) {
+    const maxRows = 5;
+    const maxCols = 5;
+    const slicedW = weights.data
+      .slice(0, maxRows)
+      .map((row) => row.slice(0, maxCols));
+
+    const slicedB = biases.data.slice(0, maxRows);
+
+    const slicedO = outputs.data
+      .slice(0, maxRows)
+      .map((row) => row.slice(0, maxCols));
+
+    return {
+      slicedW,
+      slicedB,
+      slicedO,
+      sw: weights.shape,
+      sb: biases.shape,
+      so: outputs.shape,
+    };
+  }
+
   updateParameters() {
     const layersElements = this.getAllParameters();
     const layers = this.origin.layers;
+    const slicedDataAll = [];
 
     for (let i = 0; i < layers.length; i++) {
       const { weights, biases, outputs } = layers[i];
+      if (this.calculationComponent) {
+        slicedDataAll.push(this.sliceData(weights, biases, outputs));
+      }
       const { lines, neurons } = layersElements[i];
       for (let i = 0; i < neurons.length; i++) {
         neurons[i].setOutput(outputs.data[0][i]);
@@ -216,6 +197,7 @@ class MlpView extends Playable {
         }
       }
     }
+    this.calculationComponent?.setData(slicedDataAll);
   }
 
   setOrigin(obj) {
