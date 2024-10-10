@@ -90,7 +90,7 @@ class MlpView extends Playable {
 
   handleSetMode(mode) {
     this.setMode(mode);
-    this.checkCompleted();
+    this.isInitialized() && this.checkCompleted();
   }
 
   handleSetZenMode(mode) {

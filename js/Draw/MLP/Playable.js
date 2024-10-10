@@ -217,9 +217,6 @@ class Playable extends Draggable {
 
   async initializeMlp() {
     const mlp = new MLP();
-    mlp.setLr(this.lr);
-    mlp.setBatchSize(this.batchSize);
-
     const layers = this.layers;
 
     this.setLoading(true);
@@ -239,14 +236,14 @@ class Playable extends Draggable {
 
       mlp.addLayer(layerOrigin);
     }
-
+    mlp.setLr(this.lr);
+    mlp.setBatchSize(this.batchSize);
+    mlp.setMode(this.mode);
     mlp.setErrFunc(this.errFunc);
     mlp.setTotalParams();
     this.setOrigin(mlp);
 
-    if (!this.isPropsShown()) {
-      this.togglePropsShown();
-    }
+    !this.isPropsShown() && this.togglePropsShown();
 
     mainOrganizer.setActiveLine(null);
     this.setLoading(false);
