@@ -58,6 +58,7 @@ class MLP extends MlpParams {
       mlp_output,
       new Tensor(y_batch),
     );
+    this.addLossData({ step: this.stepCounter, data: loss.data[0][0] });
 
     this.zeroGrad();
     loss.backward();

@@ -19,6 +19,7 @@ let constrain;
 let lerpColor;
 let color;
 let floor;
+let map;
 
 class CanvasManager {
   constructor(instance) {
@@ -51,5 +52,7 @@ class CanvasManager {
     lerpColor = (c1, c2, t) => p.lerpColor(c1, c2, t);
     color = (r, g, b) => p.color(r, g, b);
     floor = (val) => p.floor(val);
+    map = (value, start1, stop1, start2, stop2) =>
+      p.map(value, start1, stop1, start2, stop2);
   }
 }

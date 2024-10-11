@@ -1,45 +1,20 @@
-class CalculationViewer extends Draggable {
+class CalculationViewer extends Viewer {
   constructor(x, y) {
     super(x, y, 0, 100);
     this.dot = new CalculationDot(this, true);
-    this.line = null;
-    this.removeButton = new ImageButton("delete", () => this.handleRemove());
     this.cellSize = 240;
     this.headerSize = 50;
     this.rows = 0;
     this.padding = 30;
     this.w = this.cellSize * 4 + this.headerSize;
-    this.data = [];
   }
 
-  getPressables() {
-    return [this.removeButton];
-  }
-
-  updateButtonCoordinates() {
-    const button = this.removeButton;
-    button.setCoordinates(this.x + (this.w - button.w) / 2, this.y + this.h);
+  adjustOffsets() {
+    this.line.setOffsets(0, 60);
   }
 
   handleRemove() {
     this.line.from.parent.removeCalculationComponent();
-  }
-
-  postUpdateCoordinates() {
-    this.dot.updateCoordinates();
-    this.updateButtonCoordinates();
-  }
-
-  setCoordinates(x, y) {
-    super.setCoordinates(x, y);
-    this.postUpdateCoordinates();
-  }
-
-  setLine(from) {
-    this.line = new WeightlessLine(from, this.dot);
-    this.line.setOffsets(0, 60);
-    from.occupy();
-    this.dot.occupy();
   }
 
   setInputData(data, shape) {
@@ -183,49 +158,10 @@ class CalculationViewer extends Draggable {
     executeDrawingCommands(commands);
   }
 
-  showDecorations() {
+  showData() {
+    this.data.map((d) => this.showMatrix(d));
     this.showLines();
     this.showHeaders();
     this.showSigns();
-  }
-
-  showCalculations() {
-    this.data.map((d) => this.showMatrix(d));
-    this.showDecorations();
-  }
-
-  show() {
-    const commands = [
-      { func: "fill", args: [255] },
-      { func: "rect", args: [this.x, this.y, this.w, this.h, 10] },
-      { func: "textAlign", args: [CENTER, CENTER] },
-    ];
-    executeDrawingCommands(commands);
-    this.data.length ? this.showCalculations() : this.showPlaceHolder();
-  }
-
-  showPlaceHolder() {
-    LoadingIndiactor.drawText(
-      this.x,
-      this.y,
-      this.w,
-      this.h,
-      "Go one step to see calculation details",
-      18,
-    );
-  }
-
-  draw() {
-    this.line?.draw(true);
-    this.show();
-    this.dot.draw();
-    this.removeButton.draw();
-  }
-
-  destroy() {
-    this.dot.destroy();
-    this.dot = null;
-    this.line?.destroy();
-    this.line = null;
   }
 }

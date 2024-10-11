@@ -1,4 +1,4 @@
-class LossGraphDot extends Dot {
+class GraphDot extends Dot {
   constructor(parent, isInput = false) {
     super(parent, isInput);
     this.setColor("sky");
@@ -9,6 +9,13 @@ class LossGraphDot extends Dot {
     const parent = this.parent;
     this.x = parent.x + parent.w / 2;
     this.y = parent.y;
+  }
+
+  handlePressed() {
+    if (this.isHidden() || !iManager.checkRollout(this)) return;
+    const graphViewer = new GraphViewer(0, 0);
+    graphViewer.setLine(this);
+    this.parent.setGraphComponent(graphViewer);
   }
 
   show() {

@@ -8,6 +8,7 @@ class Playable extends Draggable {
     this.inputComponent = null;
     this.outputComponent = null;
     this.calculationComponent = null;
+    this.graphComponent = null;
     this.initializeButtons();
   }
 
@@ -64,6 +65,18 @@ class Playable extends Draggable {
     this.calculationComponent?.destroy();
     this.calculationComponent = null;
     this.dots[0].free();
+  }
+
+  setGraphComponent(graphComponent) {
+    graphComponent.setCoordinates(this.x + this.w + 100, this.y + 100);
+    graphComponent.setData(this.origin.getLossData());
+    this.graphComponent = graphComponent;
+  }
+
+  removeGraphComponent() {
+    this.graphComponent?.destroy();
+    this.graphComponent = null;
+    this.dots[1].free();
   }
 
   setMsPerStepText(value) {
@@ -290,6 +303,7 @@ class Playable extends Draggable {
     const outputData = this.getOutput()?.getData() ?? null;
     await this.origin.trainOneStep(inputData, outputData);
     this.updateParameters();
+    this.graphComponent?.setData(this.origin.getLossData());
     this.setMsPerStepText(performance.now() - startTime + "ms / step");
   }
 

@@ -5,7 +5,7 @@ class MlpView extends Playable {
     this.loading = false;
     this.loadingText = "";
     this.layers = [];
-    this.dots = [new CalculationDot(this, false), new LossGraphDot(this)];
+    this.dots = [new CalculationDot(this), new GraphDot(this)];
     this.label = "MLP1";
     this.origin = null;
     this.lr = 0.1;
@@ -251,6 +251,7 @@ class MlpView extends Playable {
         ...this.getLayers(),
         this.getOutput(),
         this.calculationComponent,
+        this.graphComponent,
       ].filter(Boolean),
     );
   }
@@ -432,6 +433,7 @@ class MlpView extends Playable {
       );
     }
     this.calculationComponent?.draw();
+    this.graphComponent?.draw();
   }
 
   export() {
