@@ -1,9 +1,13 @@
 class CalculationViewer extends Draggable {
   constructor(x, y) {
-    super(x, y, 450, 100);
+    super(x, y, 0, 100);
     this.dot = new CalculationDot(this, true);
     this.line = null;
     this.removeButton = new ImageButton("delete", () => this.handleRemove());
+    this.cellSize = 240;
+    this.headerSize = 50;
+    this.rows = 0;
+    this.w = this.cellSize * 4;
     this.data = [];
   }
 
@@ -12,31 +16,24 @@ class CalculationViewer extends Draggable {
   }
 
   setData(data) {
-    // FIXME divide component to chunk. that way most of the arguments will be elimineted. no need to dynamic align
-    let lastY = 0;
+    this.rows = 0;
     data.forEach((d) => {
+      const y = this.rows * this.cellSize;
       const { slicedW, slicedB, slicedO, sb, sw, so } = d;
-      const lD = this.data[this.data.length - 1];
-      const longest = Math.max(slicedW.length, slicedB.length, slicedO.length);
 
-      const fW = this.formatMatrix(slicedW, sw, lD.x + lD.w, lastY, longest);
-      const fB = this.formatMatrix(slicedB, sb, fW.x + fW.w, lastY, longest);
-      const fO = this.formatMatrix(slicedO, so, fB.x + fB.w, lastY, longest);
-      lastY = Math.max(fW.y + fW.h, fB.y + fB.h, fO.y + fO.h);
-      this.w = Math.max(
-        this.w,
-        Math.max(fW.x + fW.w, fB.x + fB.w, fO.x + fO.w) + 30,
+      this.data.push(
+        this.formatMatrix(slicedW, sw, this.cellSize, y),
+        this.formatMatrix(slicedB, sb, this.cellSize * 2, y),
+        this.formatMatrix(slicedO, so, this.cellSize * 3, y),
+        this.formatMatrix(slicedO, so, 0, ++this.rows * this.cellSize),
       );
-      const fO1 = this.formatMatrix(slicedO, so, 0, lastY);
-
-      this.data.push(fW, fB, fO, fO1);
     });
-    const lastData = this.data[this.data.length - 1];
-    this.h = lastData.y + lastData.h + 30;
+
+    this.h = ++this.rows * this.cellSize + this.headerSize;
     this.postUpdateCoordinates();
   }
 
-  formatMatrix(data, shape, x, y, maxRecord = 0) {
+  formatMatrix(data, shape, x, y) {
     data = data.map((d) =>
       d instanceof Array
         ? d.map((_d) => parseFloat(_d).toFixed(2))
@@ -44,15 +41,14 @@ class CalculationViewer extends Draggable {
     );
     const padding = 30;
 
-    x = x + padding;
-    y = y + padding + (Math.max(maxRecord - shape[0], 0) * padding) / 2;
-
     const rowExceeds = shape[1] > data[0].length;
     const colExceeds = shape[0] > data.length;
 
     const w =
       data[0].length * padding + (+rowExceeds ? padding : padding / 2) + 7;
     const h = data.length * padding + (+colExceeds ? padding / 2 : 0) - 9;
+    x = x + (this.cellSize - w) / 2 + this.headerSize;
+    y = y + (this.cellSize - h) / 2 + this.headerSize;
 
     return { data, shape, x, y, w, h, rowExceeds, colExceeds };
   }
@@ -87,16 +83,7 @@ class CalculationViewer extends Draggable {
     this.dot.occupy();
   }
 
-  show() {
-    const commands = [
-      { func: "fill", args: [255] },
-      { func: "rect", args: [this.x, this.y, this.w, this.h, 10] },
-      { func: "textAlign", args: [CENTER, CENTER] },
-    ];
-    executeDrawingCommands(commands);
-  }
-
-  createMatrixView(dataObject) {
+  showMatrix(dataObject) {
     const { data, shape, x, y, w, h, rowExceeds, colExceeds } = dataObject;
     const p = 30;
     const absoluteX = this.x + x;
@@ -147,8 +134,78 @@ class CalculationViewer extends Draggable {
     executeDrawingCommands(commands);
   }
 
-  showInput() {
-    this.data.map((d) => this.createMatrixView(d));
+  showLines() {
+    const commands = [];
+    for (let i = 1; i < this.rows; i++) {
+      const y = this.y + i * this.cellSize + this.headerSize;
+      commands.push({ func: "line", args: [this.x, y, this.x + this.w, y] });
+    }
+    executeDrawingCommands(commands);
+  }
+
+  showHeader() {
+    const headers = ["Inputs", "Weights", "Biases", "Outputs"];
+    const commands = [
+      {
+        func: "line",
+        args: [
+          this.x,
+          this.y + this.headerSize,
+          this.x + this.w,
+          this.y + this.headerSize,
+        ],
+      },
+      { func: "textAlign", args: [CENTER, CENTER] },
+      { func: "textSize", args: [16] },
+      ...headers.map((header, i) => ({
+        func: "text",
+        args: [
+          header,
+          this.x + this.headerSize + this.cellSize * i,
+          this.y,
+          this.cellSize,
+          this.headerSize,
+        ],
+      })),
+      ...Array.from({ length: this.rows }).map((r, i) => {
+        const y = this.y + i * this.cellSize + this.headerSize;
+        return {
+          func: "text",
+          args: [`L${i}`, this.x, y, this.headerSize, this.cellSize],
+        };
+      }),
+      {
+        func: "line",
+        args: [
+          this.x + this.headerSize,
+          this.y,
+          this.x + this.headerSize,
+          this.y + this.h,
+        ],
+      },
+    ];
+
+    executeDrawingCommands(commands);
+  }
+
+  showDecorations() {
+    this.showLines();
+    this.showHeader();
+  }
+
+  showCalculations() {
+    this.data.map((d) => this.showMatrix(d));
+    this.showDecorations();
+  }
+
+  show() {
+    const commands = [
+      { func: "fill", args: [255] },
+      { func: "rect", args: [this.x, this.y, this.w, this.h, 10] },
+      { func: "textAlign", args: [CENTER, CENTER] },
+    ];
+    executeDrawingCommands(commands);
+    this.data.length ? this.showCalculations() : this.showPlaceHolder();
   }
 
   showPlaceHolder() {
@@ -167,7 +224,6 @@ class CalculationViewer extends Draggable {
     this.show();
     this.dot.draw();
     this.removeButton.draw();
-    this.data.length ? this.showInput() : this.showPlaceHolder();
   }
 
   destroy() {
