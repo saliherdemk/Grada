@@ -8,7 +8,7 @@ class CalculationViewer extends Draggable {
     this.headerSize = 50;
     this.rows = 0;
     this.padding = 30;
-    this.w = this.cellSize * 4;
+    this.w = this.cellSize * 4 + this.headerSize;
     this.data = [];
   }
 
@@ -78,7 +78,7 @@ class CalculationViewer extends Draggable {
 
     const w = data[0].length * p + (+rowExceeds ? p : p / 2) + 7;
     const h = data.length * p + (+colExceeds ? p / 2 : 0) - 9;
-    x = x + (this.cellSize - w) / 2 + this.headerSize;
+    x = x + (this.cellSize - w) / 2 + this.headerSize + this.headerSize / 4;
     y = y + (this.cellSize - h) / 2 + this.headerSize;
 
     return { data, shape, x, y, w, h, rowExceeds, colExceeds };
