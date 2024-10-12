@@ -17,96 +17,115 @@ class GraphViewer extends Viewer {
     this.line.from.parent.removeGraphComponent();
   }
 
-  showData() {
-    let xAxisStart = this.x + 50;
-    let xAxisEnd = this.x + this.w - 50;
-    let yAxisStart = this.y + this.h - 50;
-    let yAxisEnd = this.y + 50;
+  drawGridLines({ xCount, yCount, xStart, xEnd, yStart, yEnd }) {
+    const commands = [{ func: "stroke", args: [100] }];
+    for (let i = 0; i < xCount; i++) {
+      let x = map(i, 0, xCount - 1, xStart, xEnd);
+      commands.push({ func: "line", args: [x, yStart, x, yEnd] });
+    }
 
-    const xLabelsCount = 20;
-    const yLabelsCount = 10;
-
-    const commands = [];
-
-    let minLoss = Math.min(...this.data.map((record) => record.data));
-    let maxLoss = Math.max(...this.data.map((record) => record.data));
-
-    const drawGridLines = () => {
-      for (let i = 0; i < xLabelsCount; i++) {
-        let x = map(i, 0, xLabelsCount - 1, xAxisStart, xAxisEnd);
-        commands.push({ func: "line", args: [x, yAxisStart, x, yAxisEnd] });
-      }
-
-      for (let i = 0; i <= yLabelsCount; i++) {
-        let y = map(i, 0, yLabelsCount, yAxisStart, yAxisEnd);
-        commands.push({ func: "line", args: [xAxisStart, y, xAxisEnd, y] });
-      }
-    };
-
-    const drawXAxisLabels = () => {
-      for (let i = 0; i < xLabelsCount; i++) {
-        let x = map(i, 0, xLabelsCount - 1, xAxisStart, xAxisEnd);
-        let label = i < this.data.length ? i : "";
-        commands.push({ func: "text", args: [label, x, yAxisStart + 15] });
-      }
-    };
-
-    const drawYAxisLabels = () => {
-      for (let i = 0; i <= yLabelsCount; i++) {
-        let y = map(i, 0, yLabelsCount, yAxisStart, yAxisEnd);
-        let label = (
-          (maxLoss - minLoss) * (i / yLabelsCount) +
-          minLoss
-        ).toFixed(2);
-        commands.push({ func: "text", args: [label, xAxisStart - 35, y + 5] });
-      }
-    };
-
-    const drawLossLine = () => {
-      commands.push({ func: "stroke", args: [0, 153, 255] });
-      commands.push({ func: "beginShape", args: [] });
-
-      for (let i = 0; i < this.data.length; i++) {
-        let x = map(i, 0, xLabelsCount - 1, xAxisStart, xAxisEnd);
-        let y = map(this.data[i].data, minLoss, maxLoss, yAxisStart, yAxisEnd);
-
-        commands.push({ func: "vertex", args: [x, y] });
-
-        commands.push(
-          { func: "noFill", args: [] },
-          { func: "stroke", args: [255, 0, 0] },
-
-          { func: "fill", args: [255, 0, 0] },
-          { func: "ellipse", args: [x, y, 4] },
-          { func: "noFill", args: [] },
-        );
-      }
-
-      commands.push({ func: "endShape", args: [] });
-    };
-
-    const drawHeader = () => {
-      commands.push(
-        { func: "textAlign", args: [CENTER] },
-        { func: "textSize", args: [16] },
-        { func: "fill", args: [255] },
-        { func: "stroke", args: [255] },
-        {
-          func: "text",
-          args: ["Loss Value over Steps", this.x + this.w / 2, this.y + 30],
-        },
-      );
-    };
-
-    commands.push({ func: "stroke", args: [100] });
-    drawGridLines();
-    commands.push({ func: "stroke", args: [255] });
-    commands.push({ func: "fill", args: [255] });
-    drawXAxisLabels();
-    drawYAxisLabels();
-    drawLossLine();
-    drawHeader();
-
+    for (let i = 0; i <= yCount; i++) {
+      let y = map(i, 0, yCount, yStart, yEnd);
+      commands.push({ func: "line", args: [xStart, y, xEnd, y] });
+    }
     executeDrawingCommands(commands);
+  }
+
+  drawYAxisLabels({ xStart, yCount, yStart, yEnd, maxL, minL }) {
+    const commands = [
+      { func: "fill", args: [255] },
+      { func: "noStroke", args: [] },
+    ];
+    for (let i = 0; i <= yCount; i++) {
+      let y = map(i, 0, yCount, yStart, yEnd);
+      let label = ((maxL - minL) * (i / yCount) + minL).toFixed(2);
+      commands.push({ func: "text", args: [label, xStart - 35, y + 5] });
+    }
+    executeDrawingCommands(commands);
+  }
+
+  drawLossLine({ xCount, xStart, xEnd, yStart, yEnd, maxL, minL }) {
+    const commands = [];
+    const data = this.data;
+    const half = xCount / 2;
+
+    commands.push({ func: "beginShape", args: [] });
+    for (let i = 0; i < data.length; i++) {
+      let x;
+      let label = "";
+      if (data.length <= half) {
+        x = map(i, 0, data.length, xStart, xEnd);
+        label = data[i].step;
+      } else if (i < data.length - half) {
+        x = map(i, 0, data.length - half, xStart, xStart + (xEnd - xStart) / 2);
+        if (i % ~~(data.length - half / half) == 0) {
+          label = data[i].step;
+        }
+      } else {
+        x = map(
+          i - data.length + half,
+          0,
+          10,
+          xStart + (xEnd - xStart) / 2,
+          xEnd,
+        );
+        label = data[i].step - data.length - 10;
+      }
+      const y = map(data[i].data, minL, maxL, yStart, yEnd);
+
+      commands.push(
+        { func: "vertex", args: [x, y] },
+        { func: "fill", args: [255, 0, 0] },
+        { func: "ellipse", args: [x, y, 2] },
+        { func: "fill", args: [255] },
+        { func: "noStroke", args: [] },
+        { func: "text", args: [data[i].step, x, yStart + 15] },
+        { func: "stroke", args: [255, 0, 0] },
+        { func: "noFill", args: [] },
+      );
+    }
+    commands.push({ func: "endShape", args: [] });
+    executeDrawingCommands(commands);
+  }
+
+  drawHeader() {
+    const commands = [
+      { func: "textAlign", args: [CENTER] },
+      { func: "textSize", args: [16] },
+      { func: "fill", args: [255] },
+      { func: "stroke", args: [255] },
+      {
+        func: "text",
+        args: ["Loss Value over Steps", this.x + this.w / 2, this.y + 30],
+      },
+    ];
+    executeDrawingCommands(commands);
+  }
+
+  showData() {
+    let minL = Infinity;
+    let maxL = -Infinity;
+
+    for (const record of this.data) {
+      const value = record.data;
+      if (value < minL) minL = value;
+      if (value > maxL) maxL = value;
+    }
+
+    const parameters = {
+      xCount: 20,
+      yCount: 10,
+      xStart: this.x + 50,
+      xEnd: this.x + this.w - 50,
+      yStart: this.y + this.h - 50,
+      yEnd: this.y + 50,
+      maxL,
+      minL,
+    };
+
+    this.drawGridLines(parameters);
+    this.drawYAxisLabels(parameters);
+    this.drawLossLine(parameters);
+    this.drawHeader();
   }
 }
