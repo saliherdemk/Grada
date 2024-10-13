@@ -91,17 +91,21 @@ function convertSetsToArrays(obj) {
 }
 
 function downloadJSON(obj, filename) {
-  const jsonStr = JSON.stringify(obj, null, 2);
-  const blob = new Blob([jsonStr], { type: "application/json" });
-  const link = document.createElement("a");
-  const url = URL.createObjectURL(blob);
+  try {
+    const jsonStr = JSON.stringify(obj, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
 
-  link.href = url;
-  link.download = `${filename}.json`;
+    link.href = url;
+    link.download = `${filename}.json`;
 
-  document.body.appendChild(link);
-  link.click();
+    document.body.appendChild(link);
+    link.click();
 
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    alert(e);
+  }
 }

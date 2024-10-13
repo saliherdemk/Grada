@@ -1,12 +1,11 @@
 class MlpView extends Playable {
   constructor() {
     super();
-    this.inputComponent = null;
-    this.outputComponent = null;
     this.zenMode = false;
     this.loading = false;
     this.loadingText = "";
     this.layers = [];
+    this.dots = [new CalculationDot(this), new GraphDot(this)];
     this.label = "MLP1";
     this.origin = null;
     this.lr = 0.1;
@@ -15,6 +14,25 @@ class MlpView extends Playable {
     this.mode = "train";
     this.propsShown = false;
     this.selected = false;
+  }
+
+  getAllParameters() {
+    let layersParameters = [];
+
+    for (let i = 1; i < this.layers.length; i++) {
+      const neurons = [...this.layers[i].neurons];
+
+      const lines = this.layers[i - 1].neurons.map((prevNeuron) => {
+        return this.layers[i].neurons.map((_, j) => {
+          let a = prevNeuron.lines[j];
+          return a;
+        });
+      });
+
+      layersParameters.push({ lines, neurons });
+    }
+
+    return layersParameters;
   }
 
   setLoadingText(text) {
@@ -27,38 +45,6 @@ class MlpView extends Playable {
 
   isLoading() {
     return this.loading;
-  }
-
-  setInputComponent(component) {
-    this.inputComponent = component;
-    mainOrganizer.removeComponent(component);
-    this.checkCompleted();
-  }
-
-  getInput() {
-    return this.inputComponent;
-  }
-
-  setOutputComponent(component) {
-    this.outputComponent = component;
-    mainOrganizer.removeComponent(component);
-    this.checkCompleted();
-  }
-
-  getOutput() {
-    return this.outputComponent;
-  }
-
-  clearInput() {
-    mainOrganizer.addComponent(this.inputComponent);
-    this.inputComponent = null;
-    this.checkCompleted();
-  }
-
-  clearOutput() {
-    mainOrganizer.addComponent(this.outputComponent);
-    this.outputComponent = null;
-    this.checkCompleted();
   }
 
   isInactive() {
@@ -104,7 +90,7 @@ class MlpView extends Playable {
 
   handleSetMode(mode) {
     this.setMode(mode);
-    this.checkCompleted();
+    this.isInitialized() && this.checkCompleted();
   }
 
   handleSetZenMode(mode) {
@@ -150,6 +136,10 @@ class MlpView extends Playable {
     });
   }
 
+  updateDotsCoordinates() {
+    this.dots.forEach((d) => d.updateCoordinates());
+  }
+
   getPrevAndNext(layer) {
     const layers = this.getLayers();
     const index = layers.indexOf(layer);
@@ -160,8 +150,59 @@ class MlpView extends Playable {
     return this.layers;
   }
 
+  sliceData(weights, biases, outputs) {
+    const maxRows = 5;
+    const maxCols = 5;
+    const slicedW = weights.data
+      .slice(0, maxRows)
+      .map((row) => row.slice(0, maxCols));
+
+    const slicedB = biases.data.slice(0, maxRows);
+
+    const slicedO = outputs.data
+      .slice(0, maxRows)
+      .map((row) => row.slice(0, maxCols));
+
+    return {
+      slicedW,
+      slicedB,
+      slicedO,
+      sw: weights.shape,
+      sb: biases.shape,
+      so: outputs.shape,
+    };
+  }
+
+  updateParameters() {
+    const layersElements = this.getAllParameters();
+    const layers = this.origin.layers;
+    const slicedDataAll = [];
+
+    for (let i = 0; i < layers.length; i++) {
+      const { weights, biases, outputs } = layers[i];
+      if (this.calculationComponent) {
+        slicedDataAll.push(this.sliceData(weights, biases, outputs));
+      }
+      const { lines, neurons } = layersElements[i];
+      for (let i = 0; i < neurons.length; i++) {
+        neurons[i].setOutput(outputs.data[0][i]);
+        neurons[i].setBias(biases.data[i]);
+        neurons[i].setBiasGrad(biases.grad?.[i] ?? 0);
+      }
+
+      for (let j = 0; j < lines.length; j++) {
+        for (let k = 0; k < lines[0].length; k++) {
+          lines[j][k].setWeight(weights.data[j][k]);
+          lines[j][k].setGrad(weights.grad?.[j][k] ?? 0);
+        }
+      }
+    }
+    this.calculationComponent?.setData(slicedDataAll);
+  }
+
   setOrigin(obj) {
     this.origin = obj;
+    this.updateParameters();
   }
 
   moveLayers(targetMlpView) {
@@ -200,11 +241,18 @@ class MlpView extends Playable {
     this.w = lastX - firstX + 70;
     this.h = lastY - firstY + 75;
     this.updateButtonsCoordinates();
+    this.updateDotsCoordinates();
   }
 
   getLayerReversed() {
     return reverseArray(
-      [this.getInput(), ...this.getLayers(), this.getOutput()].filter(Boolean),
+      [
+        this.getInput(),
+        ...this.getLayers(),
+        this.getOutput(),
+        this.calculationComponent,
+        this.graphComponent,
+      ].filter(Boolean),
     );
   }
 
@@ -214,7 +262,9 @@ class MlpView extends Playable {
       layer,
     ]);
 
-    return [...pressables, ...this.controlButtons].filter(Boolean);
+    return [...pressables, ...this.controlButtons, ...this.dots].filter(
+      Boolean,
+    );
   }
 
   resetCoordinates() {
@@ -243,13 +293,23 @@ class MlpView extends Playable {
     );
 
     originLayer.parent.updateBorders();
+    const calcComponent = this.calculationComponent;
+    calcComponent?.setCoordinates(
+      this.x - (calcComponent.w - this.w) / 2,
+      this.y + this.h + 100,
+    );
+    const graphComponent = this.graphComponent;
+    graphComponent?.setCoordinates(
+      this.x - (graphComponent.w - this.w) / 2,
+      this.y - 400,
+    );
   }
 
   handlePressed() {
     if (!this.isLoading() && !this.zenMode) {
       this.getPressables().forEach((p) => p.handlePressed());
     }
-    iManager.checkRollout(this);
+    super.handlePressed();
   }
 
   handleKeyPressed() {
@@ -283,6 +343,7 @@ class MlpView extends Playable {
     this.getInput()?.clearLines();
     this.getOutput()?.clearLines();
     this.getLayers().forEach((l) => l.destroy());
+    this.calculationComponent?.destroy();
     this.setLayers([]);
     if (editMLPOrganizer.getSelected() == this) {
       editMLPOrganizer.disable();
@@ -371,6 +432,7 @@ class MlpView extends Playable {
     this.inputComponent?.draw();
     this.getLayers().forEach((layer) => layer.draw());
     this.outputComponent?.draw();
+    this.dots.forEach((d) => d.draw());
     if (this.isLoading()) {
       LoadingIndiactor.drawText(
         this.x,
@@ -380,6 +442,8 @@ class MlpView extends Playable {
         this.loadingText,
       );
     }
+    this.calculationComponent?.draw();
+    this.graphComponent?.draw();
   }
 
   export() {
@@ -390,8 +454,11 @@ class MlpView extends Playable {
       batchSize: this.batchSize,
       errFunc: this.errFunc,
     };
-    const originProps = this.origin.export();
-    const sanitized = convertSetsToArrays({ ...viewsProps, ...originProps });
+    const originProps = this.origin?.export() ?? null;
+    const sanitized = convertSetsToArrays({
+      ...viewsProps,
+      origin: originProps,
+    });
 
     downloadJSON(sanitized, this.label);
   }
@@ -404,8 +471,9 @@ class MlpView extends Playable {
     this.setLabel(label);
     this.setMode("eval");
     this.resetCoordinates();
+    if (!mlpData.origin) return;
     await this.toggleMlp();
-    const { parameters, stepCounter, epoch } = mlpData;
-    this.origin.import(parameters, stepCounter, epoch);
+    this.origin.import(mlpData.origin);
+    this.updateParameters();
   }
 }

@@ -1,61 +1,26 @@
-class Dot {
-  constructor(parent) {
-    this.parent = parent;
-    this.rollover = false;
-    this.occupied = false;
-    this.r = 20;
-    this.hidden = false;
-    this.color = [244, 63, 94];
-    this.theme = "red";
-    this.setColor();
-    this.updateCoordinates();
-  }
-
-  isHidden() {
-    return this.hidden || this.isOccupied();
-  }
-
-  hide() {
-    this.hidden = true;
-  }
-
-  visible() {
-    this.hidden = false;
-  }
-
-  isInput() {
-    return this.parent.inputDot == this;
-  }
-
-  isOccupied() {
-    return this.occupied;
+class LayerDot extends Dot {
+  constructor(parent, isInput = false) {
+    super(parent, isInput);
+    this.setColor("red");
   }
 
   occupy() {
-    this.occupied = true;
+    super.occupy();
     this.parent.removeButton?.changeImg("brokenLink");
   }
 
   free() {
-    this.occupied = false;
+    super.free();
     const parent = this.parent;
     const allFree = parent.getDots().every((d) => !d?.isOccupied());
 
     allFree && parent.removeButton?.changeImg("delete");
   }
 
-  destroy() {
-    this.parent = null;
-  }
-
   updateCoordinates() {
     const parent = this.parent;
     this.x = this.isInput() ? parent.x : parent.x + parent.w;
     this.y = parent.y + parent.h / 2;
-  }
-
-  over() {
-    this.rollover = iManager.isHovered(this);
   }
 
   handlePressed() {
@@ -69,22 +34,12 @@ class Dot {
       return;
     }
     if (activeLine.from.getTheme() !== this.getTheme()) return;
-
     if (this.isInput()) {
-      const layer1 = activeLine.from.parent;
       const layer2 = this.parent;
+      const layer1 = activeLine.from.parent;
       layer1 !== layer2 && layer1.connectLayer(layer2);
     }
     mainOrganizer.setActiveLine(null);
-  }
-
-  getTheme() {
-    return this.theme;
-  }
-
-  setColor(theme = "red") {
-    this.theme = theme;
-    this.color = themeManager.getColor(theme);
   }
 
   show() {
@@ -98,11 +53,5 @@ class Dot {
     ];
 
     executeDrawingCommands(commands);
-  }
-
-  draw() {
-    if (this.isHidden()) return;
-    this.show();
-    this.over();
   }
 }

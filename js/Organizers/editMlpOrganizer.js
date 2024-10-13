@@ -18,6 +18,11 @@ class EditMLPOrganizer extends EditOrganizer {
         handler: this.updateLr,
       },
       {
+        id: "mlp-lr-number",
+        event: "change",
+        handler: this.updateLrNumber,
+      },
+      {
         id: "mlp-batch-size",
         event: "input",
         handler: this.updateBatchSize,
@@ -69,7 +74,18 @@ class EditMLPOrganizer extends EditOrganizer {
   }
 
   updateLr(e) {
+    getElementById("mlp-lr-number").value = e.target.value;
     this.getSelected().setLr(e.target.value);
+  }
+
+  updateLrNumber(e) {
+    let value = parseFloat(e.target.value);
+
+    value = Math.max(0, Math.min(value, 1)).toFixed(3);
+
+    const lrInput = getElementById("mlp-lr");
+    lrInput.value = value;
+    lrInput.dispatchEvent(new Event("input"));
   }
 
   updateBatchSize(e) {
@@ -119,6 +135,7 @@ class EditMLPOrganizer extends EditOrganizer {
     const selected = this.getSelected();
     setElementProperties("mlp-label", { value: selected.label });
     setElementProperties("mlp-lr", { value: selected.lr });
+    setElementProperties("mlp-lr-number", { value: selected.lr });
     setElementProperties(`mlp-batch-size`, { value: selected.batchSize });
     setElementProperties("err-function-select", { value: selected.errFunc });
     setElementProperties(`mode-${selected.mode}`, { checked: true });

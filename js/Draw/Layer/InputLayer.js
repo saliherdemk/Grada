@@ -15,18 +15,16 @@ class InputLayer extends IOLayer {
     super.initialize();
   }
 
-  updateBatch() {
-    const { batchX } = this.getDataset().getBatch(this.currentIndex, 6);
-    this.batch = batchX;
+  getData() {
+    return this.getDataset().getBatch(
+      this.currentIndex,
+      this.connected.parent.batchSize,
+    ).batchX;
   }
 
-  fetchNext() {
-    super.fetchNext();
-
-    this.batch[0].forEach((value, i) => {
-      const n = this.connected.neurons[i];
-      n.setOutput(value);
-    });
+  updateShownBatch() {
+    const { batchX } = this.getDataset().getBatch(this.currentIndex, 6);
+    this.batch = batchX;
   }
 
   draw() {

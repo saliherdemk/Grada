@@ -21,34 +21,93 @@ class ActivationFunctionManager {
   }
 
   tanh(x) {
-    const output = x.map((_x) => {
-      const e = _x.mul(2).exp();
-      return e.sub(new Value(1)).div(e.add(new Value(1)));
-    });
+    const result = x.data.map((row) => row.map((_x) => Math.tanh(_x)));
+    const output = new Tensor(result);
+    output._prev = [x];
+
+    output._backward = function () {
+      if (x.grad === null) {
+        x.grad = x.data.map((row) => row.map(() => 0));
+      }
+      for (let i = 0; i < x.data.length; i++) {
+        for (let j = 0; j < x.data[0].length; j++) {
+          x.grad[i][j] +=
+            (1 - Math.tanh(x.data[i][j]) ** 2) * output.grad[i][j];
+        }
+      }
+    };
+
     return output;
   }
 
   relu(x) {
-    const output = x.map((_x) => {
-      let data = _x.data;
-      let out = new Value(Math.max(0, data), [_x]);
-      out.backward = function () {
-        _x.grad += data > 0 ? 1 : 0;
-      };
-      return out;
-    });
+    const result = x.data.map((row) => row.map((_x) => Math.max(0, _x)));
+    const output = new Tensor(result);
+    output._prev = [x];
+
+    output._backward = function () {
+      if (x.grad === null) {
+        x.grad = x.data.map((row) => row.map(() => 0));
+      }
+      for (let i = 0; i < x.data.length; i++) {
+        for (let j = 0; j < x.data[0].length; j++) {
+          x.grad[i][j] += (x.data[i][j] > 0 ? 1 : 0) * output.grad[i][j];
+        }
+      }
+    };
+
     return output;
   }
 
   sigmoid(x) {
-    return x.map((_x) => new Value(1).div(new Value(1).add(_x.neg().exp())));
+    const result = x.data.map((row) =>
+      row.map((_x) => 1 / (1 + Math.exp(-_x))),
+    );
+    const output = new Tensor(result);
+    output._prev = [x];
+
+    output._backward = function () {
+      if (x.grad === null) {
+        x.grad = x.data.map((row) => row.map(() => 0));
+      }
+      for (let i = 0; i < x.data.length; i++) {
+        for (let j = 0; j < x.data[0].length; j++) {
+          const sig = 1 / (1 + Math.exp(-x.data[i][j]));
+          x.grad[i][j] += sig * (1 - sig) * output.grad[i][j];
+        }
+      }
+    };
+
+    return output;
   }
 
   softmax(x) {
-    let denominator = new Value(0);
-    x.forEach((_x) => {
-      denominator = denominator.add(_x.exp());
-    });
-    return x.map((_x) => _x.exp().div(denominator));
+    const maxVal = x.data.map((row) => Math.max(...row));
+    const exps = x.data.map((row, i) =>
+      row.map((_x) => Math.exp(_x - maxVal[i])),
+    );
+    const sums = exps.map((row) => row.reduce((a, b) => a + b, 0));
+    const softmaxResult = exps.map((row, i) => row.map((_x) => _x / sums[i]));
+
+    const output = new Tensor(softmaxResult);
+    output._prev = [x];
+
+    output._backward = function () {
+      if (x.grad === null) {
+        x.grad = x.data.map((row) => row.map(() => 0));
+      }
+
+      for (let i = 0; i < output.data.length; i++) {
+        for (let j = 0; j < output.data[0].length; j++) {
+          for (let k = 0; k < output.data[0].length; k++) {
+            const gradVal =
+              output.data[i][j] * ((j === k ? 1 : 0) - output.data[i][k]);
+            x.grad[i][k] += output.grad[i][j] * gradVal;
+          }
+        }
+      }
+    };
+
+    return output;
   }
 }

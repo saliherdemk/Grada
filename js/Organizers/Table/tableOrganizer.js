@@ -51,14 +51,6 @@ class TableOrganizer extends FunctionalTable {
     addClass(getElementById("download-dataset-btn"), "hidden");
   }
 
-  reset() {
-    this.name = "";
-    this.xData = [];
-    this.yData = [];
-    this.xLabels = [];
-    this.yLabels = [];
-  }
-
   setEditDatasetLayout() {
     removeClass(getElementById("edit-dataset-container"), "hidden");
     removeClass(getElementById("create-dataset-btn"), "hidden");
@@ -132,6 +124,7 @@ class TableOrganizer extends FunctionalTable {
   createDataset() {
     this.mode == 1 && this.setDataFromTable();
     datasetOrganizer.addDataset(new Dataset(this.name, this.getData()));
+    this.reset();
   }
 
   downloadDataset() {

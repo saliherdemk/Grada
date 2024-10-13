@@ -33,7 +33,7 @@ class TextButton extends CanvasButton {
 
     const { defaultColor, activeColor } = this.getTheme();
 
-    const color = this.isRollout() ? defaultColor : activeColor;
+    const color = this.isRollout() ? activeColor : defaultColor;
 
     const commands = [
       { func: "fill", args: color },

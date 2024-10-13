@@ -2,7 +2,6 @@ class HiddenLayer extends FunctionalLayerView {
   constructor(x, y) {
     super(x, y, 55, 0);
     this.parent = null;
-    this.origin = null;
     this.actFunc = "";
     this.initialize();
   }
@@ -54,21 +53,23 @@ class HiddenLayer extends FunctionalLayerView {
     next && this.connectLayer(next);
   }
 
-  connectLayer(targetLayer) {
+  async connectLayer(targetLayer) {
     if (targetLayer instanceof Component) {
       targetLayer.connectLayer(this);
       return;
     }
+
     if (this.parent == targetLayer.parent) return;
 
-    this.connectNeurons(targetLayer);
     targetLayer.parent.moveLayers(this.parent);
+    await this.connectNeurons(targetLayer);
   }
 
   async connectNeurons(targetLayer, batchSize = 10000) {
     const parent = this.parent;
     const totalConnections = this.neurons.length * targetLayer.neurons.length;
     let processedConnections = 0;
+
     parent.setLoading(true);
 
     for (let i = 0; i < this.neurons.length; i++) {
@@ -155,23 +156,6 @@ class HiddenLayer extends FunctionalLayerView {
   postUpdateCoordinates() {
     super.postUpdateCoordinates();
     this.parent.updateBorders();
-  }
-
-  clearOrigin() {
-    this.neurons.forEach((n) => n.clearOrigin());
-    this.origin = null;
-  }
-
-  setOrigin(obj) {
-    // Thanks to MLP class, we can't get rid of this mess. There is no input layer in original MLP class and all weights belongs to target neurons. Too much work to change. Maybe later.
-    const { prev } = this.parent.getPrevAndNext(this);
-    for (let i = 0; i < this.neurons.length; i++) {
-      for (let j = 0; j < prev.neurons.length; j++) {
-        this.neurons[i].setOrigin(obj.neurons[i]);
-        prev.neurons[j].lines[i].setOrigin(obj.neurons[i].w[j]);
-      }
-    }
-    this.origin = obj;
   }
 
   destroy() {
