@@ -58,7 +58,7 @@ class MLP extends MlpParams {
       mlp_output,
       new Tensor(y_batch),
     );
-    this.addLossData({ step: this.stepCounter, data: loss.data[0][0] });
+    this.addLossData(loss.data[0][0]);
 
     this.zeroGrad();
     loss.backward();
@@ -75,12 +75,14 @@ class MLP extends MlpParams {
       biases: biases.map((b) => b.data),
       seenRecordNum: this.seenRecordNum,
       stepCounter: this.stepCounter,
+      lossData: this.lossData,
     };
   }
 
-  import(weights, biases, seenRecordNum, stepCounter) {
+  import({ weights, biases, seenRecordNum, stepCounter, lossData }) {
     this.seenRecordNum = seenRecordNum;
     this.stepCounter = stepCounter;
+    this.lossData = lossData;
     for (let i = 0; i < this.layers.length; i++) {
       this.layers[i].setParameters(weights[i], biases[i]);
     }

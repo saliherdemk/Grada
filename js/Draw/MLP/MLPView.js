@@ -293,6 +293,16 @@ class MlpView extends Playable {
     );
 
     originLayer.parent.updateBorders();
+    const calcComponent = this.calculationComponent;
+    calcComponent?.setCoordinates(
+      this.x - (calcComponent.w - this.w) / 2,
+      this.y + this.h + 100,
+    );
+    const graphComponent = this.graphComponent;
+    graphComponent?.setCoordinates(
+      this.x - (graphComponent.w - this.w) / 2,
+      this.y - 400,
+    );
   }
 
   handlePressed() {
@@ -463,8 +473,7 @@ class MlpView extends Playable {
     this.resetCoordinates();
     if (!mlpData.origin) return;
     await this.toggleMlp();
-    const { weights, biases, seenRecordNum, stepCounter } = mlpData.origin;
-    this.origin.import(weights, biases, seenRecordNum, stepCounter);
+    this.origin.import(mlpData.origin);
     this.updateParameters();
   }
 }

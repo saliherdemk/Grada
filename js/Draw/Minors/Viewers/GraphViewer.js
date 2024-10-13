@@ -48,43 +48,77 @@ class GraphViewer extends Viewer {
     const commands = [];
     const data = this.data;
     const half = xCount / 2;
+    const totalData = data.length;
 
     commands.push({ func: "beginShape", args: [] });
-    for (let i = 0; i < data.length; i++) {
-      let x;
-      let label = "";
-      if (data.length <= half) {
-        x = map(i, 0, data.length, xStart, xEnd);
-        label = data[i].step;
-      } else if (i < data.length - half) {
-        x = map(i, 0, data.length - half, xStart, xStart + (xEnd - xStart) / 2);
-        if (i % ~~(data.length - half / half) == 0) {
-          label = data[i].step;
-        }
-      } else {
-        x = map(
-          i - data.length + half,
-          0,
-          10,
-          xStart + (xEnd - xStart) / 2,
-          xEnd,
-        );
-        label = data[i].step - data.length - 10;
-      }
-      const y = map(data[i].data, minL, maxL, yStart, yEnd);
+
+    for (let i = 0; i < totalData; i++) {
+      let x = this.calculateX(i, totalData, xCount, xStart, xEnd, half);
+      const y = map(data[i], minL, maxL, yStart, yEnd);
+      const { label, rotate } = this.getLabelAndRotation(
+        i,
+        totalData,
+        xCount,
+        half,
+      );
+
+      this.drawLabel(label, x, yStart + 15, rotate);
 
       commands.push(
         { func: "vertex", args: [x, y] },
         { func: "fill", args: [255, 0, 0] },
         { func: "ellipse", args: [x, y, 2] },
-        { func: "fill", args: [255] },
-        { func: "noStroke", args: [] },
-        { func: "text", args: [data[i].step, x, yStart + 15] },
         { func: "stroke", args: [255, 0, 0] },
         { func: "noFill", args: [] },
       );
     }
+
     commands.push({ func: "endShape", args: [] });
+    executeDrawingCommands(commands);
+  }
+
+  calculateX(i, totalData, xCount, xStart, xEnd, half) {
+    if (totalData <= xCount) {
+      return map(i, 0, totalData, xStart, xEnd);
+    } else if (i < totalData - half) {
+      return map(i, 0, totalData - half, xStart, xStart + (xEnd - xStart) / 2);
+    } else {
+      return (
+        map(i - totalData + half, 0, 10, xStart + (xEnd - xStart) / 2, xEnd) +
+        20
+      );
+    }
+  }
+
+  getLabelAndRotation(i, totalData, xCount, half) {
+    let label = "";
+    let rotate = false;
+
+    if (totalData <= xCount) {
+      label = i + 1;
+    } else if (
+      i === 0 ||
+      i === totalData - half - 1 ||
+      i === ~~((totalData - half) / 2)
+    ) {
+      label = i + 1;
+      rotate = i === totalData - half - 1;
+    } else if (i >= totalData - half) {
+      label = i - (totalData - half) + 1;
+    }
+
+    return { label, rotate };
+  }
+
+  drawLabel(label, x, y, rotate) {
+    const commands = [
+      { func: "translate", args: [x, y] },
+      { func: "rotate", args: [rotate ? HALF_PI : 0] },
+      { func: "textAlign", args: [CENTER, CENTER] },
+      { func: "fill", args: [255] },
+      { func: "noStroke", args: [] },
+      { func: "text", args: [label, 0, 0] },
+    ];
     executeDrawingCommands(commands);
   }
 
@@ -107,7 +141,7 @@ class GraphViewer extends Viewer {
     let maxL = -Infinity;
 
     for (const record of this.data) {
-      const value = record.data;
+      const value = record;
       if (value < minL) minL = value;
       if (value > maxL) maxL = value;
     }
@@ -116,7 +150,7 @@ class GraphViewer extends Viewer {
       xCount: 20,
       yCount: 10,
       xStart: this.x + 50,
-      xEnd: this.x + this.w - 50,
+      xEnd: this.x + this.w - 25,
       yStart: this.y + this.h - 50,
       yEnd: this.y + 50,
       maxL,

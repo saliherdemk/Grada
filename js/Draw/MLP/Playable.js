@@ -57,7 +57,10 @@ class Playable extends Draggable {
   }
 
   setCalculationComponent(calcComponent) {
-    calcComponent.setCoordinates(this.x + this.w / 2, this.y + this.h + 100);
+    calcComponent.setCoordinates(
+      this.x - (calcComponent.w - this.w) / 2,
+      this.y + this.h + 100,
+    );
     this.calculationComponent = calcComponent;
   }
 
@@ -68,7 +71,10 @@ class Playable extends Draggable {
   }
 
   setGraphComponent(graphComponent) {
-    graphComponent.setCoordinates(this.x + this.w + 100, this.y + 100);
+    graphComponent.setCoordinates(
+      this.x - (graphComponent.w - this.w) / 2,
+      this.y - 400,
+    );
     graphComponent.setData(this.origin.getLossData());
     this.graphComponent = graphComponent;
   }
@@ -266,6 +272,7 @@ class Playable extends Draggable {
     this.pause();
     this.clearOrigin();
     this.removeCalculationComponent();
+    this.removeGraphComponent();
     this.isPropsShown() && this.togglePropsShown();
     this.getInput()?.clearLines();
     this.getOutput()?.clearLines();
