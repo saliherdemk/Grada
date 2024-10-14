@@ -5,7 +5,8 @@ class CalculationViewer extends Viewer {
     this.cellSize = 240;
     this.headerSize = 50;
     this.rows = 0;
-    this.padding = 30;
+    this.paddingX = 50;
+    this.paddingY = 30;
     this.w = this.cellSize * 5 + this.headerSize;
   }
 
@@ -43,19 +44,24 @@ class CalculationViewer extends Viewer {
     this.postUpdateCoordinates();
   }
 
+  formatScientific(num, significantDigits) {
+    return parseFloat(num).toExponential(significantDigits);
+  }
+
   formatMatrix(data, shape, x, y) {
     data = data.map((d) =>
       d instanceof Array
-        ? d.map((_d) => parseFloat(_d).toFixed(2))
-        : [parseFloat(d).toFixed(2)],
+        ? d.map((_d) => this.formatScientific(_d, 2))
+        : [this.formatScientific(d, 2)],
     );
-    const p = this.padding;
+    const px = this.paddingX;
+    const py = this.paddingY;
 
     const rowExceeds = shape[1] > data[0].length;
     const colExceeds = shape[0] > data.length;
 
-    const w = data[0].length * p + (+rowExceeds ? p : p / 2) + 7;
-    const h = data.length * p + (+colExceeds ? p / 2 : 0) - 9;
+    const w = data[0].length * px + (+rowExceeds ? px : px / 2) + 9;
+    const h = data.length * py + (+colExceeds ? py / 2 : 0) - 9;
     x = x + (this.cellSize - w) / 2 + this.headerSize + this.headerSize / 4;
     y = y + (this.cellSize - h) / 2 + this.headerSize;
 
@@ -68,23 +74,24 @@ class CalculationViewer extends Viewer {
 
   showMatrix(dataObject) {
     const { data, shape, x, y, w, h, rowExceeds, colExceeds } = dataObject;
-    const p = this.padding;
+    const px = this.paddingX;
+    const py = this.paddingY;
     const absoluteX = this.x + x;
     const absoluteY = this.y + y;
 
     const commands = [];
     data.forEach((row, i) => {
       row.forEach((_, j) => {
-        const elementX = absoluteX + j * p + p / 2;
-        const elementY = absoluteY + i * p + p / 2;
+        const elementX = absoluteX + j * px + px / 2;
+        const elementY = absoluteY + i * py + py / 2;
         commands.push(this.createTxtCmd(row[j], elementX, elementY));
 
         if (rowExceeds && j == row.length - 1) {
-          commands.push(this.createTxtCmd("...", elementX + p, elementY));
+          commands.push(this.createTxtCmd("...", elementX + px, elementY));
         }
         if (colExceeds && i == data.length - 1) {
           commands.push(
-            this.createTxtCmd("...", elementX + 10, elementY + p / 2),
+            this.createTxtCmd("...", elementX + 10, elementY + py / 2),
           );
         }
       });
@@ -147,7 +154,7 @@ class CalculationViewer extends Viewer {
       { func: "textAlign", args: [CENTER, CENTER] },
     ];
 
-    const { x, y, cellSize: cs, headerSize: hs, padding: p } = this;
+    const { x, y, cellSize: cs, headerSize: hs, paddingY: p } = this;
 
     for (let i = 0; i <= this.rows; i++) {
       const yPos = y + (i ? (i - 1) * cs + hs : 0);
