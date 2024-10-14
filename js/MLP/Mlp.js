@@ -14,13 +14,6 @@ class MLP extends MlpParams {
     }
   }
 
-  forward(inputs) {
-    for (let i = 0; i < this.layers.length; i++) {
-      inputs = this.layers[i].forward(inputs);
-    }
-    return inputs;
-  }
-
   getParameters() {
     const allWeights = [];
     const allBiases = [];
@@ -50,10 +43,16 @@ class MLP extends MlpParams {
     });
   }
 
-  trainOneStep(x_batch, y_batch) {
-    const mlp_output = this.forward(new Tensor(x_batch));
-    if (this.mode == "eval") return;
+  forward(x_batch) {
+    let inputs = new Tensor(x_batch);
+    for (let i = 0; i < this.layers.length; i++) {
+      inputs = this.layers[i].forward(inputs);
+    }
+    return inputs;
+  }
 
+  backward(mlp_output, y_batch) {
+    if (this.mode == "eval") return;
     const loss = errFuncManager.getFunction(this.errFunc)(
       mlp_output,
       new Tensor(y_batch),

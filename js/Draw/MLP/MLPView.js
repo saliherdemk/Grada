@@ -179,16 +179,23 @@ class MlpView extends Playable {
     };
   }
 
+  setCalculationData() {
+    const layers = this.origin.layers;
+    const slicedDataAll = [];
+    for (let i = 0; i < layers.length; i++) {
+      const { weights, biases, z, outputs } = layers[i];
+      slicedDataAll.push(this.sliceData(weights, biases, z, outputs));
+    }
+    this.calculationComponent?.setData(slicedDataAll);
+  }
+
   updateParameters() {
     const layersElements = this.getAllParameters();
     const layers = this.origin.layers;
-    const slicedDataAll = [];
 
     for (let i = 0; i < layers.length; i++) {
-      const { weights, biases, z, outputs } = layers[i];
-      if (this.calculationComponent) {
-        slicedDataAll.push(this.sliceData(weights, biases, z, outputs));
-      }
+      const { weights, biases, outputs } = layers[i];
+
       const { lines, neurons } = layersElements[i];
       for (let i = 0; i < neurons.length; i++) {
         neurons[i].setOutput(outputs.data[0][i]);
@@ -203,7 +210,6 @@ class MlpView extends Playable {
         }
       }
     }
-    this.calculationComponent?.setData(slicedDataAll);
   }
 
   setOrigin(obj) {

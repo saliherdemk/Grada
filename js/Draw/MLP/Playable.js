@@ -308,7 +308,9 @@ class Playable extends Draggable {
       [parseInt(this.batchSize), this.getInput().shape[1]],
     );
     const outputData = this.getOutput()?.getData() ?? null;
-    await this.origin.trainOneStep(inputData, outputData);
+    const mlp_output = await this.origin.forward(inputData);
+    this.calculationComponent && this.setCalculationData();
+    await this.origin.backward(mlp_output, outputData);
     this.updateParameters();
     this.graphComponent?.setData(this.origin.getLossData());
     this.setMsPerStepText(performance.now() - startTime + "ms / step");
