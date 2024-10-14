@@ -6,7 +6,7 @@ class CalculationViewer extends Viewer {
     this.headerSize = 50;
     this.rows = 0;
     this.padding = 30;
-    this.w = this.cellSize * 4 + this.headerSize;
+    this.w = this.cellSize * 5 + this.headerSize;
   }
 
   adjustOffsets() {
@@ -23,19 +23,22 @@ class CalculationViewer extends Viewer {
 
   setData(data) {
     this.rows = 0;
-    data.forEach(({ slicedW, slicedB, slicedO, sb, sw, so }, i) => {
-      const y = this.rows * this.cellSize;
-      this.data.push(
-        this.formatMatrix(slicedW, sw, this.cellSize, y),
-        this.formatMatrix(slicedB, sb, this.cellSize * 2, y),
-        this.formatMatrix(slicedO, so, this.cellSize * 3, y),
-      );
-      if (i !== data.length - 1) {
+    data.forEach(
+      ({ slicedW, slicedB, slicedZ, slicedO, sb, sw, sz, so }, i) => {
+        const y = this.rows * this.cellSize;
         this.data.push(
-          this.formatMatrix(slicedO, so, 0, ++this.rows * this.cellSize),
+          this.formatMatrix(slicedW, sw, this.cellSize, y),
+          this.formatMatrix(slicedB, sb, this.cellSize * 2, y),
+          this.formatMatrix(slicedZ, sz, this.cellSize * 3, y),
+          this.formatMatrix(slicedO, so, this.cellSize * 4, y),
         );
-      }
-    });
+        if (i !== data.length - 1) {
+          this.data.push(
+            this.formatMatrix(slicedO, so, 0, ++this.rows * this.cellSize),
+          );
+        }
+      },
+    );
     this.h = ++this.rows * this.cellSize + this.headerSize;
     this.postUpdateCoordinates();
   }
@@ -100,7 +103,7 @@ class CalculationViewer extends Viewer {
   }
 
   showHeaders() {
-    const headers = ["Inputs", "Weights", "Biases", "Outputs"];
+    const headers = ["Inputs", "Weights", "Biases", "z", "σ(z)"];
     const x = this.x;
     const hs = this.headerSize;
     const cs = this.cellSize;
@@ -138,7 +141,7 @@ class CalculationViewer extends Viewer {
   }
 
   showSigns() {
-    const signs = ["@", "+", "="];
+    const signs = ["@", "+", "=", "=>"];
     const commands = [
       { func: "textSize", args: [16] },
       { func: "textAlign", args: [CENTER, CENTER] },

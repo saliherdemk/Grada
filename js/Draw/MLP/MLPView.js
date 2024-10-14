@@ -150,7 +150,7 @@ class MlpView extends Playable {
     return this.layers;
   }
 
-  sliceData(weights, biases, outputs) {
+  sliceData(weights, biases, z, outputs) {
     const maxRows = 5;
     const maxCols = 5;
     const slicedW = weights.data
@@ -159,6 +159,10 @@ class MlpView extends Playable {
 
     const slicedB = biases.data.slice(0, maxRows);
 
+    const slicedZ = z.data
+      .slice(0, maxRows)
+      .map((row) => row.slice(0, maxCols));
+
     const slicedO = outputs.data
       .slice(0, maxRows)
       .map((row) => row.slice(0, maxCols));
@@ -166,9 +170,11 @@ class MlpView extends Playable {
     return {
       slicedW,
       slicedB,
+      slicedZ,
       slicedO,
       sw: weights.shape,
       sb: biases.shape,
+      sz: z.shape,
       so: outputs.shape,
     };
   }
@@ -179,9 +185,9 @@ class MlpView extends Playable {
     const slicedDataAll = [];
 
     for (let i = 0; i < layers.length; i++) {
-      const { weights, biases, outputs } = layers[i];
+      const { weights, biases, z, outputs } = layers[i];
       if (this.calculationComponent) {
-        slicedDataAll.push(this.sliceData(weights, biases, outputs));
+        slicedDataAll.push(this.sliceData(weights, biases, z, outputs));
       }
       const { lines, neurons } = layersElements[i];
       for (let i = 0; i < neurons.length; i++) {

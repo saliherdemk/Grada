@@ -2,6 +2,7 @@ class DenseLayer {
   constructor() {
     this.weights = null;
     this.biases = null;
+    this.z = null;
     this.outputs = null;
     this.actFunc = actFuncManager.getFunction("mse");
   }
@@ -27,8 +28,8 @@ class DenseLayer {
   }
 
   forward(inputs) {
-    this.outputs = inputs.dot(this.weights).add(this.biases);
-    this.outputs = this.actFunc ? this.actFunc(this.outputs) : this.outputs;
+    this.z = inputs.dot(this.weights).add(this.biases);
+    this.outputs = this.actFunc ? this.actFunc(this.z) : this.z;
     return this.outputs;
   }
 
