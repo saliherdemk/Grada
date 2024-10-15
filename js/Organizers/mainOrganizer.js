@@ -40,6 +40,8 @@ class MainOrganizer {
       goOnce: p.loadImage("media/goOnce.png"),
       play: p.loadImage("media/play.png"),
       pause: p.loadImage("media/pause.png"),
+      zoomIn: p.loadImage("media/zoom-in.png"),
+      zoomOut: p.loadImage("media/zoom-out.png"),
     };
   }
 
