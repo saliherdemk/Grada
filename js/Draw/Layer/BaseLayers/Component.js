@@ -46,6 +46,11 @@ class Component extends FunctionalLayerView {
     this.doubleClicked();
   }
 
+  updateButtons(hide) {
+    const button = this.removeButton;
+    hide ? button.hide() : button.visible();
+  }
+
   replace(layer) {
     const isShrank = layer.isShrank();
     const neuronsNum = isShrank

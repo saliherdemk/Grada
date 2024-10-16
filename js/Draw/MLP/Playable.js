@@ -138,7 +138,8 @@ class Playable extends Draggable {
     this.pause();
     this.updateStatus(
       +(
-        this.getInput() instanceof InputLayer &&
+        (this.getInput() instanceof InputLayer ||
+          this.getInput() instanceof DigitComponent) &&
         (isEval || this.getOutput() instanceof OutputLayer)
       ),
     );

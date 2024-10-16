@@ -10,9 +10,15 @@ class Draggable {
 
   doubleClicked() {}
 
+  handleDrag(x, y) {
+    this.updateCoordinates(x, y);
+  }
+
   handlePressed() {
     iManager.checkRollout(this);
   }
+
+  handleKeyPressed(_k) {}
 
   setCoordinates(x, y) {
     this.x = x;

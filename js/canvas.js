@@ -61,17 +61,7 @@ let mainSketch = function (p) {
   };
 
   p.keyPressed = function () {
-    const k = p.key.toLowerCase();
-    if (k == "e") {
-      mainOrganizer.mlpViews.forEach((mlpView) => mlpView.handleKeyPressed());
-    }
-
-    if (k == "escape") {
-      editMLPOrganizer.disable();
-      editLayerOrganizer.disable();
-      tableOrganizer.disable();
-      mainOrganizer.enable();
-    }
+    iManager.handleKeyPressed(p.key.toLowerCase());
   };
 
   p.doubleClicked = function () {

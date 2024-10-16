@@ -6,11 +6,6 @@ class IOLayer extends Component {
     this.recordNum = this.getDataset().shapeY[0];
   }
 
-  updateButtons(hide) {
-    const button = this.removeButton;
-    hide ? button.hide() : button.visible();
-  }
-
   initialize() {
     this.updateShownBatch();
     this.adjustNeurons();

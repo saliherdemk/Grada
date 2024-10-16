@@ -59,7 +59,7 @@ class InteractionManager {
     const { mouseX, mouseY } = getCurrentMouseCoordinates();
     const x = (mouseX - this.offsetX - this.panX) / this.scaleFactor;
     const y = (mouseY - this.offsetY - this.panY) / this.scaleFactor;
-    this.selected.updateCoordinates(x, y);
+    this.selected.handleDrag(x, y);
   }
 
   getAbsoluteCoordinates(x, y) {
@@ -82,14 +82,13 @@ class InteractionManager {
 
   handleDrag() {
     if (mainOrganizer.isDisabled()) return;
-    if (this.getSelected() instanceof Draggable) {
-      this.updateSelectedCoordinates();
+    const selected = this.getSelected();
+    if (selected) {
+      selected instanceof Draggable && this.updateSelectedCoordinates();
       return;
     }
 
-    if (this.isCanvasDragging()) {
-      this.updatePanCoordinates();
-    }
+    this.isCanvasDragging() && this.updatePanCoordinates();
   }
 
   handleRelease() {
@@ -102,6 +101,18 @@ class InteractionManager {
     reverseArray(mainOrganizer.getAll()).forEach((el) =>
       el.handleDoubleClicked(),
     );
+  }
+
+  handleKeyPressed(k) {
+    mainOrganizer.mlpViews.forEach((mlpView) => mlpView.handleKeyPressed(k));
+    mainOrganizer.components.forEach((c) => c.handleKeyPressed(k));
+
+    if (k == "escape") {
+      editMLPOrganizer.disable();
+      editLayerOrganizer.disable();
+      tableOrganizer.disable();
+      mainOrganizer.enable();
+    }
   }
 
   isHovered(obj) {

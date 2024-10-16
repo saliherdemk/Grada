@@ -13,8 +13,8 @@ function executeDrawingCommands(arr) {
 }
 
 function getCurrentMouseCoordinates() {
-  const instance = canvasManager.getInstance();
-  return { mouseX: instance.mouseX, mouseY: instance.mouseY };
+  const { mouseX, mouseY, pmouseX, pmouseY } = canvasManager.getInstance();
+  return { mouseX, mouseY, pmouseX, pmouseY };
 }
 
 function getElementById(el) {

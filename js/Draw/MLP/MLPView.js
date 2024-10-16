@@ -324,15 +324,11 @@ class MlpView extends Playable {
     super.handlePressed();
   }
 
-  handleKeyPressed() {
-    iManager.isHovered(this) && this.resetCoordinates();
-  }
-
-  handleReleased() {
-    this.getLayers().forEach((layer) => {
-      layer.released();
-    });
-    this.released();
+  handleKeyPressed(k) {
+    if (iManager.isHovered(this)) {
+      k == "e" && this.resetCoordinates();
+    }
+    this.getInput()?.handleKeyPressed(k);
   }
 
   handleDoubleClicked() {

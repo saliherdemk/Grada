@@ -1,89 +1,170 @@
-class DigitInputGrid extends Component {
+class DigitInputGrid extends Draggable {
   constructor(x, y) {
-    super(x, y, 400);
-    this.shrank = true;
-    this.neuronAlignment = "right";
+    super(x, y);
     this.gridSize = 28;
-    this.grid = Array.from({ length: this.gridSize }, () =>
+    this.cellSize = 10;
+    this.setDimensions(
+      this.gridSize * this.cellSize,
+      this.gridSize * this.cellSize,
+    );
+    this.clear();
+    this.drawings = [];
+  }
+
+  clear() {
+    this.drawings = [];
+    this.values = this.createEmptyGrid();
+  }
+
+  createEmptyGrid() {
+    return Array.from({ length: this.gridSize }, () =>
       Array(this.gridSize).fill(0),
     );
-    this.initialize();
-  }
-
-  initialize() {
-    this.inputDot.destroy();
-    this.inputDot = null;
-    this.outputDot.setColor("cyan");
-    this.adjustNeurons();
-    this.postUpdateCoordinates();
-  }
-
-  adjustNeurons() {
-    const neuronNum = this.gridSize * this.gridSize;
-    this.adjustNeuronNum(neuronNum);
-    this.setShownNeuronsNum(neuronNum > 5 ? 5 : neuronNum);
   }
 
   setCoordinates(x, y) {
-    super.setCoordinates(x, y);
-    this.postUpdateCoordinates();
+    this.x = x;
+    this.y = y;
   }
 
-  getPressables() {
-    return [this.removeButton];
+  handlePressed() {
+    iManager.checkRollout(this);
   }
 
-  doubleClicked() {}
+  handleDrag(_x, _y) {
+    const { mouseX, mouseY, pmouseX, pmouseY } = getCurrentMouseCoordinates();
+    const { x, y } = iManager.getAbsoluteCoordinates(mouseX, mouseY);
+    const { x: px, y: py } = iManager.getAbsoluteCoordinates(pmouseX, pmouseY);
+
+    this.drawings.push(this.getClampedCoordinates(x, y, px, py));
+  }
+
+  getClampedCoordinates(x, y, px, py) {
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+    return {
+      x1: clamp(x - this.x, 0, this.w),
+      y1: clamp(y - this.y, 0, this.h),
+      x2: clamp(px - this.x, 0, this.w),
+      y2: clamp(py - this.y, 0, this.h),
+    };
+  }
 
   showGrid() {
-    const commands = [{ func: "stroke", args: [0, 150] }];
-    const cellSize = 10;
+    const commands = [{ func: "stroke", args: [0, 50] }];
+    const offset = this.gridSize * this.cellSize;
+
     for (let i = 0; i <= this.gridSize; i++) {
-      const offSet1 = i * cellSize;
-      const offset2 = this.gridSize * cellSize;
-      const x = this.x + 25;
-      const y = this.y + 30;
+      const pos = i * this.cellSize;
+      commands.push(
+        {
+          func: "line",
+          args: [this.x + pos, this.y, this.x + pos, this.y + offset],
+        },
+        {
+          func: "line",
+          args: [this.x, this.y + pos, this.x + offset, this.y + pos],
+        },
+      );
+    }
+
+    executeDrawingCommands(commands);
+  }
+
+  showDrawings() {
+    const commands = [
+      { func: "stroke", args: [0] },
+      { func: "strokeWeight", args: [4] },
+    ];
+
+    for (const { x1, y1, x2, y2 } of this.drawings) {
       commands.push({
         func: "line",
-        args: [x + offSet1, y, x + offSet1, y + offset2],
-      });
-      commands.push({
-        func: "line",
-        args: [x, y + offSet1, x + offset2, y + offSet1],
+        args: [this.x + x1, this.y + y1, this.x + x2, this.y + y2],
       });
     }
 
     executeDrawingCommands(commands);
   }
 
-  show() {
-    const middleX = this.x + this.w / 2;
-    const commands = [
-      { func: "rect", args: [this.x, this.y, this.w, this.h, 10] },
-      { func: "textAlign", args: [CENTER, CENTER] },
-      {
-        func: "text",
-        args: ["Grid Input", middleX, this.y - 10],
-      },
-    ];
-
-    executeDrawingCommands(commands);
+  draw() {
     this.showGrid();
+    this.showDrawings();
+    this.showValues();
   }
 
-  draw() {
-    super.draw();
-    this.show();
-    this.isShrank() && this.showInfoBox();
+  convertDrawingsToValues() {
+    this.values = this.createEmptyGrid();
 
-    this.neurons.forEach((neuron) => neuron.draw());
-    LoadingIndiactor.drawText(
-      this.x,
-      this.y,
-      this.w,
-      this.h,
-      "Work In Progress",
-      35,
-    );
+    for (const { x1, y1, x2, y2 } of this.drawings) {
+      this.drawLineOnValues(
+        Math.min(Math.floor(x1 / this.cellSize), 27),
+        Math.min(Math.floor(y1 / this.cellSize), 27),
+        Math.min(Math.floor(x2 / this.cellSize), 27),
+        Math.min(Math.floor(y2 / this.cellSize), 27),
+      );
+    }
+
+    this.normalizeValues();
+  }
+
+  normalizeValues() {
+    const maxValue = Math.max(...this.values.flat());
+    if (maxValue === 0) return;
+
+    for (let i = 0; i < this.gridSize; i++) {
+      for (let j = 0; j < this.gridSize; j++) {
+        this.values[i][j] = Math.floor((this.values[i][j] / maxValue) * 255);
+      }
+    }
+  }
+
+  // Bresenham's Algorithm
+  drawLineOnValues(x1, y1, x2, y2) {
+    const dx = Math.abs(x2 - x1);
+    const dy = Math.abs(y2 - y1);
+    const sx = x1 < x2 ? 1 : -1;
+    const sy = y1 < y2 ? 1 : -1;
+    let err = dx - dy;
+
+    while (true) {
+      this.values[y1][x1] = Math.min(this.values[y1][x1] + 30, 255);
+      if (x1 === x2 && y1 === y2) break;
+
+      const e2 = err * 2;
+      if (e2 > -dy) {
+        err -= dy;
+        x1 += sx;
+      }
+      if (e2 < dx) {
+        err += dx;
+        y1 += sy;
+      }
+    }
+  }
+
+  showValues() {
+    this.convertDrawingsToValues();
+    const commands = [];
+    const cellSize = this.cellSize / 2;
+
+    for (let i = 0; i < this.gridSize; i++) {
+      for (let j = 0; j < this.gridSize; j++) {
+        const colorValue = this.values[i][j];
+        commands.push(
+          { func: "fill", args: [colorValue] },
+          {
+            func: "rect",
+            args: [
+              this.x + this.w + 25 + j * cellSize,
+              this.y + (this.h - cellSize * this.gridSize) / 2 + i * cellSize,
+              cellSize,
+              cellSize,
+            ],
+          },
+        );
+      }
+    }
+
+    executeDrawingCommands(commands);
   }
 }
