@@ -16,6 +16,10 @@ class MlpView extends Playable {
     this.selected = false;
   }
 
+  isEval() {
+    return this.mode == "eval";
+  }
+
   getAllParameters() {
     let layersParameters = [];
 
@@ -90,7 +94,10 @@ class MlpView extends Playable {
 
   handleSetMode(mode) {
     this.setMode(mode);
-    this.isInitialized() && this.checkCompleted();
+    if (this.isInitialized()) {
+      this.setGraphComponentData();
+      this.checkCompleted();
+    }
   }
 
   handleSetZenMode(mode) {
@@ -407,7 +414,7 @@ class MlpView extends Playable {
       { func: "text", args: [`Total Parameters: ${totalParams}\n`, x, y - 10] },
     ];
 
-    const commands = this.getMode() == "train" ? this.getTrainCommands() : [];
+    const commands = this.isEval() ? [] : this.getTrainCommands();
 
     executeDrawingCommands([...commands, ...common]);
   }

@@ -52,12 +52,15 @@ class MLP extends MlpParams {
   }
 
   backward(mlp_output, y_batch) {
-    if (this.mode == "eval") return;
     const loss = errFuncManager.getFunction(this.errFunc)(
       mlp_output,
       new Tensor(y_batch),
     );
-    this.addLossData(loss.data[0][0]);
+    if (this.mode == "eval") {
+      this.addEvalLoss(loss.data[0][0]);
+      return;
+    }
+    this.addTrainLoss(loss.data[0][0]);
 
     this.zeroGrad();
     loss.backward();
@@ -74,14 +77,16 @@ class MLP extends MlpParams {
       biases: biases.map((b) => b.data),
       seenRecordNum: this.seenRecordNum,
       stepCounter: this.stepCounter,
-      lossData: this.lossData,
+      trainLoss: this.trainLoss,
+      evalLoss: this.evalLoss,
     };
   }
 
-  import({ weights, biases, seenRecordNum, stepCounter, lossData }) {
+  import({ weights, biases, seenRecordNum, stepCounter, trainLoss, evalLoss }) {
     this.seenRecordNum = seenRecordNum;
     this.stepCounter = stepCounter;
-    this.lossData = lossData;
+    this.trainLoss = trainLoss;
+    this.evalLoss = evalLoss;
     for (let i = 0; i < this.layers.length; i++) {
       this.layers[i].setParameters(weights[i], biases[i]);
     }

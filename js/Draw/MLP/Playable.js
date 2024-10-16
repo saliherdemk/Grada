@@ -75,8 +75,14 @@ class Playable extends Draggable {
       this.x - (graphComponent.w - this.w) / 2,
       this.y - 400,
     );
-    graphComponent.setData(this.origin.getLossData());
     this.graphComponent = graphComponent;
+    this.setGraphComponentData();
+  }
+
+  setGraphComponentData() {
+    this.graphComponent?.setData(
+      this.isEval() ? this.origin.getEvalLoss() : this.origin.getTrainLoss(),
+    );
   }
 
   removeGraphComponent() {
@@ -134,13 +140,12 @@ class Playable extends Draggable {
   }
 
   checkCompleted() {
-    const isEval = this.getMode() == "eval";
     this.pause();
     this.updateStatus(
       +(
         (this.getInput() instanceof InputLayer ||
           this.getInput() instanceof DigitComponent) &&
-        (isEval || this.getOutput() instanceof OutputLayer)
+        (this.isEval() || this.getOutput() instanceof OutputLayer)
       ),
     );
 
@@ -304,16 +309,17 @@ class Playable extends Draggable {
   async executeOnce() {
     let startTime = performance.now();
     const inputData = this.getInput().getData();
+    const origin = this.origin;
     this.calculationComponent?.setInputData(
       inputData.slice(0, 5).map((row) => row.slice(0, 5)),
       [parseInt(this.batchSize), this.getInput().shape[1]],
     );
     const outputData = this.getOutput()?.getData() ?? null;
-    const mlp_output = await this.origin.forward(inputData);
+    const mlp_output = await origin.forward(inputData);
     this.calculationComponent && this.setCalculationData();
-    await this.origin.backward(mlp_output, outputData);
+    outputData && (await origin.backward(mlp_output, outputData));
     this.updateParameters();
-    this.graphComponent?.setData(this.origin.getLossData());
+    this.setGraphComponentData();
     this.setMsPerStepText(performance.now() - startTime + "ms / step");
   }
 

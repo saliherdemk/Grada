@@ -9,15 +9,24 @@ class MlpParams {
     this.epoch = 0;
     this.seenRecordNum = 0;
     this.mode = "train";
-    this.lossData = [];
+    this.trainLoss = [];
+    this.evalLoss = [];
   }
 
-  getLossData() {
-    return this.lossData;
+  getTrainLoss() {
+    return this.trainLoss;
   }
 
-  addLossData(lossData) {
-    this.lossData.push(lossData);
+  getEvalLoss() {
+    return this.evalLoss;
+  }
+
+  addTrainLoss(lossData) {
+    this.trainLoss.push(lossData);
+  }
+
+  addEvalLoss(lossData) {
+    this.evalLoss.push(lossData);
   }
 
   setLr(lr) {
