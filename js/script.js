@@ -112,8 +112,16 @@ function scaleCanvas(event) {
   iManager.scaleFactor = newScaleFactor;
 }
 
-const children = getElementById("disable-background").children;
+document.addEventListener("DOMContentLoaded", function () {
+  const disableBg = getElementById("disable-background");
+  for (let child of disableBg.children) {
+    child.addEventListener("click", (e) => e.stopPropagation());
+  }
+  disableBg.addEventListener("click", () => closeEdit());
+  disableBg.addEventListener("mouseover", () => disableCanvas());
+  disableBg.addEventListener("mouseout", () => enableCanvas());
 
-for (let child of children) {
-  child.addEventListener("click", (e) => e.stopPropagation());
-}
+  const mlpEditContainer = getElementById("mlp-edit-container");
+  mlpEditContainer.addEventListener("mouseover", () => disableCanvas());
+  mlpEditContainer.addEventListener("mouseout", () => enableCanvas());
+});
