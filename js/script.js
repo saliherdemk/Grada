@@ -111,3 +111,9 @@ function scaleCanvas(event) {
 
   iManager.scaleFactor = newScaleFactor;
 }
+
+const children = getElementById("disable-background").children;
+
+for (let child of children) {
+  child.addEventListener("click", (e) => e.stopPropagation());
+}

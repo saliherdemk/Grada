@@ -36,11 +36,11 @@ let mainSketch = function (p) {
   };
 
   p.mousePressed = function () {
-    !editLayerOrganizer.isEnabled() && iManager.handlePress();
+    !mainOrganizer.isDisabled() && iManager.handlePress();
   };
 
   p.mouseDragged = function () {
-    !editLayerOrganizer.isEnabled() && iManager.handleDrag();
+    !mainOrganizer.isDisabled() && iManager.handleDrag();
   };
 
   p.mouseReleased = function () {

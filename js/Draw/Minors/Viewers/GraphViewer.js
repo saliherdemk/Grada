@@ -3,7 +3,7 @@ class GraphViewer extends Viewer {
     super(x, y, 500, 300);
     this.dot = new GraphDot(this, true);
     this.dark = true;
-    this.scale = 1;
+    this.scale = this.data.length > 2000 ? 1 : 0.1;
     this.gridRows = 20;
     this.gridCols = 10;
     this.buttons = [];

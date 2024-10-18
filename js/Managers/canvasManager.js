@@ -7,7 +7,6 @@ let TWO_PI;
 let MOVE;
 let WAIT;
 let HAND;
-let FRAMECOUNT;
 
 let atan2;
 let dist;
@@ -45,7 +44,6 @@ class CanvasManager {
     MOVE = p.MOVE;
     WAIT = p.WAIT;
     HAND = p.HAND;
-    FRAMECOUNT = p.frameCount;
 
     atan2 = (y, x) => p.atan2(y, x);
     dist = (x1, y1, x2, y2) => p.dist(x1, y1, x2, y2);

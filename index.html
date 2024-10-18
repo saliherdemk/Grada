@@ -118,8 +118,13 @@
         height="20"
       />
     </div>
-    <div id="disable-background" onclick="closeEdit()">
-      <div id="canvas-parent" onclick="event.stopPropagation()">
+    <div
+      id="disable-background"
+      onclick="closeEdit()"
+      onmouseover="disableCanvas()"
+      onmouseout="enableCanvas()"
+    >
+      <div id="canvas-parent">
         <div id="edit-panel">
           <div id="layer-settings-container">
             <div class="flex-center">
@@ -185,7 +190,7 @@
         </div>
       </div>
 
-      <div id="create-dataset-container" onclick="event.stopPropagation()">
+      <div id="create-dataset-container">
         <div class="flex-end">
           <img
             id="create-dataset-close"
@@ -321,8 +326,8 @@
 
     <script src="js/p5.min.js"></script>
 
-    <script src="js/script.js"></script>
     <script src="js/helpers.js"></script>
+    <script src="js/script.js"></script>
 
     <script src="js/Workers/flattenWorker.js"></script>
     <script src="js/Workers/getMinMaxWorker.js"></script>
