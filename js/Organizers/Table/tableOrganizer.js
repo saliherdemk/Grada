@@ -20,7 +20,12 @@ class TableOrganizer extends FunctionalTable {
     addEventToElement("create-dataset-btn", "click", () =>
       this.createDataset(),
     );
-    addEventToElement("mnist-button", "click", () => this.createMNIST());
+    addEventToElement("mnist-train-button", "click", () =>
+      this.createMNIST("train"),
+    );
+    addEventToElement("mnist-eval-button", "click", () =>
+      this.createMNIST("eval"),
+    );
     addEventToElement("download-dataset-btn", "click", () =>
       this.downloadDataset(),
     );
@@ -233,17 +238,19 @@ class TableOrganizer extends FunctionalTable {
       });
   }
 
-  async createMNIST() {
+  async createMNIST(type) {
     this.disableAll();
-    setElementProperties("mnist-button", { loading: "true" });
+    const buttonId = `mnist-${type}-button`;
+    setElementProperties(buttonId, { loading: "true" });
 
     async function loadXData() {
       const allXData = [];
 
+      // FIXME: change 10 to how many files there is
       for (let chunkNumber = 1; chunkNumber <= 10; chunkNumber++) {
         try {
           const module = await import(
-            `../../../Data/mnist/xData/chunk_${chunkNumber}.js`
+            `../../../Data/mnist/${type}/xData/chunk_${chunkNumber}.js`
           );
           allXData.push(...module.default);
         } catch (error) {
@@ -256,7 +263,7 @@ class TableOrganizer extends FunctionalTable {
 
     async function loadYData() {
       try {
-        const module = await import("../../../Data/mnist/yData.js");
+        const module = await import(`../../../Data/mnist/${type}/yData.js`);
         return module.default;
       } catch (error) {
         console.error("Error loading yData:", error);
@@ -266,9 +273,9 @@ class TableOrganizer extends FunctionalTable {
     const xDatas = await loadXData();
     const yDatas = await loadYData();
 
-    this.setPreparedDataset({ xDatas, yDatas }, "MNIST");
+    this.setPreparedDataset({ xDatas, yDatas }, `MNIST-${type}`);
     this.enableAll();
-    setElementProperties("mnist-button", { loading: "false" });
+    setElementProperties(buttonId, { loading: "false" });
   }
 
   onProcessFinish(btnId) {

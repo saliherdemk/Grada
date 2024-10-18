@@ -311,7 +311,7 @@ class Playable extends Draggable {
     const inputData = this.getInput().getData();
     const origin = this.origin;
     this.calculationComponent?.setInputData(
-      inputData.slice(0, 5).map((row) => row.slice(0, 5)),
+      inputData.slice(0, 5).map((row) => row.slice(0, 4)),
       [parseInt(this.batchSize), this.getInput().shape[1]],
     );
     const outputData = this.getOutput()?.getData() ?? null;

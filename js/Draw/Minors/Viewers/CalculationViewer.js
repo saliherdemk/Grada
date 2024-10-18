@@ -2,7 +2,7 @@ class CalculationViewer extends Viewer {
   constructor(x, y) {
     super(x, y, 0, 100);
     this.dot = new CalculationDot(this, true);
-    this.cellSize = 240;
+    this.cellSize = 300;
     this.headerSize = 50;
     this.rows = 0;
     this.paddingX = 50;

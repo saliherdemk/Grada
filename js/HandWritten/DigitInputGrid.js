@@ -3,23 +3,22 @@ class DigitInputGrid extends Draggable {
     super(x, y);
     this.gridSize = 28;
     this.cellSize = 10;
-    this.setDimensions(
-      this.gridSize * this.cellSize,
-      this.gridSize * this.cellSize,
-    );
-    this.clear();
+    const size = this.gridSize * this.cellSize;
+    this.setDimensions(size, size);
     this.drawings = [];
+
+    this.drawingCanvas = createGraphics(size, size);
+    this.drawingCanvas.stroke(0);
+    this.drawingCanvas.strokeWeight(15);
+
+    this.scaledCanvas = createGraphics(this.gridSize, this.gridSize);
+    this.clear();
   }
 
   clear() {
     this.drawings = [];
-    this.values = this.createEmptyGrid();
-  }
-
-  createEmptyGrid() {
-    return Array.from({ length: this.gridSize }, () =>
-      Array(this.gridSize).fill(0),
-    );
+    this.drawingCanvas.clear();
+    this.drawingCanvas.background(255);
   }
 
   setCoordinates(x, y) {
@@ -36,7 +35,10 @@ class DigitInputGrid extends Draggable {
     const { x, y } = iManager.getAbsoluteCoordinates(mouseX, mouseY);
     const { x: px, y: py } = iManager.getAbsoluteCoordinates(pmouseX, pmouseY);
 
-    this.drawings.push(this.getClampedCoordinates(x, y, px, py));
+    const clamped = this.getClampedCoordinates(x, y, px, py);
+    this.drawings.push(clamped);
+
+    this.drawingCanvas.line(clamped.x1, clamped.y1, clamped.x2, clamped.y2);
   }
 
   getClampedCoordinates(x, y, px, py) {
@@ -48,7 +50,6 @@ class DigitInputGrid extends Draggable {
       y2: clamp(py - this.y, 0, this.h),
     };
   }
-
   showGrid() {
     const commands = [{ func: "stroke", args: [0, 50] }];
     const offset = this.gridSize * this.cellSize;
@@ -71,100 +72,51 @@ class DigitInputGrid extends Draggable {
   }
 
   showDrawings() {
-    const commands = [
-      { func: "stroke", args: [0] },
-      { func: "strokeWeight", args: [4] },
-    ];
-
-    for (const { x1, y1, x2, y2 } of this.drawings) {
-      commands.push({
-        func: "line",
-        args: [this.x + x1, this.y + y1, this.x + x2, this.y + y2],
-      });
-    }
-
-    executeDrawingCommands(commands);
+    executeDrawingCommands([
+      { func: "image", args: [this.drawingCanvas, this.x, this.y] },
+      { func: "noFill", args: [] },
+      { func: "strokeWeight", args: [3] },
+      { func: "rect", args: [this.x, this.y, this.w, this.h] },
+    ]);
+    this.showGrid();
   }
 
   draw() {
-    this.showGrid();
     this.showDrawings();
     this.showValues();
-  }
-
-  convertDrawingsToValues() {
-    this.values = this.createEmptyGrid();
-
-    for (const { x1, y1, x2, y2 } of this.drawings) {
-      this.drawLineOnValues(
-        Math.min(Math.floor(x1 / this.cellSize), 27),
-        Math.min(Math.floor(y1 / this.cellSize), 27),
-        Math.min(Math.floor(x2 / this.cellSize), 27),
-        Math.min(Math.floor(y2 / this.cellSize), 27),
-      );
-    }
-
-    this.normalizeValues();
-  }
-
-  normalizeValues() {
-    const maxValue = Math.max(...this.values.flat());
-    if (maxValue === 0) return;
-
-    for (let i = 0; i < this.gridSize; i++) {
-      for (let j = 0; j < this.gridSize; j++) {
-        this.values[i][j] = Math.floor((this.values[i][j] / maxValue) * 255);
-      }
-    }
-  }
-
-  // Bresenham's Algorithm
-  drawLineOnValues(x1, y1, x2, y2) {
-    const dx = Math.abs(x2 - x1);
-    const dy = Math.abs(y2 - y1);
-    const sx = x1 < x2 ? 1 : -1;
-    const sy = y1 < y2 ? 1 : -1;
-    let err = dx - dy;
-
-    while (true) {
-      this.values[y1][x1] = Math.min(this.values[y1][x1] + 30, 255);
-      if (x1 === x2 && y1 === y2) break;
-
-      const e2 = err * 2;
-      if (e2 > -dy) {
-        err -= dy;
-        x1 += sx;
-      }
-      if (e2 < dx) {
-        err += dx;
-        y1 += sy;
-      }
-    }
+    this.setValues();
   }
 
   showValues() {
-    this.convertDrawingsToValues();
-    const commands = [];
-    const cellSize = this.cellSize / 2;
+    const sc = this.scaledCanvas;
+    const dc = this.drawingCanvas;
+    const gs = this.gridSize;
+    sc.copy(dc, 0, 0, dc.width, dc.height, 0, 0, gs, gs);
+    const canvasSize = 100;
+    const x = this.x + this.w + 50;
+    const y = this.y + (this.h - canvasSize) / 2;
+    executeDrawingCommands([
+      { func: "image", args: [sc, x, y, canvasSize, canvasSize] },
+      { func: "noFill", args: [] },
+      { func: "rect", args: [x, y, canvasSize, canvasSize] },
+    ]);
+  }
 
-    for (let i = 0; i < this.gridSize; i++) {
-      for (let j = 0; j < this.gridSize; j++) {
-        const colorValue = this.values[i][j];
-        commands.push(
-          { func: "fill", args: [colorValue] },
-          {
-            func: "rect",
-            args: [
-              this.x + this.w + 25 + j * cellSize,
-              this.y + (this.h - cellSize * this.gridSize) / 2 + i * cellSize,
-              cellSize,
-              cellSize,
-            ],
-          },
-        );
+  setValues() {
+    const sc = this.scaledCanvas;
+    const gs = this.gridSize;
+    sc.loadPixels();
+    let pixelData = [];
+    for (let y = 0; y < gs; y++) {
+      for (let x = 0; x < gs; x++) {
+        let index = (x + y * gs) * 4;
+        let r = sc.pixels[index];
+        let g = sc.pixels[index + 1];
+        let b = sc.pixels[index + 2];
+        let brightness = (r + g + b) / 3;
+        pixelData.push(`${1 - Math.round(brightness) / 255} `);
       }
     }
-
-    executeDrawingCommands(commands);
+    this.values = pixelData;
   }
 }

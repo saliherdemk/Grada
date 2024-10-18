@@ -159,7 +159,7 @@ class MlpView extends Playable {
 
   sliceData(weights, biases, z, outputs) {
     const maxRows = 5;
-    const maxCols = 5;
+    const maxCols = 4;
     const slicedW = weights.data
       .slice(0, maxRows)
       .map((row) => row.slice(0, maxCols));

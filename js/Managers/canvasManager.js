@@ -7,6 +7,7 @@ let TWO_PI;
 let MOVE;
 let WAIT;
 let HAND;
+let FRAMECOUNT;
 
 let atan2;
 let dist;
@@ -20,6 +21,10 @@ let lerpColor;
 let color;
 let floor;
 let map;
+let createGraphics;
+let red;
+let green;
+let blue;
 
 class CanvasManager {
   constructor(instance) {
@@ -40,6 +45,7 @@ class CanvasManager {
     MOVE = p.MOVE;
     WAIT = p.WAIT;
     HAND = p.HAND;
+    FRAMECOUNT = p.frameCount;
 
     atan2 = (y, x) => p.atan2(y, x);
     dist = (x1, y1, x2, y2) => p.dist(x1, y1, x2, y2);
@@ -52,7 +58,10 @@ class CanvasManager {
     lerpColor = (c1, c2, t) => p.lerpColor(c1, c2, t);
     color = (r, g, b) => p.color(r, g, b);
     floor = (val) => p.floor(val);
-    map = (value, start1, stop1, start2, stop2) =>
-      p.map(value, start1, stop1, start2, stop2);
+    map = (v, s1, sp1, s2, sp2) => p.map(v, s1, sp1, s2, sp2);
+    createGraphics = (w, h) => p.createGraphics(w, h);
+    red = (c) => p.red(c);
+    green = (c) => p.green(c);
+    blue = (c) => p.blue(c);
   }
 }
