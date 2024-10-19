@@ -312,7 +312,7 @@ class Playable extends Draggable {
     const origin = this.origin;
     this.calculationComponent?.setInputData(
       inputData.slice(0, 5).map((row) => row.slice(0, 4)),
-      [parseInt(this.batchSize), this.getInput().shape[1]],
+      [inputData.length, inputData[0].length],
     );
     const outputData = this.getOutput()?.getData() ?? null;
     const mlp_output = await origin.forward(inputData);

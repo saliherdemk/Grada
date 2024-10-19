@@ -9,7 +9,7 @@ class DigitInputGrid extends Draggable {
 
     this.drawingCanvas = createGraphics(size, size);
     this.drawingCanvas.stroke(0);
-    this.drawingCanvas.strokeWeight(15);
+    this.drawingCanvas.strokeWeight(25);
 
     this.scaledCanvas = createGraphics(this.gridSize, this.gridSize);
     this.clear();
