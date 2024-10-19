@@ -1,4 +1,4 @@
-class DigitComponent extends Component {
+class DigitInput extends Component {
   constructor(x, y) {
     super(x, y, 550);
     this.shrank = true;

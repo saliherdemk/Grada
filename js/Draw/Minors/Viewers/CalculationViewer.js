@@ -18,7 +18,8 @@ class CalculationViewer extends Viewer {
     this.line.from.parent.removeCalculationComponent();
   }
 
-  setInputData(data, shape) {
+  setInputData(data) {
+    const shape = [data.length, data[0].length];
     this.data = [this.formatMatrix(data, shape, 0, 0)];
   }
 

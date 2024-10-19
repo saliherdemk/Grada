@@ -2,6 +2,7 @@ class NeuronView {
   constructor() {
     this.x;
     this.y;
+    this.color = themeManager.getTheme("white").activeColor;
     this.output = "";
     this.bias = "";
     this.biasGrad = "";
@@ -10,8 +11,13 @@ class NeuronView {
     this.r = 25;
   }
 
-  setOutput(o) {
-    this.output = o.toFixed(2).toString();
+  setColor(color) {
+    this.color = themeManager.getTheme(color).defaultColor;
+  }
+
+  setOutput(o, int = false) {
+    const output = int ? parseInt(o) : o.toFixed(2);
+    this.output = output.toString();
   }
 
   setBias(b) {
@@ -85,7 +91,7 @@ class NeuronView {
 
   show() {
     const commands = [
-      { func: "fill", args: [255] },
+      { func: "fill", args: [this.color] },
       { func: "circle", args: [this.x, this.y, this.r] },
       { func: "textAlign", args: [CENTER, CENTER] },
       { func: "textSize", args: [8] },

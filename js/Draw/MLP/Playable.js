@@ -144,7 +144,7 @@ class Playable extends Draggable {
     this.updateStatus(
       +(
         (this.getInput() instanceof InputLayer ||
-          this.getInput() instanceof DigitComponent) &&
+          this.getInput() instanceof DigitInput) &&
         (this.isEval() || this.getOutput() instanceof OutputLayer)
       ),
     );
@@ -310,21 +310,30 @@ class Playable extends Draggable {
     let startTime = performance.now();
     const inputData = this.getInput().getData();
     const origin = this.origin;
-    this.calculationComponent?.setInputData(
-      inputData.slice(0, 5).map((row) => row.slice(0, 4)),
-      [inputData.length, inputData[0].length],
-    );
-    const outputData = this.getOutput()?.getData() ?? null;
+    const calcComp = this.calculationComponent;
+    const output = this.getOutput();
+
+    calcComp?.setInputData(inputData.slice(0, 5).map((row) => row.slice(0, 4)));
+
+    const outputData = output instanceof OutputLayer ? output.getData() : null;
     const mlp_output = await origin.forward(inputData);
-    this.calculationComponent && this.setCalculationData();
+
+    calcComp && this.setCalculationData();
     outputData && (await origin.backward(mlp_output, outputData));
+
     this.updateParameters();
     this.setGraphComponentData();
     this.setMsPerStepText(performance.now() - startTime + "ms / step");
+
+    if (output instanceof DigitOutput) {
+      const lastLayer = origin.layers[origin.layers.length - 1];
+      output.setData(lastLayer.outputs.data[0]);
+    }
   }
 
   fetchNext() {
     this.getInput().fetchNext();
-    this.getOutput()?.fetchNext();
+    const output = this.getOutput();
+    output instanceof OutputLayer && output.fetchNext();
   }
 }
