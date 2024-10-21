@@ -8,6 +8,7 @@ class DigitInputGrid extends Draggable {
 
     this.setupCanvases(size);
     this.clear();
+    this.getData();
 
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
     this.values = Array({ length: 784 }).fill(0);
@@ -140,6 +141,17 @@ class DigitInputGrid extends Draggable {
     ]);
   }
 
+  async getData() {
+    try {
+      const module = await import(
+        `https://saliherdemk.github.io/Grada/Data/testData.js`
+      );
+      this.testData = module.default;
+    } catch (error) {
+      console.error("Error loading test data:", error);
+    }
+  }
+
   showTestData() {
     const x = this.x + this.w + 25;
     const y = this.y;
@@ -148,7 +160,7 @@ class DigitInputGrid extends Draggable {
       { func: "text", args: ["example from mnist", x, y - 10] },
     ];
 
-    testData[0].forEach((b, i) => {
+    this.testData?.[0].forEach((b, i) => {
       const j = Math.floor(i / this.gridSize);
       commands.push(
         { func: "fill", args: [b * 255] },
