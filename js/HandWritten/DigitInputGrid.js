@@ -144,7 +144,7 @@ class DigitInputGrid extends Draggable {
   async getData() {
     try {
       const module = await import(
-        `https://saliherdemk.github.io/Grada/Data/testData.js`
+        `https://saliherdemk.github.io/Grada/Data/data.js`
       );
       this.testData = module.default;
     } catch (error) {
