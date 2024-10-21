@@ -24,6 +24,7 @@ let createGraphics;
 let red;
 let green;
 let blue;
+let get;
 
 class CanvasManager {
   constructor(instance) {
@@ -61,5 +62,6 @@ class CanvasManager {
     red = (c) => p.red(c);
     green = (c) => p.green(c);
     blue = (c) => p.blue(c);
+    get = (x, y, w, h) => p.get(x, y, w, h);
   }
 }

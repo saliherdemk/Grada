@@ -11,6 +11,7 @@ class DigitOutput extends Component {
     this.adjustNeuronNum(10);
     this.setShownNeuronsNum(10);
     this.neurons.forEach((n, i) => n.setOutput(i, true));
+    this.postUpdateCoordinates();
   }
 
   setData(data) {
