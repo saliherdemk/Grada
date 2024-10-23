@@ -47,7 +47,7 @@ class IOLayer extends Component {
     const commands = [...this.getColorful(i)];
     commands.push({
       func: "text",
-      args: [text, this.x + 21.5 + x, y - 5, 25, 25],
+      args: [text.toString().slice(0, 2), this.x + 21.5 + x, y - 5, 25, 25],
     });
     return commands;
   }

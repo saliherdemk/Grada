@@ -141,20 +141,20 @@ class EventManager {
   }
 
   isParentInitialized() {
-    return this.context.getSelected().parent?.isInitialized() ?? true;
+    return this.context.getSelected().parent?.isInitialized() ?? false;
   }
 
   setRestrictions() {
     const selected = this.context.getSelected();
-    const isIOLayer = selected instanceof IOLayer;
+    const isHiddenLayer = selected instanceof HiddenLayer;
     const parentInitialized = this.isParentInitialized();
 
     setElementProperties("set-neuron-num", {
-      disabled: isIOLayer || parentInitialized,
+      disabled: !isHiddenLayer || parentInitialized,
     });
 
     setElementProperties("act-function-select", {
-      disabled: isIOLayer || parentInitialized,
+      disabled: !isHiddenLayer || parentInitialized,
     });
   }
 }
