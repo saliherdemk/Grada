@@ -2,7 +2,6 @@ class Viewer extends Draggable {
   constructor(x, y, w = 300, h = 100) {
     super(x, y, w, h);
     this.line = null;
-    this.removeButton = new ImageButton("delete", () => this.handleRemove());
     this.data = [];
     this.dot = null;
     this.dark = false;
@@ -12,14 +11,9 @@ class Viewer extends Draggable {
     return [this.removeButton];
   }
 
-  updateButtonCoordinates() {
-    const button = this.removeButton;
-    button.setCoordinates(this.x + (this.w - button.w) / 2, this.y + this.h);
-  }
-
   postUpdateCoordinates() {
     this.dot.updateCoordinates();
-    this.updateButtonCoordinates();
+    super.postUpdateCoordinates();
   }
 
   setCoordinates(x, y) {

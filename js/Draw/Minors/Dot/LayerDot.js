@@ -4,19 +4,6 @@ class LayerDot extends Dot {
     this.setColor("red");
   }
 
-  occupy() {
-    super.occupy();
-    this.parent.removeButton?.changeImg("brokenLink");
-  }
-
-  free() {
-    super.free();
-    const parent = this.parent;
-    const allFree = parent.getDots().every((d) => !d?.isOccupied());
-
-    allFree && parent.removeButton?.changeImg("delete");
-  }
-
   updateCoordinates() {
     const parent = this.parent;
     this.x = this.isInput() ? parent.x : parent.x + parent.w;

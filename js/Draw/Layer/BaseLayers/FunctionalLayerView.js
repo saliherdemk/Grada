@@ -1,7 +1,6 @@
 class FunctionalLayerView extends LayerView {
   constructor(x, y, w, h) {
     super(x, y, w, h);
-    this.removeButton = new ImageButton("delete", () => this.handleRemove());
     this.inputDot = new LayerDot(this, true);
     this.outputDot = new LayerDot(this, false);
   }
@@ -29,23 +28,11 @@ class FunctionalLayerView extends LayerView {
   postUpdateCoordinates() {
     this.updateNeuronsCoordinates();
     this.updateDotsCoordinates();
-    this.updateButtonCoordinates();
+    super.postUpdateCoordinates();
   }
 
   updateDotsCoordinates() {
     this.getDots().forEach((dot) => dot.updateCoordinates());
-  }
-
-  updateButtonCoordinates() {
-    const button = this.removeButton;
-    button.setCoordinates(this.x + (this.w - button.w) / 2, this.y + this.h);
-  }
-
-  getDots() {
-    let dots = [];
-    this.inputDot && dots.push(this.inputDot);
-    this.outputDot && dots.push(this.outputDot);
-    return dots;
   }
 
   connectLayer() {

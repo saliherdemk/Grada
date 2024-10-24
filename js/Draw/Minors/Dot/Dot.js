@@ -13,10 +13,15 @@ class Dot {
 
   occupy() {
     this.occupied = true;
+    this.parent.removeButton?.changeImg("brokenLink");
   }
 
   free() {
     this.occupied = false;
+    const parent = this.parent;
+    const allFree = parent.getDots().every((d) => !d?.isOccupied());
+
+    allFree && parent.removeButton?.changeImg("delete");
   }
 
   isHidden() {

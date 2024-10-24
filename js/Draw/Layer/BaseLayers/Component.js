@@ -27,12 +27,6 @@ class Component extends FunctionalLayerView {
     this.connected = null;
   }
 
-  // FIXME: determinate if isLoading exists. if is merge the function with mlpview
-  handlePressed() {
-    this.getPressables().forEach((p) => p.handlePressed());
-    iManager.checkRollout(this);
-  }
-
   handleRemove() {
     if (this.connected) {
       this.clearLines();

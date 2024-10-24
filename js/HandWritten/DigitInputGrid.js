@@ -33,10 +33,6 @@ class DigitInputGrid extends Draggable {
     this.y = y;
   }
 
-  handlePressed() {
-    iManager.checkRollout(this);
-  }
-
   handleDrag(_x, _y) {
     const { mouseX, mouseY, pmouseX, pmouseY } = getCurrentMouseCoordinates();
     const { x, y } = iManager.getAbsoluteCoordinates(mouseX, mouseY);
