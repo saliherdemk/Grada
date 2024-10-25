@@ -10,6 +10,27 @@ class Flatter extends Component {
     this.initialize();
   }
 
+  connectLayer(targetLayer) {
+    super.connectLayer(targetLayer);
+    this.buttons.forEach((b) => b.disable());
+  }
+
+  clearLines() {
+    super.clearLines();
+    this.buttons.forEach((b) => b.enable());
+  }
+
+  updateButtons(hide) {
+    super.updateButtons(hide);
+    this.source?.updateButtons(hide);
+  }
+
+  getData() {
+    this.values = this.source.getData();
+    console.log(this.values);
+    return this.values.map((v) => v.flat());
+  }
+
   handleRemove() {
     // FIXME: add variable to control if component isoleted and ready to remove
     if (!(this.source || this.connected)) {
@@ -35,12 +56,14 @@ class Flatter extends Component {
 
   setSource(source) {
     this.source = source;
+    this.connected?.parent.checkCompleted();
   }
 
   clearSource() {
     this.source.clearConnected();
     this.source = null;
     this.inputDot.free();
+    this.connected?.parent.checkCompleted();
   }
 
   initializeButtons() {
@@ -144,6 +167,24 @@ class Flatter extends Component {
     executeDrawingCommands(commands);
   }
 
+  showValues() {
+    if (!this.values) return;
+    const x = this.x + 50;
+    const y = this.y + 50;
+    const commands = [{ func: "noStroke", args: [] }];
+
+    this.values[0].forEach((row, j) => {
+      row.forEach((b, i) => {
+        commands.push(
+          { func: "fill", args: [b * 255] },
+          { func: "square", args: [x + i * 3, y + j * 3, 3] },
+        );
+      });
+    });
+
+    executeDrawingCommands(commands);
+  }
+
   draw() {
     super.draw();
     this.show();
@@ -151,5 +192,6 @@ class Flatter extends Component {
     this.neurons.forEach((neuron) => neuron.draw());
     this.buttons.forEach((b) => b.draw());
     this.showAugmentationProps();
+    this.showValues();
   }
 }

@@ -40,10 +40,12 @@ class InputLayer extends IOLayer {
   }
 
   getData() {
-    return this.getDataset().getBatch(
-      this.currentIndex,
-      this.connected.parent.batchSize,
-    ).batchX;
+    const connected = this.connected
+      ? this.connected.parent
+      : this.connectedLine.to.parent.connected.parent;
+    console.log(this.currentIndex);
+    return this.getDataset().getBatch(this.currentIndex, connected.batchSize)
+      .batchX;
   }
 
   updateShownBatch() {

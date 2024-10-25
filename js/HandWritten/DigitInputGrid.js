@@ -8,10 +8,9 @@ class DigitInputGrid extends Draggable {
 
     this.setupCanvases(size);
     this.clear();
-    this.getData();
 
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
-    this.values = Array({ length: 784 }).fill(0);
+    this.startPipeline();
   }
 
   setupCanvases(size) {
@@ -104,7 +103,7 @@ class DigitInputGrid extends Draggable {
     const pc = this.normalizedCanvas;
     const gs = this.gridSize;
     pc.loadPixels();
-    let pixelData = [];
+    let pixelData = Array.from({ length: gs }, () => Array(gs).fill(0));
     for (let j = 0; j < gs; j++) {
       for (let i = 0; i < gs; i++) {
         let index = (i + j * gs) * 4;
@@ -112,9 +111,10 @@ class DigitInputGrid extends Draggable {
         let g = pc.pixels[index + 1];
         let b = pc.pixels[index + 2];
         let brightness = (r + g + b) / 3;
-        pixelData.push(brightness / 255);
+        pixelData[j][i] = brightness / 255;
       }
     }
+
     this.values = pixelData;
   }
 
@@ -137,55 +137,7 @@ class DigitInputGrid extends Draggable {
     ]);
   }
 
-  async getData() {
-    try {
-      const module = await import(
-        `https://saliherdemk.github.io/Grada/Data/data.js`
-      );
-      this.testData = module.default;
-    } catch (error) {
-      console.error("Error loading test data:", error);
-    }
-  }
-
-  showTestData() {
-    const x = this.x + this.w + 25;
-    const y = this.y;
-    const commands = [
-      { func: "noStroke", args: [] },
-      { func: "text", args: ["example from mnist", x, y - 10] },
-    ];
-
-    this.testData?.[0].forEach((b, i) => {
-      const j = Math.floor(i / this.gridSize);
-      commands.push(
-        { func: "fill", args: [b * 255] },
-        { func: "square", args: [x + (i % this.gridSize) * 3, y + j * 3, 3] },
-      );
-    });
-
-    executeDrawingCommands(commands);
-  }
-
-  showValues() {
-    const x = this.x + this.w + 25;
-    const y = this.y + 100;
-    const commands = [{ func: "noStroke", args: [] }];
-
-    this.values.forEach((b, i) => {
-      const j = Math.floor(i / this.gridSize);
-      commands.push(
-        { func: "fill", args: [b * 255] },
-        { func: "square", args: [x + (i % this.gridSize) * 3, y + j * 3, 3] },
-      );
-    });
-
-    executeDrawingCommands(commands);
-  }
-
   draw() {
     this.showDrawingCanvas();
-    this.showTestData();
-    this.showValues();
   }
 }

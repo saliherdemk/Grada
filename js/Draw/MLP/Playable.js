@@ -140,11 +140,12 @@ class Playable extends Draggable {
   }
 
   checkCompleted() {
+    const input = this.getInput();
     this.pause();
     this.updateStatus(
       +(
-        (this.getInput() instanceof InputLayer ||
-          this.getInput() instanceof DigitInput) &&
+        (input instanceof InputLayer ||
+          (input instanceof Flatter && input.source)) &&
         (this.isEval() || this.getOutput() instanceof OutputLayer)
       ),
     );

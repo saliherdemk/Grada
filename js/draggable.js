@@ -15,6 +15,11 @@ class Draggable {
     this.destroy();
   }
 
+  updateButtons(hide) {
+    const button = this.removeButton;
+    hide ? button.hide() : button.visible();
+  }
+
   destroy() {}
 
   getDots() {

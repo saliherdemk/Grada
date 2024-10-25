@@ -19,8 +19,7 @@ class HiddenLayer extends FunctionalLayerView {
   }
 
   updateButtons(hide) {
-    const button = this.removeButton;
-    hide ? button.hide() : button.visible();
+    super.updateButtons(hide);
     this.getDots().forEach((d) => d.setColor(hide ? "cyan" : "red"));
   }
 
