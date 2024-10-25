@@ -2,7 +2,7 @@ class IOLayer extends Component {
   constructor(datasetId, _x, _y) {
     super(_x, _y, 350);
     this.datasetId = datasetId;
-    this.currentIndex = -2; // FIXME explain why it's -2 if ur not slothful
+    this.currentIndex = 0;
     this.recordNum = this.getDataset().shapeY[0];
   }
 
@@ -22,9 +22,18 @@ class IOLayer extends Component {
     return datasetOrganizer.getDatasetById(this.datasetId);
   }
 
+  getConnected() {
+    if (this.connected) {
+      return this.connected.parent;
+    }
+    if (this.connectedLine) {
+      return this.connectedLine.to.parent.connected.parent;
+    }
+    return null;
+  }
+
   fetchNext() {
-    this.currentIndex += parseInt(this.connected.parent.batchSize);
-    console.log(this.currentIndex);
+    this.currentIndex += parseInt(this.getConnected().batchSize);
     this.updateShownBatch();
   }
 

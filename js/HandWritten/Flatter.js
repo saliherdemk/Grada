@@ -26,8 +26,6 @@ class Flatter extends Component {
   }
 
   getData() {
-    this.values = this.source.getData();
-    console.log(this.values);
     return this.values.map((v) => v.flat());
   }
 
@@ -47,7 +45,12 @@ class Flatter extends Component {
     }
   }
 
-  fetchNext() {}
+  fetchNext() {
+    this.source.fetchNext();
+    const isFromGrid = this.source instanceof DigitInput;
+    const data = this.source.getData();
+    this.values = isFromGrid ? [data] : data;
+  }
 
   setPartSize(ps) {
     this.partSize = ps;
@@ -173,6 +176,7 @@ class Flatter extends Component {
     const y = this.y + 50;
     const commands = [{ func: "noStroke", args: [] }];
 
+    console.log(this.values);
     this.values[0].forEach((row, j) => {
       row.forEach((b, i) => {
         commands.push(

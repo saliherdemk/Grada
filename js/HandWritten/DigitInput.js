@@ -7,6 +7,8 @@ class DigitInput extends Draggable {
     this.initialize();
   }
 
+  fetchNext() {}
+
   getData() {
     return this.grid.values;
   }
