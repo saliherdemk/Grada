@@ -40,7 +40,7 @@ class Flatter extends Component {
   }
 
   getData() {
-    return this.values.map((v) => v.flat());
+    return this.values.map((v) => v.map((_v) => _v.flat())).flat();
   }
 
   handleRemove() {
@@ -57,6 +57,7 @@ class Flatter extends Component {
     if (this.connected) {
       this.clearLines();
     }
+    this.values = null;
   }
 
   fetchNext() {
@@ -187,27 +188,39 @@ class Flatter extends Component {
 
   showValues() {
     if (!this.values) return;
+
     const pixelSize = 3;
+    const padding = 30;
+    const gridWidth = 250;
+    const gridHeight = 300;
+    const partDisplaySize = pixelSize * this.partSize + padding;
+
+    const elementsPerRow = Math.floor(gridWidth / partDisplaySize);
+    const elementsPerColumn = Math.floor(gridHeight / partDisplaySize);
+    const maxElements = elementsPerRow * elementsPerColumn;
+
     const commands = [{ func: "noStroke", args: [] }];
-    let lastX = 0;
-    let lastY = 0;
-    this.values[0].forEach((value, _i) => {
-      const x = this.x + _i * 4 * this.partSize + 25;
-      const y = this.y + 25 + ~~(lastX / this.w) * this.partSize;
-      console.log(lastX, x, this.w);
+    const valuesToShow = this.values[0].slice(0, maxElements);
+
+    valuesToShow.forEach((value, index) => {
+      const rowIndex = Math.floor(index / elementsPerRow);
+      const colIndex = index % elementsPerRow;
+
+      const xOffset = colIndex * partDisplaySize;
+      const yOffset = rowIndex * partDisplaySize;
+
       value.forEach((row, j) => {
-        row.forEach((b, i) => {
-          const relativeX = x + i * pixelSize;
-          const relativeY = y + j * pixelSize;
-          lastX = Math.max(lastX, relativeX);
-          lastY = Math.max(lastY, relativeY);
+        row.forEach((brightness, i) => {
+          const x = padding + this.x + xOffset + i * pixelSize;
+          const y = padding + this.y + yOffset + j * pixelSize;
           commands.push(
-            { func: "fill", args: [b * 255] },
-            { func: "square", args: [relativeX, relativeY, pixelSize] },
+            { func: "fill", args: [brightness * 255] },
+            { func: "square", args: [x, y, pixelSize] },
           );
         });
       });
     });
+
     executeDrawingCommands(commands);
   }
 

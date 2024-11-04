@@ -25,6 +25,7 @@ class DigitInputGrid extends Draggable {
   clear() {
     this.drawingCanvas.background(0);
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
+    this.startPipeline();
   }
 
   setCoordinates(x, y) {

@@ -1,9 +1,12 @@
 document.addEventListener("contextmenu", (event) => event.preventDefault());
 
 function createHandWrittenInput() {
-  mainOrganizer.addComponent(new Flatter(100, 100));
   mainOrganizer.addComponent(new DigitInput(100, 0));
   mainOrganizer.addComponent(new DigitOutput(800, 100));
+}
+
+function createFlatter() {
+  mainOrganizer.addComponent(new Flatter(100, 100));
 }
 
 function createLayer() {
