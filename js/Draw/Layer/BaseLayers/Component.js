@@ -6,8 +6,9 @@ class Component extends FunctionalLayerView {
 
   connectLayer(targetLayer) {
     const isEqual = this.getNeuronNum() == targetLayer.getNeuronNum();
-    if (!isEqual || targetLayer.isComponent()) return;
+    if (!isEqual || targetLayer.isComponent()) return false;
     this.connectNeurons(targetLayer);
+    return true;
   }
 
   connectNeurons(targetLayer) {

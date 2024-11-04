@@ -11,8 +11,7 @@ class Flatter extends Component {
   }
 
   connectLayer(targetLayer) {
-    super.connectLayer(targetLayer);
-    this.buttons.forEach((b) => b.disable());
+    super.connectLayer(targetLayer) && this.buttons.forEach((b) => b.disable());
   }
 
   clearLines() {
@@ -23,6 +22,21 @@ class Flatter extends Component {
   updateButtons(hide) {
     super.updateButtons(hide);
     this.source?.updateButtons(hide);
+  }
+
+  augment(data) {
+    let output = [];
+    for (let i = 0; i < this.partCount; i++) {
+      let diff = 28 - this.partSize;
+      let x = parseInt(Math.random() * diff);
+      let y = parseInt(Math.random() * diff);
+      let part = [];
+      for (let j = 0; j < this.partSize; j++) {
+        part.push(data[y + j].slice(x, x + this.partSize));
+      }
+      output.push(part);
+    }
+    return output;
   }
 
   getData() {
@@ -48,8 +62,9 @@ class Flatter extends Component {
   fetchNext() {
     this.source.fetchNext();
     const isFromGrid = this.source instanceof DigitInput;
-    const data = this.source.getData();
-    this.values = isFromGrid ? [data] : data;
+    let data = this.source.getData();
+    data = isFromGrid ? [data] : data;
+    this.values = data.map((batch) => this.augment(batch));
   }
 
   setPartSize(ps) {
@@ -172,20 +187,27 @@ class Flatter extends Component {
 
   showValues() {
     if (!this.values) return;
-    const x = this.x + 50;
-    const y = this.y + 50;
+    const pixelSize = 3;
     const commands = [{ func: "noStroke", args: [] }];
-
-    console.log(this.values);
-    this.values[0].forEach((row, j) => {
-      row.forEach((b, i) => {
-        commands.push(
-          { func: "fill", args: [b * 255] },
-          { func: "square", args: [x + i * 3, y + j * 3, 3] },
-        );
+    let lastX = 0;
+    let lastY = 0;
+    this.values[0].forEach((value, _i) => {
+      const x = this.x + _i * 4 * this.partSize + 25;
+      const y = this.y + 25 + ~~(lastX / this.w) * this.partSize;
+      console.log(lastX, x, this.w);
+      value.forEach((row, j) => {
+        row.forEach((b, i) => {
+          const relativeX = x + i * pixelSize;
+          const relativeY = y + j * pixelSize;
+          lastX = Math.max(lastX, relativeX);
+          lastY = Math.max(lastY, relativeY);
+          commands.push(
+            { func: "fill", args: [b * 255] },
+            { func: "square", args: [relativeX, relativeY, pixelSize] },
+          );
+        });
       });
     });
-
     executeDrawingCommands(commands);
   }
 
