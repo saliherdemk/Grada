@@ -293,7 +293,7 @@ class MlpView extends Playable {
     let lastX = originLayer.x;
 
     const input = this.getInput();
-    input?.setCoordinates(
+    input?.resetTo(
       lastX - input.w - 50,
       originLayer.y - (input.h - originLayer.h) / 2,
     );
@@ -306,10 +306,7 @@ class MlpView extends Playable {
     });
 
     const output = this.getOutput();
-    output?.setCoordinates(
-      lastX + 50,
-      originLayer.y - (output.h - originLayer.h) / 2,
-    );
+    output?.resetTo(lastX + 50, originLayer.y - (output.h - originLayer.h) / 2);
 
     originLayer.parent.updateBorders();
     const calcComponent = this.calculationComponent;

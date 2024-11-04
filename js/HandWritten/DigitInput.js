@@ -9,6 +9,10 @@ class DigitInput extends Draggable {
 
   fetchNext() {}
 
+  resetTo(x, y) {
+    this.setCoordinates(x, y);
+  }
+
   getData() {
     return this.grid.values;
   }

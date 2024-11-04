@@ -18,6 +18,14 @@ class IOLayer extends Component {
     this.setShownNeuronsNum(neuronNum > 4 ? 4 : neuronNum);
   }
 
+  resetTo(x, y) {
+    this.setCoordinates(x, y);
+  }
+
+  getRecordNum() {
+    return this.recordNum;
+  }
+
   getDataset() {
     return datasetOrganizer.getDatasetById(this.datasetId);
   }

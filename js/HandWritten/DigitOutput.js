@@ -14,6 +14,10 @@ class DigitOutput extends Component {
     this.postUpdateCoordinates();
   }
 
+  resetTo(x, y) {
+    this.setCoordinates(x, y);
+  }
+
   setData(data) {
     let maxIndex = 0;
     data.forEach((val, idx) => {

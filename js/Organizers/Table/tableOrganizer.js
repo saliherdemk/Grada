@@ -104,6 +104,7 @@ class TableOrganizer extends FunctionalTable {
     setElementProperties("import-dataset", { loading: false });
     setElementProperties("one-hot-encode-btn", { loading: false });
     setElementProperties("flat-progress-bar", { innerText: "" });
+    setElementProperties("normalize-progress-bar", { innerText: "" });
     setElementProperties("onehot-progress-bar", { innerText: "" });
   }
 

@@ -152,7 +152,7 @@ class Playable extends Draggable {
 
     if (!this.origin) return;
     this.origin.recordNum =
-      this.getStatus() == 1 ? this.getInput().recordNum : 0;
+      this.getStatus() == 1 ? this.getInput().getRecordNum() : 0;
   }
 
   updateStatus(status) {

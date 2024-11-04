@@ -10,6 +10,18 @@ class Flatter extends Component {
     this.initialize();
   }
 
+  resetTo(x, y) {
+    this.setCoordinates(x, y);
+    this.source?.resetTo(
+      x - this.source.w - 50,
+      y + (this.h - this.source.h) / 2,
+    );
+  }
+
+  getRecordNum() {
+    return this.source.recordNum;
+  }
+
   connectLayer(targetLayer) {
     super.connectLayer(targetLayer) && this.buttons.forEach((b) => b.disable());
   }

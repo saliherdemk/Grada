@@ -26,7 +26,6 @@ class GraphViewer extends Viewer {
   }
 
   updateButtonCoordinates() {
-    super.updateButtonCoordinates();
     this.buttons.forEach((b, i) => {
       b.setCoordinates(this.x + i * 25 + 5, this.y + this.h - 30);
     });
@@ -37,6 +36,7 @@ class GraphViewer extends Viewer {
     this.xEnd = this.x + this.w - 25;
     this.yStart = this.y + this.h - 50;
     this.yEnd = this.y + 50;
+    this.updateButtonCoordinates();
     super.postUpdateCoordinates();
   }
 
