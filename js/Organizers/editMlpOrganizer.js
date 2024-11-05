@@ -23,6 +23,11 @@ class EditMLPOrganizer extends EditOrganizer {
         handler: this.updateLrNumber,
       },
       {
+        id: "mlp-momentum",
+        event: "input",
+        handler: this.updateMomentum,
+      },
+      {
         id: "mlp-batch-size",
         event: "input",
         handler: this.updateBatchSize,
@@ -88,6 +93,10 @@ class EditMLPOrganizer extends EditOrganizer {
     lrInput.dispatchEvent(new Event("input"));
   }
 
+  updateMomentum(e) {
+    this.getSelected().setMomentum(e.target.value);
+  }
+
   updateBatchSize(e) {
     this.getSelected().setBatchSize(e.target.value);
   }
@@ -136,6 +145,7 @@ class EditMLPOrganizer extends EditOrganizer {
     setElementProperties("mlp-label", { value: selected.label });
     setElementProperties("mlp-lr", { value: selected.lr });
     setElementProperties("mlp-lr-number", { value: selected.lr });
+    setElementProperties("mlp-momentum", { value: selected.momentum });
     setElementProperties(`mlp-batch-size`, { value: selected.batchSize });
     setElementProperties("err-function-select", { value: selected.errFunc });
     setElementProperties(`mode-${selected.mode}`, { checked: true });

@@ -59,6 +59,12 @@
       </div>
 
       <div>
+        <label for="mlp-momentum">Momentum</label> <br />
+        <input id="mlp-momentum" type="range" step="0.1" max="0.9" min="0.1" />
+        <br />
+      </div>
+
+      <div>
         <label for="mlp-batch-size">Batch Size</label><br />
         <input id="mlp-batch-size" type="range" value="" max="128" min="1" />
       </div>
@@ -354,6 +360,7 @@
 
     <script src="js/MLP/Dataset.js"></script>
     <script src="js/MLP/DenseLayer.js"></script>
+    <script src="js/MLP/SGD.js"></script>
     <script src="js/MLP/MlpParams.js"></script>
     <script src="js/MLP/Mlp.js"></script>
 

@@ -9,6 +9,7 @@ class MlpView extends Playable {
     this.label = "MLP1";
     this.origin = null;
     this.lr = 0.1;
+    this.momentum = 0.9;
     this.batchSize = 1;
     this.errFunc = "mse";
     this.mode = "train";
@@ -80,6 +81,11 @@ class MlpView extends Playable {
   setLr(lr) {
     this.lr = lr;
     this.origin?.setLr(lr);
+  }
+
+  setMomentum(momentum) {
+    this.momentum = momentum;
+    this.origin?.setMomentum(momentum);
   }
 
   setErrFunc(errFunc) {
@@ -366,6 +372,7 @@ class MlpView extends Playable {
   getProps() {
     return {
       lr: this.lr,
+      momentum: this.momentum,
       errFunc: this.errFunc,
       batchSize: this.batchSize,
     };
@@ -383,14 +390,13 @@ class MlpView extends Playable {
   getTrainCommands() {
     const x = this.x + 5;
     const y = this.y + this.h;
-    const { lr, batchSize } = this.getProps();
+    const { lr, momentum, batchSize } = this.getProps();
     const { stepCounter, epoch } = this.getOriginProps();
     const commands = [
-      { func: "text", args: [`Learning Rate: ${lr}`, x, y + 60] },
       {
         func: "text",
         args: [
-          `Step: ${stepCounter} - ${this.msPerStepText}\nEpoch: ${epoch}\nBatch Size: ${batchSize}`,
+          `Step: ${stepCounter} - ${this.msPerStepText}\nEpoch: ${epoch}\nBatch Size: ${batchSize}\nLearning Rate: ${lr}\nMomentum: ${momentum}`,
           x,
           y + 15,
         ],
@@ -463,6 +469,7 @@ class MlpView extends Playable {
       layers: this.layers.map((layer) => layer.export()),
       label: this.label,
       lr: this.lr,
+      momentum: this.momentum,
       batchSize: this.batchSize,
       errFunc: this.errFunc,
     };
@@ -476,8 +483,9 @@ class MlpView extends Playable {
   }
 
   async import(mlpData) {
-    const { lr, batchSize, errFunc, label } = mlpData;
+    const { lr, momentum, batchSize, errFunc, label } = mlpData;
     this.setLr(lr);
+    this.setMomentum(momentum);
     this.setBatchSize(batchSize);
     this.setErrFunc(errFunc);
     this.setLabel(label);

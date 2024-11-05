@@ -19,10 +19,20 @@ class DigitOutput extends Component {
   }
 
   setData(data) {
+    let index = 0;
+    let result = Array.from({ length: 10 }).fill(0);
+
+    while (index < 10) {
+      data.forEach((el) => {
+        result[index] += el[index];
+      });
+      result[index++] /= 4;
+    }
     let maxIndex = 0;
-    data.forEach((val, idx) => {
-      if (val > data[maxIndex]) maxIndex = idx;
+    result.forEach((val, idx) => {
+      if (val > result[maxIndex]) maxIndex = idx;
     });
+
     this.neurons.forEach((n, i) => {
       n.setColor(i == maxIndex ? "green" : "white");
     });

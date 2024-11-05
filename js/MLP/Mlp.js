@@ -2,6 +2,15 @@ class MLP extends MlpParams {
   constructor() {
     super();
     this.layers = [];
+    this.optimizer = new SGD();
+  }
+
+  setLr(lr) {
+    this.optimizer.setLr(lr);
+  }
+
+  setMomentum(momentum) {
+    this.optimizer.setMomentum(momentum);
   }
 
   addLayer(layer) {
@@ -27,20 +36,9 @@ class MLP extends MlpParams {
     return { weights: allWeights, biases: allBiases };
   }
 
-  step(lr) {
+  getAllParameters() {
     const { weights, biases } = this.getParameters();
-
-    weights.concat(biases).forEach((param) => {
-      param.step(lr);
-    });
-  }
-
-  zeroGrad() {
-    const { weights, biases } = this.getParameters();
-
-    weights.concat(biases).forEach((param) => {
-      param.grad = null;
-    });
+    return weights.concat(biases);
   }
 
   forward(x_batch) {
@@ -56,15 +54,16 @@ class MLP extends MlpParams {
       mlp_output,
       new Tensor(y_batch),
     );
-    if (this.mode == "eval") {
+
+    if (this.mode === "eval") {
       this.addEvalLoss(loss.data[0][0]);
       return;
     }
     this.addTrainLoss(loss.data[0][0]);
 
-    this.zeroGrad();
+    this.optimizer.zeroGrad(this.getAllParameters());
     loss.backward();
-    this.step(this.lr);
+    this.optimizer.step(this.getAllParameters());
     this.stepCounter++;
     this.seenRecordNum += parseInt(this.batchSize);
   }

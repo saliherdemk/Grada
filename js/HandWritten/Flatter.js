@@ -202,24 +202,32 @@ class Flatter extends Component {
     if (!this.values) return;
 
     const pixelSize = 3;
-    const padding = 30;
-    const gridWidth = 250;
-    const gridHeight = 300;
-    const partDisplaySize = pixelSize * this.partSize + padding;
+    const padding = 15;
+    const gridW = 250;
+    const gridH = 250;
+    const displaySize = pixelSize * this.partSize + padding;
 
-    const elementsPerRow = Math.floor(gridWidth / partDisplaySize);
-    const elementsPerColumn = Math.floor(gridHeight / partDisplaySize);
-    const maxElements = elementsPerRow * elementsPerColumn;
+    const maxElementsPerRow = Math.floor(gridW / displaySize);
+    const maxElementsPerColumn = Math.floor(gridH / displaySize);
+    const maxElements = maxElementsPerRow * maxElementsPerColumn;
+
+    const valuesToShow = this.values[0].slice(0, maxElements);
+    const totalElements = valuesToShow.length;
+
+    const rowsNeeded = Math.ceil(totalElements / maxElementsPerRow);
+    const colsNeeded = Math.min(totalElements, maxElementsPerRow);
+
+    const xCenterOffset = (gridW - colsNeeded * displaySize - padding) / 2;
+    const yCenterOffset = (gridH - rowsNeeded * displaySize - 2 * padding) / 2;
 
     const commands = [{ func: "noStroke", args: [] }];
-    const valuesToShow = this.values[0].slice(0, maxElements);
 
     valuesToShow.forEach((value, index) => {
-      const rowIndex = Math.floor(index / elementsPerRow);
-      const colIndex = index % elementsPerRow;
+      const rowIndex = Math.floor(index / colsNeeded);
+      const colIndex = index % colsNeeded;
 
-      const xOffset = colIndex * partDisplaySize;
-      const yOffset = rowIndex * partDisplaySize;
+      const xOffset = colIndex * displaySize + xCenterOffset;
+      const yOffset = rowIndex * displaySize + yCenterOffset;
 
       value.forEach((row, j) => {
         row.forEach((brightness, i) => {

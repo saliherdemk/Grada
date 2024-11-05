@@ -263,6 +263,7 @@ class Playable extends Draggable {
       mlp.addLayer(layerOrigin);
     }
     mlp.setLr(this.lr);
+    mlp.setMomentum(this.momentum);
     mlp.setBatchSize(this.batchSize);
     mlp.setMode(this.mode);
     mlp.setErrFunc(this.errFunc);
@@ -328,7 +329,7 @@ class Playable extends Draggable {
 
     if (output instanceof DigitOutput) {
       const lastLayer = origin.layers[origin.layers.length - 1];
-      output.setData(lastLayer.outputs.data[0]);
+      output.setData(lastLayer.outputs.data);
     }
   }
 

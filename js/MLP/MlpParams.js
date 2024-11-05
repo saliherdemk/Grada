@@ -1,6 +1,5 @@
 class MlpParams {
   constructor() {
-    this.lr = 0;
     this.batchSize = 0;
     this.errFunc = errFuncManager.getFunction("mse");
     this.totalParams = 0;
@@ -27,10 +26,6 @@ class MlpParams {
 
   addEvalLoss(lossData) {
     this.evalLoss.push(lossData);
-  }
-
-  setLr(lr) {
-    this.lr = lr;
   }
 
   setBatchSize(batchSize) {

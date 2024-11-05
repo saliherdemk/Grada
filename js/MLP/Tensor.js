@@ -134,20 +134,6 @@ class Tensor {
     return output;
   }
 
-  step(lr) {
-    if (Array.isArray(this.data[0])) {
-      for (let i = 0; i < this.data.length; i++) {
-        for (let j = 0; j < this.data[0].length; j++) {
-          this.data[i][j] -= this.grad[i][j] * lr;
-        }
-      }
-    } else {
-      for (let i = 0; i < this.data.length; i++) {
-        this.data[i] -= this.grad[i] * lr;
-      }
-    }
-  }
-
   transpose() {
     const transposedData = Array.from({ length: this.shape[1] }, (_, i) =>
       Array.from({ length: this.shape[0] }, (_, j) => this.data[j][i]),
