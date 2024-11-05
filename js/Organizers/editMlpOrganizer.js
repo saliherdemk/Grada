@@ -62,11 +62,6 @@ class EditMLPOrganizer extends EditOrganizer {
         event: "change",
         handler: this.handleModeChange,
       },
-      {
-        id: "mlp-zen-mode",
-        event: "change",
-        handler: this.handleZenModeChange,
-      },
     ];
 
     events.forEach(({ id, event, handler }) => {
@@ -112,11 +107,6 @@ class EditMLPOrganizer extends EditOrganizer {
     this.getSelected().handleSetMode(selectedRadio.value);
   }
 
-  handleZenModeChange() {
-    let selectedRadio = document.querySelector('input[name="mlp-zen"]:checked');
-    this.getSelected().handleSetZenMode(selectedRadio.value);
-  }
-
   togglePropVisibility() {
     this.selected.togglePropsShown();
     this.setPropsBtnText();
@@ -149,7 +139,6 @@ class EditMLPOrganizer extends EditOrganizer {
     setElementProperties(`mlp-batch-size`, { value: selected.batchSize });
     setElementProperties("err-function-select", { value: selected.errFunc });
     setElementProperties(`mode-${selected.mode}`, { checked: true });
-    setElementProperties(`zen-${selected.zenMode}`, { checked: true });
     this.setPropsBtnText();
   }
 

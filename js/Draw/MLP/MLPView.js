@@ -1,7 +1,6 @@
 class MlpView extends Playable {
   constructor() {
     super();
-    this.zenMode = false;
     this.loading = false;
     this.loadingText = "";
     this.layers = [];
@@ -104,18 +103,6 @@ class MlpView extends Playable {
       this.setGraphComponentData();
       this.checkCompleted();
     }
-  }
-
-  handleSetZenMode(mode) {
-    mode == "true" ? this.openZenMode() : this.closeZenMode();
-  }
-
-  openZenMode() {
-    this.zenMode = true;
-  }
-
-  closeZenMode() {
-    this.zenMode = false;
   }
 
   setMode(mode) {
@@ -328,7 +315,7 @@ class MlpView extends Playable {
   }
 
   handlePressed() {
-    if (!this.isLoading() && !this.zenMode) {
+    if (!this.isLoading()) {
       this.getPressables().forEach((p) => p.handlePressed());
     }
     super.handlePressed();
@@ -343,7 +330,7 @@ class MlpView extends Playable {
 
   handleDoubleClicked() {
     if (this.isLoading()) return;
-    !this.zenMode && this.getLayerReversed().forEach((l) => l.doubleClicked());
+    this.getLayerReversed().forEach((l) => l.doubleClicked());
 
     if (this.isInactive() || iManager.isBusy()) {
       iManager.handleRelease();
@@ -433,18 +420,10 @@ class MlpView extends Playable {
     executeDrawingCommands(commands);
   }
 
-  showZen() {
-    LoadingIndiactor.drawText(this.x, this.y, this.w, this.h, "Zen Mode");
-  }
-
   draw() {
     if (!this.isInactive()) {
       this.show();
       this.isPropsShown() && this.showProps();
-      if (this.zenMode) {
-        this.showZen();
-        return;
-      }
       this.controlButtons.forEach((btn) => btn.draw());
     }
     this.inputComponent?.draw();
