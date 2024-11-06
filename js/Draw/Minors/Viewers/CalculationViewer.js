@@ -20,6 +20,7 @@ class CalculationViewer extends Viewer {
 
   setInputData(data) {
     const shape = [data.length, data[0].length];
+    data = data.slice(0, 5).map((row) => row.slice(0, 4));
     this.data = [this.formatMatrix(data, shape, 0, 0)];
   }
 

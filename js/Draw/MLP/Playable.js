@@ -315,7 +315,7 @@ class Playable extends Draggable {
     const calcComp = this.calculationComponent;
     const output = this.getOutput();
 
-    calcComp?.setInputData(inputData.slice(0, 5).map((row) => row.slice(0, 4)));
+    calcComp?.setInputData(inputData);
 
     const outputData = output instanceof OutputLayer ? output.getData() : null;
     const mlp_output = await origin.forward(inputData);
