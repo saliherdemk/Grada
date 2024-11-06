@@ -35,11 +35,6 @@ class MainOrganizer {
     this.images = {
       brokenLink: p.loadImage("media/broken-link.png"),
       delete: p.loadImage("media/delete-icon.png"),
-      lock: p.loadImage("media/lock.png"),
-      lockOpen: p.loadImage("media/lock-open.png"),
-      goOnce: p.loadImage("media/goOnce.png"),
-      play: p.loadImage("media/play.png"),
-      pause: p.loadImage("media/pause.png"),
       zoomIn: p.loadImage("media/zoom-in.png"),
       zoomOut: p.loadImage("media/zoom-out.png"),
     };

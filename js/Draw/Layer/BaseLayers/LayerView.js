@@ -1,6 +1,5 @@
 class LayerView extends Draggable {
-  constructor(_x, _y, w, h) {
-    const { x, y } = iManager.getAbsoluteCoordinates(_x, _y);
+  constructor(x, y, w, h) {
     super(x, y, w, h);
     this.neurons = [];
     this.yGap = 50;

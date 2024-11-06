@@ -6,10 +6,6 @@
   </head>
 
   <body>
-    <a href="https://github.com/saliherdemk/Grada" target="blank">
-      <img src="media/githubLogo.png" alt="" id="github-icon" />
-    </a>
-
     <div id="welcome-container" onclick="toggleWelcome()">
       <div id="popup-container">
         <h3>Grada</h3>
@@ -43,8 +39,6 @@
         </div>
       </div>
     </div>
-
-    <img id="tip-button" src="media/tip.png" alt="" onclick="toggleWelcome()" />
 
     <div id="mlp-edit-container">
       <div>
@@ -89,10 +83,10 @@
         Hide Props
       </button>
 
-      <button id="mlp-reset-btn" class="btn btn-yellow" type="button">
+      <button id="mlp-reset-btn" class="btn btn-orange" type="button">
         Reset Coordinates
       </button>
-      <button id="mlp-export-btn" class="btn btn-yellow" type="button">
+      <button id="mlp-export-btn" class="btn btn-purple" type="button">
         Export
       </button>
 
@@ -255,68 +249,61 @@
       </div>
     </div>
 
-    <div class="control-container">
-      <div id="toggle-dataset-container">
-        <img
-          id="toggle-dataset-btn"
-          src="media/arrow.svg"
-          onclick="toggleDatasetsContainer()"
-          alt=""
-        />
-      </div>
-      <div
-        id="datasets-container"
-        class="active"
-        onmouseover="disableCanvas()"
-        onmouseout="enableCanvas()"
+    <div
+      id="drawer"
+      class="active"
+      onmouseover="disableCanvas()"
+      onmouseout="enableCanvas()"
+    >
+      <img id="toggle-drawer" src="media/arrow.svg" onclick="toggleDrawer()" />
+
+      <div id="header">Datasets</div>
+      <div id="dataset-scrollable"></div>
+
+      <div id="header">Handwritten Digits</div>
+
+      <button class="btn btn-blue" onclick="createHandWritten()">
+        HandWritten Input
+      </button>
+
+      <button class="btn btn-purple" onclick="importHandwrittenModel()">
+        HandWritten Model
+      </button>
+
+      <div id="header">Others</div>
+
+      <button onclick="openCreateDataset()" class="btn btn-yellow">
+        Create Dataset
+      </button>
+
+      <button class="btn btn-orange" onclick="createFlatter()">
+        Add Flatter
+      </button>
+
+      <button class="btn btn-green" onclick="createLayer()">Add Layer</button>
+
+      <button
+        class="btn btn-sky"
+        id="import-mlp-btn"
+        onclick="triggerImportMlpInput()"
       >
-        <div>Datasets</div>
-        <div id="dataset-scrollable"></div>
-        <button onclick="openCreateDataset()" class="btn btn-sky">
-          Create Dataset
-        </button>
-        <button
-          id="add-layer"
-          type="button"
-          class="btn btn-yellow"
-          onclick="createHandWrittenInput()"
-        >
-          HandWritten Input
-        </button>
-        <button
-          id="add-layer"
-          type="button"
-          class="btn btn-yellow"
-          onclick="createFlatter()"
-        >
-          Add Flatter
-        </button>
-        <button
-          id="add-layer"
-          type="button"
-          class="btn btn-green"
-          onclick="createLayer()"
-        >
-          Add Layer
-        </button>
-        <button
-          class="btn btn-cyan"
-          id="import-mlp-btn"
-          onclick="triggerImportMlpInput()"
-        >
-          Import MLP
-        </button>
-        <input
-          type="file"
-          id="import-mlp-input"
-          oninput="readMLPFile(event)"
-          accept=".json"
-          class="hidden"
-        />
+        Import MLP
+      </button>
+      <input
+        type="file"
+        id="import-mlp-input"
+        oninput="readMLPFile(event)"
+        accept=".json"
+        class="hidden"
+      />
+      <div id="footer">
+        <a href="https://github.com/saliherdemk/Grada" target="blank">
+          <img src="media/github.svg" alt="" />
+        </a>
+
+        <img class="pointer" src="media/tip.svg" onclick="toggleWelcome()" />
       </div>
     </div>
-
-    <!-- <button onclick="logMLPs()" type="">Log Mlps</button> -->
 
     <script src="js/p5.min.js"></script>
 

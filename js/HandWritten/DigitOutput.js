@@ -38,7 +38,6 @@ class DigitOutput extends Component {
     });
   }
 
-  // FIXME: maybe we can merge those functions into a base class for output
   fetchNext() {}
 
   connectLayer(targetLayer) {

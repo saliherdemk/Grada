@@ -12,7 +12,7 @@ class DatasetOrganizer {
       mainOrganizer.addComponent(new InputLayer(id));
       mainOrganizer.addComponent(new OutputLayer(id));
     };
-    btn.classList.add("btn", "btn-gray");
+    btn.classList.add("btn", "btn-cyan");
   }
 
   addDataset(dataset) {

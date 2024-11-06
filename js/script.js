@@ -1,20 +1,25 @@
 document.addEventListener("contextmenu", (event) => event.preventDefault());
 
-function createHandWrittenInput() {
-  mainOrganizer.addComponent(new DigitInput(100, 0));
+function createHandWritten() {
+  mainOrganizer.addComponent(new DigitInput(400, 100));
   mainOrganizer.addComponent(new DigitOutput(800, 100));
 }
 
 function createFlatter() {
-  mainOrganizer.addComponent(new Flatter(100, 100));
+  mainOrganizer.addComponent(new Flatter(400, 100));
 }
 
 function createLayer() {
   return new HiddenLayer(300, 500);
 }
 
-function logMLPs() {
-  console.log(mainOrganizer.mlpViews);
+async function importHandwrittenModel() {
+  try {
+    const module = await import(`../Models/HandwrittenMlp.js`);
+    importMLP(module.default);
+  } catch (error) {
+    console.error("Error loading yData:", error);
+  }
 }
 
 function openCreateDataset() {
@@ -25,9 +30,8 @@ function closeCreateDataset() {
   tableOrganizer.disable();
 }
 
-function toggleDatasetsContainer() {
-  getElementById("datasets-container").classList.toggle("active");
-  getElementById("toggle-dataset-btn").classList.toggle("active");
+function toggleDrawer() {
+  getElementById("drawer").classList.toggle("active");
 }
 
 function toggleWelcome() {

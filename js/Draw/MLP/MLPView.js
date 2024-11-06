@@ -374,39 +374,26 @@ class MlpView extends Playable {
     return { totalParams, stepCounter, epoch };
   }
 
-  getTrainCommands() {
-    const x = this.x + 5;
-    const y = this.y + this.h;
-    const { lr, momentum, batchSize } = this.getProps();
-    const { stepCounter, epoch } = this.getOriginProps();
-    const commands = [
-      {
-        func: "text",
-        args: [
-          `Step: ${stepCounter} - ${this.msPerStepText}\nEpoch: ${epoch}\nBatch Size: ${batchSize}\nLearning Rate: ${lr}\nMomentum: ${momentum}`,
-          x,
-          y + 15,
-        ],
-      },
-    ];
-
-    return commands;
-  }
-
   showProps() {
-    const { errFunc } = this.getProps();
-    const { totalParams } = this.getOriginProps();
+    const { lr, momentum, batchSize, errFunc } = this.getProps();
+    const { totalParams, stepCounter, epoch } = this.getOriginProps();
+    const commonText = `Step: ${stepCounter} - ${this.msPerStepText}\nEpoch: ${epoch}\nBatch Size: ${batchSize}\n`;
+    let a = this.isEval()
+      ? "Mode: Eval"
+      : `Learning Rate: ${lr}\nMomentum: ${momentum}`;
 
     const x = this.x + 5;
     const y = this.y + this.h;
-    const common = [
+    const commands = [
       { func: "text", args: [errFunc, x + this.w - 35, y - 10] },
       { func: "text", args: [`Total Parameters: ${totalParams}\n`, x, y - 10] },
+      { func: "text", args: [commonText, x, y + 15] },
+      { func: "noStroke", args: [] },
+      { func: "fill", args: [themeManager.getTheme("blue").activeColor] },
+      { func: "text", args: [a, x, y + 60] },
     ];
 
-    const commands = this.isEval() ? [] : this.getTrainCommands();
-
-    executeDrawingCommands([...commands, ...common]);
+    executeDrawingCommands(commands);
   }
 
   show() {

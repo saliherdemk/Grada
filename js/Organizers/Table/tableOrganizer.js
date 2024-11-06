@@ -246,9 +246,9 @@ class TableOrganizer extends FunctionalTable {
 
     async function loadXData() {
       const allXData = [];
+      const totalFileNum = type == "train" ? 10 : 2;
 
-      // FIXME: change 10 to how many files there is
-      for (let chunkNumber = 1; chunkNumber <= 10; chunkNumber++) {
+      for (let chunkNumber = 1; chunkNumber <= totalFileNum; chunkNumber++) {
         try {
           const module = await import(
             `../../../Data/mnist/${type}/xData/chunk_${chunkNumber}.js`

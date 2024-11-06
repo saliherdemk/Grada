@@ -56,7 +56,6 @@ class Flatter extends Component {
   }
 
   handleRemove() {
-    // FIXME: add variable to control if component isoleted and ready to remove
     if (!(this.source || this.connected)) {
       this.destroy();
       mainOrganizer.removeComponent(this);

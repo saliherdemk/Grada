@@ -27,7 +27,6 @@ class InputLayer extends IOLayer {
     super.initialize();
   }
 
-  // FIXME: probably need merge with parent class
   handleRemove() {
     const isMultiDim = this.outputDot.theme == "black";
     if (!isMultiDim) return super.handleRemove();

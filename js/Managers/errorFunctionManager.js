@@ -4,6 +4,7 @@ class ErrorFunctionManager {
       mse: this.mse,
       mae: this.mae,
       bce: this.bce,
+      categorical: this.categorical, // Add categorical here
     };
     const selectElement = getElementById("err-function-select");
 
