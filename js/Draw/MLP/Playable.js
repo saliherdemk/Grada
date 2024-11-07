@@ -325,7 +325,7 @@ class Playable extends Draggable {
 
     this.updateParameters();
     this.setGraphComponentData();
-    this.setMsPerStepText(performance.now() - startTime + "ms / step");
+    this.setMsPerStepText(~~(performance.now() - startTime) + "ms / step");
 
     if (output instanceof DigitOutput) {
       const lastLayer = origin.layers[origin.layers.length - 1];

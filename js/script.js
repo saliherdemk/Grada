@@ -122,6 +122,37 @@ function scaleCanvas(event) {
   iManager.scaleFactor = newScaleFactor;
 }
 
+let currentPage = 0;
+const totalPages = 4;
+
+function updatePageVisibility() {
+  const pages = document.querySelectorAll("[id^='page-']");
+  pages.forEach((page, index) => {
+    if (index === currentPage) {
+      page.classList.add("active");
+    } else {
+      page.classList.remove("active");
+    }
+  });
+  const pageControls = getElementById("page-controls");
+  pageControls.lastElementChild.style.visibility =
+    currentPage == totalPages ? "hidden" : "visible";
+  pageControls.firstElementChild.style.visibility =
+    currentPage == 0 ? "hidden" : "visible";
+}
+
+function incrementPage(e) {
+  e.stopPropagation();
+  currentPage = Math.min(currentPage + 1, totalPages);
+  updatePageVisibility();
+}
+
+function decrementPage(e) {
+  e.stopPropagation();
+  currentPage = Math.max(currentPage - 1, 0);
+  updatePageVisibility();
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const disableBg = getElementById("disable-background");
   for (let child of disableBg.children) {
@@ -134,4 +165,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const mlpEditContainer = getElementById("mlp-edit-container");
   mlpEditContainer.addEventListener("mouseover", () => disableCanvas());
   mlpEditContainer.addEventListener("mouseout", () => enableCanvas());
+});
+
+window.addEventListener("load", () => {
+  const loader = getElementById("loading-overlay");
+  loader.style.opacity = 0;
+
+  setTimeout(() => {
+    loader.style.display = "none";
+  }, 300);
+  updatePageVisibility();
 });

@@ -6,36 +6,118 @@
   </head>
 
   <body>
+    <div id="loading-overlay" class="loading-overlay">
+      <div class="loader"></div>
+    </div>
+
     <div id="welcome-container" onclick="toggleWelcome()">
       <div id="popup-container">
         <h3>Grada</h3>
-        <img id="demo-img" src="media/demo.png" />
 
-        <div>
-          Grada is an interactive tool that lets you observe real-time changes
-          as you train a multilayer perceptron.
+        <div id="page-0" class="active">
+          <img id="demo-img" src="media/page-0.png" />
+          <div class="tips">
+            <div>
+              Grada is an interactive tool that lets you observe real-time
+              changes as you train a multilayer perceptron.
+            </div>
+            <div>Double-click on a layer to edit it.</div>
+            <div>
+              You can create or import datasets and apply flattening, min-max
+              normalization, and one-hot encoding operations.
+            </div>
+            <div>Double-click on the MLP to edit its properties.</div>
+            <div>
+              You can evaluate a model by connecting an input component, but to
+              train it, you'll also need to add an output component.
+            </div>
+            <div>
+              <span class="c-blue">Blue</span> represents neuron biases. <br />
+              <span class="c-cyan">Cyan</span> represents bias gradients.
+            </div>
+          </div>
         </div>
 
-        <div class="tips">
-          <div>Double-click on a layer to edit it.</div>
-          <div>
-            You can create or import datasets and apply flattening, min-max
-            normalization, and one-hot encoding operations.
+        <div id="page-1">
+          <img id="demo-img" src="media/page-1.png" />
+          <div class="tips">
+            <div>
+              In input and output layers,
+              <span class="c-yellow">yellow</span> represents fetched data, and
+              <span class="c-green">green</span> represents executed data.
+            </div>
+            <div>
+              Pressing 'E' while hovering over the MLP resets the coordinates of
+              its components.
+            </div>
+            <div>
+              Pressing 'R' while hovering over the digit input clears the grid.
+            </div>
+            <div>
+              Pressing 'Esc' closes the edit layer screen and the MLP edit
+              popup.
+            </div>
           </div>
-          <div>Double-click on the MLP to edit its properties.</div>
-          <div>
-            You can evaluate a model by connecting an input component, but to
-            train it, you'll also need to add an output component.
+        </div>
+
+        <div id="page-2">
+          <img src="media/page-2.png" width="100%" height="100%" />
+          <div class="tips">
+            <div>
+              You can add components to mlp to plot loss graph or see forward
+              pass calculations by pressing the
+              <span class="c-yellow">yellow</span> and
+              <span class="c-blue">blue</span> dots. To alternate between train
+              and evaluation loss graph simply change the mlp's mode.
+            </div>
+            <div>
+              All the numbers shown in the MLP represent the output for the
+              first record. To observe all outputs for the current batch (up to
+              5 records), use the calculationViewer component.
+            </div>
           </div>
-          <div>
-            <span class="c-blue">Blue</span> represents neuron biases. <br />
-            <span class="c-cyan">Cyan</span> represents bias gradients.
+        </div>
+
+        <div id="page-3">
+          <img src="media/page-3.png" width="90%" height="100%" />
+          <div class="tips">
+            <div>
+              Use the flattener component to flatten the dataset if you haven't
+              already done so while creating the dataset. It flattens the
+              incoming data and optionally augments it.
+            </div>
+            <div>
+              For example, in the MNIST dataset, you can crop the image into an
+              arbitrary number of parts and flatten it into a specified number.
+              You can also visulize the incoming data.
+            </div>
+            <div>
+              The data doesn't need to come from handwritten input; you can
+              connect the MNIST train-eval dataset if it hasn't been flattened.
+            </div>
           </div>
-          <div>
-            In input and output layers,
-            <span class="c-yellow">yellow</span> represents fetched data, and
-            <span class="c-green">green</span> represents executed data.
+        </div>
+        <div id="page-4">
+          <img src="media/page-4.png" width="300px" height="350px" />
+          <div class="tips">
+            <div>
+              There is a pre-trained model that you can import in the
+              Handwritten Digits section. You can also evaluate it with your
+              real-time drawings. If you don't use data augmentation (meaning
+              your part number is 1), you don't need to use the grid output but
+              since averaging are done in that component and it highlights the
+              result, don't forget to connect it.
+            </div>
+            <div>
+              Source code is available on GitHub. Contributions, issues and
+              feature requests are welcome.
+            </div>
           </div>
+        </div>
+
+        <div id="page-controls">
+          <img src="media/next.png" alt="" onclick="decrementPage(event)" />
+          <img src="media/next.png" alt="" onclick="incrementPage(event)" />
         </div>
       </div>
     </div>
