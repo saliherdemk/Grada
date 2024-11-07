@@ -461,5 +461,6 @@ class MlpView extends Playable {
     await this.toggleMlp();
     this.origin.import(mlpData.origin);
     this.updateParameters();
+    this.resetCoordinates();
   }
 }
