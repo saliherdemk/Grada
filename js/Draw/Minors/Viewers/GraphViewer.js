@@ -68,11 +68,12 @@ class GraphViewer extends Viewer {
       return { originIndex: 0, data: recentRecords };
     }
 
-    const totalRecordsCount = allRecords.length - 10;
-    const originIndex = totalRecordsCount - totalRecordsCount * this.scale;
+    const recordsNum = allRecords.length - 10;
+    const sc = this.scale;
+    const originI = recordsNum - (sc > 0 && sc < 0.1 ? 50 : recordsNum * sc);
 
-    const scaledRecords = allRecords.slice(originIndex, totalRecordsCount);
-    return { originIndex, data: scaledRecords.concat(recentRecords) };
+    const scaledRecords = allRecords.slice(originI, recordsNum);
+    return { originIndex: originI, data: scaledRecords.concat(recentRecords) };
   }
 
   drawGridLines() {

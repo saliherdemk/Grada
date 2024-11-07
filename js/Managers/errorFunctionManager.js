@@ -4,7 +4,7 @@ class ErrorFunctionManager {
       mse: this.mse,
       mae: this.mae,
       bce: this.bce,
-      categorical: this.categorical, // Add categorical here
+      cce: this.cce,
     };
     const selectElement = getElementById("err-function-select");
 
@@ -115,6 +115,50 @@ class ErrorFunctionManager {
         for (let j = 0; j < output.data[0].length; j++) {
           output.grad[i][j] +=
             (clippedOutput[i][j] - target.data[i][j]) / totalElements;
+        }
+      }
+    };
+
+    return lossTensor;
+  }
+
+  cce(output, target) {
+    const eps = 1e-15;
+    const clippedOutput = output.data.map((outRow) =>
+      outRow.map((o) => Math.min(Math.max(o, eps), 1 - eps)),
+    );
+
+    const lossValues = clippedOutput.map((outRow, i) =>
+      outRow.map(
+        (o, j) => -(target.data[i][j] * Math.log(o)), // Since target is one-hot encoded
+      ),
+    );
+
+    const totalElements = output.data.length * output.data[0].length;
+    const lossValue =
+      lossValues.reduce(
+        (sumRow, row) => sumRow + row.reduce((sum, val) => sum + val, 0),
+        0,
+      ) / totalElements;
+
+    const lossTensor = new Tensor([[lossValue]]);
+    lossTensor._prev = [output];
+
+    lossTensor._backward = function () {
+      if (output.grad === null) {
+        output.grad = output.data.map((row) => row.map(() => 0.0));
+      }
+
+      for (let i = 0; i < output.data.length; i++) {
+        for (let j = 0; j < output.data[0].length; j++) {
+          if (target.data[i][j] === 1) {
+            output.grad[i][j] += -target.data[i][j] / clippedOutput[i][j];
+          }
+        }
+      }
+      for (let i = 0; i < output.data.length; i++) {
+        for (let j = 0; j < output.data[0].length; j++) {
+          output.grad[i][j] /= totalElements;
         }
       }
     };

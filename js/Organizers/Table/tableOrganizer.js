@@ -195,10 +195,10 @@ class TableOrganizer extends FunctionalTable {
         }
 
         if (labelIndexes.includes(j)) {
-          yValues.push(value);
+          yValues.push(parseInt(value));
           continue;
         }
-        xValues.push(value);
+        xValues.push(parseInt(value));
       }
       xValues.length && this.xData.push(xValues);
       yValues.length && this.yData.push(yValues);

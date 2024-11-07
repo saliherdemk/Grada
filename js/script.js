@@ -32,6 +32,7 @@ function closeCreateDataset() {
 
 function toggleDrawer() {
   getElementById("drawer").classList.toggle("active");
+  getElementById("toggle-drawer").classList.toggle("active");
 }
 
 function toggleWelcome() {

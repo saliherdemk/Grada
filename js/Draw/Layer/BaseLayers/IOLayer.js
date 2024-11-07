@@ -2,7 +2,7 @@ class IOLayer extends Component {
   constructor(datasetId, _x, _y) {
     super(_x, _y, 350);
     this.datasetId = datasetId;
-    this.currentIndex = 0;
+    this.currentIndex = -1;
     this.recordNum = this.getDataset().shapeY[0];
   }
 

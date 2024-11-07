@@ -249,14 +249,19 @@
       </div>
     </div>
 
+    <img
+      id="toggle-drawer"
+      class="active"
+      src="media/arrow.svg"
+      onclick="toggleDrawer()"
+    />
+
     <div
       id="drawer"
       class="active"
       onmouseover="disableCanvas()"
       onmouseout="enableCanvas()"
     >
-      <img id="toggle-drawer" src="media/arrow.svg" onclick="toggleDrawer()" />
-
       <div id="header">Datasets</div>
       <div id="dataset-scrollable"></div>
 
