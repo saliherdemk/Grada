@@ -40,6 +40,7 @@ class TableOrganizer extends FunctionalTable {
 
   setMode(mode) {
     this.mode = mode;
+    this.resetButtons();
     this.setLayout();
   }
 
@@ -130,7 +131,7 @@ class TableOrganizer extends FunctionalTable {
   createDataset() {
     this.mode == 1 && this.setDataFromTable();
     datasetOrganizer.addDataset(new Dataset(this.name, this.getData()));
-    this.reset();
+    this.mode == 1 && this.reset();
   }
 
   downloadDataset() {
