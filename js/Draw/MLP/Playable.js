@@ -145,7 +145,7 @@ class Playable extends Draggable {
     this.updateStatus(
       +(
         (input instanceof InputLayer ||
-          (input instanceof Flatter && input.source)) &&
+          (input instanceof Flattener && input.source)) &&
         (this.isEval() || this.getOutput() instanceof OutputLayer)
       ),
     );

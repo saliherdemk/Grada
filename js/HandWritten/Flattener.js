@@ -1,4 +1,4 @@
-class Flatter extends Component {
+class Flattener extends Component {
   constructor(x, y) {
     super(x, y, 275);
     this.shrank = true;
@@ -168,7 +168,7 @@ class Flatter extends Component {
       { func: "textAlign", args: [CENTER, CENTER] },
       {
         func: "text",
-        args: ["Flatter", middleX, this.y - 10],
+        args: ["Flattener", middleX, this.y - 10],
       },
     ];
 

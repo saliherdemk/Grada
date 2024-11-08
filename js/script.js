@@ -5,8 +5,8 @@ function createHandWritten() {
   mainOrganizer.addComponent(new DigitOutput(800, 100));
 }
 
-function createFlatter() {
-  mainOrganizer.addComponent(new Flatter(400, 100));
+function createFlattener() {
+  mainOrganizer.addComponent(new Flattener(400, 100));
 }
 
 function createLayer() {
